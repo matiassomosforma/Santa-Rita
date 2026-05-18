@@ -325,6 +325,7 @@
   {%- if request.page_type == 'index' -%}
     <h1 class="visually-hidden">{{ shop.name }}</h1>
   {%- endif -%}
+  <div class="header-preview-badge">HEADER TEST</div>
   {% for row in rows %}
     {% liquid
       assign scheme = 'color_scheme_' | append: row
@@ -428,6 +429,23 @@
 
   #header-component :is(.header-menu, .dropdown-localization) {
     display: none;
+  }
+
+  .header-preview-badge {
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    z-index: calc(var(--layer-overlay) + 1);
+    transform: translateX(-50%);
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: #ffec3d;
+    color: #111111;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1;
+    pointer-events: none;
   }
 
   @media screen and (min-width: 750px) {
