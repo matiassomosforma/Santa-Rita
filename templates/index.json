@@ -14,8 +14,7 @@
         "slide_intro": {
           "type": "slide",
           "settings": {
-            "media_type": "video",
-            "video_asset_name": "santa-rita-banner.mp4",
+            "media_type": "image",
             "heading": "Vinos y espumantes\nque cuentan historias,\ncon el sello de Santa Rita",
             "text": "Cada botella guarda una pasión por descubrir.",
             "button_label": "Ver ofertas",

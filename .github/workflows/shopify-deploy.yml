@@ -32,4 +32,7 @@ jobs:
           shopify theme push \
             --theme ${{ secrets.SHOPIFY_THEME_ID }} \
             --allow-live \
+            --ignore "assets/*.mp4" \
+            --ignore "assets/*.mov" \
+            --ignore "assets/*.webm" \
             --json
