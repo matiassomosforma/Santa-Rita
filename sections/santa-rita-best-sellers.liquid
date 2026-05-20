@@ -1,0 +1,654 @@
+{% liquid
+  assign best_seller_products = section.settings.products
+  assign product_limit = section.settings.max_products
+%}
+
+<santa-rita-best-sellers
+  class="santa-rita-best-sellers"
+  {% if section.settings.autoplay %}
+    autoplay
+    autoplay-speed="{{ section.settings.autoplay_speed | times: 1000 }}"
+  {% endif %}
+  {% if section.settings.infinite_loop %}
+    infinite-loop
+  {% endif %}
+>
+  <div class="santa-rita-best-sellers__container">
+    <header class="santa-rita-best-sellers__header">
+      <h2>{{ section.settings.heading }}</h2>
+      <p>{{ section.settings.text }}</p>
+    </header>
+
+    <div class="santa-rita-best-sellers__viewport" data-slider-viewport>
+      <div class="santa-rita-best-sellers__track" data-slider-track>
+        {% if best_seller_products != blank %}
+          {% for product in best_seller_products limit: product_limit %}
+            {% render 'santa-rita-best-seller-card',
+              product: product,
+              section_settings: section.settings
+            %}
+          {% endfor %}
+        {% elsif section.settings.collection != blank %}
+          {% for product in section.settings.collection.products limit: product_limit %}
+            {% render 'santa-rita-best-seller-card',
+              product: product,
+              section_settings: section.settings
+            %}
+          {% endfor %}
+        {% else %}
+          <div class="santa-rita-best-sellers__empty">
+            Selecciona productos o una colección para mostrar los más vendidos.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="santa-rita-best-sellers__footer">
+      <div class="santa-rita-best-sellers__dots" data-slider-dots aria-label="Paginación de productos"></div>
+      <div class="santa-rita-best-sellers__arrows">
+        <button type="button" data-slider-prev aria-label="Productos anteriores">
+          <span aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="33" height="20" viewBox="0 0 33 20" fill="none">
+              <path d="M11 0C11 1.06 9.99212 2.64286 8.97187 3.97143C7.66012 5.68571 6.09263 7.18143 4.2955 8.32286C2.948 9.17857 1.3145 10 0 10M0 10C1.3145 10 2.94938 10.8214 4.2955 11.6771C6.09263 12.82 7.66012 14.3157 8.97187 16.0271C9.99212 17.3571 11 18.9429 11 20M0 10H33" stroke="#8C1A3E"/>
+            </svg>
+          </span>
+        </button>
+        <button type="button" data-slider-next aria-label="Productos siguientes">
+          <span aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="33" height="20" viewBox="0 0 33 20" fill="none">
+              <path d="M22 0C22 1.06 23.0079 2.64286 24.0281 3.97143C25.3399 5.68571 26.9074 7.18143 28.7045 8.32286C30.052 9.17857 31.6855 10 33 10M33 10C31.6855 10 30.0506 10.8214 28.7045 11.6771C26.9074 12.82 25.3399 14.3157 24.0281 16.0271C23.0079 17.3571 22 18.9429 22 20M33 10H0" stroke="#8C1A3E"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</santa-rita-best-sellers>
+
+<script>
+  if (!customElements.get('santa-rita-best-sellers')) {
+    customElements.define(
+      'santa-rita-best-sellers',
+      class SantaRitaBestSellers extends HTMLElement {
+        connectedCallback() {
+          this.viewport = this.querySelector('[data-slider-viewport]');
+          this.track = this.querySelector('[data-slider-track]');
+          this.prevButton = this.querySelector('[data-slider-prev]');
+          this.nextButton = this.querySelector('[data-slider-next]');
+          this.dotsContainer = this.querySelector('[data-slider-dots]');
+
+          this.handleResize = () => this.setupDots();
+
+          if (!this.viewport || !this.track) return;
+
+          this.prevButton?.addEventListener('click', () => this.scrollByPage(-1));
+          this.nextButton?.addEventListener('click', () => this.scrollByPage(1));
+          this.viewport.addEventListener('scroll', () => this.updateState(), { passive: true });
+          window.addEventListener('resize', this.handleResize);
+
+          this.setupDots();
+        }
+
+        disconnectedCallback() {
+          window.removeEventListener('resize', this.handleResize);
+        }
+
+        getStep() {
+          const card = this.track.querySelector('.santa-rita-product-card');
+          if (!card) return this.viewport.clientWidth;
+          const gap = parseFloat(window.getComputedStyle(this.track).columnGap || '0');
+          return card.getBoundingClientRect().width + gap;
+        }
+
+        getPageCount() {
+          const total = this.track.querySelectorAll('.santa-rita-product-card').length;
+          const visible = Math.round(this.viewport.clientWidth / this.getStep());
+          return Math.max(1, total - visible + 1);
+        }
+
+        setupDots() {
+          if (!this.dotsContainer) return;
+          this.dotsContainer.innerHTML = '';
+          const count = this.getPageCount();
+
+          for (let i = 0; i < count; i++) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.setAttribute('aria-label', `Ir al grupo ${i + 1}`);
+            btn.addEventListener('click', () => {
+              this.viewport.scrollTo({ left: i * this.getStep(), behavior: 'smooth' });
+            });
+            this.dotsContainer.append(btn);
+          }
+
+          this.updateState();
+        }
+
+        scrollByPage(direction) {
+          this.viewport.scrollBy({ left: direction * this.getStep(), behavior: 'smooth' });
+        }
+
+        updateState() {
+          const step = this.getStep();
+          const activeIndex = Math.round(this.viewport.scrollLeft / step);
+          const maxScroll = Math.max(0, this.viewport.scrollWidth - this.viewport.clientWidth);
+
+          Array.from(this.dotsContainer?.children || []).forEach((dot, i) => {
+            dot.classList.toggle('is-active', i === activeIndex);
+            dot.setAttribute('aria-current', i === activeIndex ? 'true' : 'false');
+          });
+
+          if (this.prevButton) this.prevButton.disabled = this.viewport.scrollLeft <= 4;
+          if (this.nextButton) this.nextButton.disabled = this.viewport.scrollLeft >= maxScroll - 4;
+        }
+      }
+    );
+  }
+</script>
+
+{% stylesheet %}
+  .santa-rita-best-sellers {
+    display: block;
+    background: #fbf8f1;
+    color: #21000f;
+  }
+
+  .santa-rita-best-sellers__container {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding: 64px clamp(24px, 6.8vw, 120px) 64px;
+  }
+
+  .santa-rita-best-sellers__header {
+    margin-bottom: 40px;
+  }
+
+  .santa-rita-best-sellers__header h2 {
+    margin: 0 0 24px 0;
+    color: #000000;
+    font-family: var(--font-heading--family);
+    font-size: clamp(24px, 3.2vw, 48px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-best-sellers__header p {
+    margin: 16px 0 0;
+    color: #1E0812;
+    font-size: 24px;
+    line-height: 1.35;
+  }
+
+  .santa-rita-best-sellers__viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding-block: 15px;
+  }
+
+  .santa-rita-best-sellers__viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .santa-rita-best-sellers__track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - 60px) / 4);
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .santa-rita-product-card {
+    position: relative;
+    display: flex;
+    min-height: 472px;
+    flex-direction: column;
+    scroll-snap-align: start;
+    overflow: hidden;
+    border: 1px solid #FFF;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 0 2px 0 rgba(140, 26, 62, 0.13) inset, 0 10px 10px 0 rgba(140, 26, 62, 0.05);
+    transition: all .3s ease;
+  }
+
+  .santa-rita-product-card:hover{
+    box-shadow: 0 0 2px 0 rgb(140 26 62 / 41%) inset, 0 10px 10px 0 rgb(140 26 62 / 19%);
+  }
+
+  .santa-rita-product-card__badges {
+    position: absolute;
+    inset: 14px 14px auto;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+
+  .santa-rita-product-card__badge {
+    display: inline-flex;
+    min-width: 50px;
+    min-height: 25px;
+    align-items: center;
+    justify-content: center;
+    padding: 0px 12px;
+    border: 1px solid #d8cdc6;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #21000f;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    border-radius: 12px;
+    border: 1px solid #AEA2A6;
+    background: #F5F4ED;;
+  }
+
+  .santa-rita-product-card__badge--discount {
+    border-color: #9b173f;
+    background: #9b173f;
+    color: #ffffff;
+  }
+
+  .santa-rita-product-card__badge--blank {
+    opacity: 0;
+  }
+
+  .santa-rita-product-card__media {
+    position: relative;
+    display: grid;
+    min-height: 184px;
+    place-items: end center;
+    padding-top: 32px;
+    margin-bottom: 32px;
+    text-decoration: none;
+  }
+
+  .santa-rita-product-card__image {
+    width: auto;
+    max-width: 78%;
+    height: 180px;
+    object-fit: contain;
+    filter: drop-shadow(11px 9px 16px rgb(33 0 15 / 14%));
+  }
+
+  .santa-rita-product-card__image--placeholder {
+    opacity: 0.65;
+    filter: none;
+  }
+
+  .santa-rita__star-group{
+    display: flex;
+    gap: 2px;
+  }
+
+  .santa-rita__product-image{
+    position: relative;
+  }
+
+  .santa-rita-product-card__rating {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 24px;
+    padding-inline: 16px;
+    color: #c98d00;
+    font-size: 12px;
+    line-height: 1;
+    position: absolute;
+    right: 0;
+    bottom: 5px;
+  }
+
+  .santa-rita-product-card__rating small {
+    color: #6E5A61;
+    font-size: 12px;
+  }
+
+  .santa-rita-product-card__eyebrow,
+  .santa-rita-product-card__origin {
+    margin: 0;
+    padding-inline: 16px;
+    color: #8d183f;
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  .santa-rita-product-card h3 {
+    margin: 4px 0 0;
+    padding-inline: 16px;
+    color: #2B1E1E;
+    font-family: var(--font-heading--family);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: 0;
+    margin-block: 7px 4px;
+  }
+
+  .santa-rita-product-card h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .santa-rita-product-card__origin {
+    margin-top: 3px;
+    color: #6b5d5d;
+  }
+
+  .santa-rita-product-card__price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 16px;
+    padding-inline: 16px;
+  }
+
+  .santa-rita-product-card__price strong {
+    color: #1E0812;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .santa-rita-product-card__price s {
+    color: #6e6262;
+    font-size: 13px;
+  }
+
+  .santa-rita-product-card__details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: auto 16px 12px;
+    padding-top: 12px;
+    border-top: 0.5px solid rgba(110, 90, 97, 0.50);
+    margin-top: 12px;
+  }
+
+  .santa-rita-product-card__details span {
+    display: flex;
+    min-height: 52px;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8px 10px;
+    border-radius: 3px;
+    background: #eee8e2;
+    color: #655b58;
+    font-size: 12px;
+    line-height: 1.1;
+  }
+
+  .santa-rita-product-card__details strong {
+    margin-top: 4px;
+    color: #21000f;
+    font-size: 14px;
+  }
+
+  .santa-rita-product-card__button {
+    width: calc(100% - 32px);
+    min-height: 44px;
+    margin: 0 16px 16px;
+    border: 0;
+    border-radius: 7px;
+    background: #8C1A3E;
+    border: 1px solid #8C1A3E;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .santa-rita-product-card__button:hover{
+    background: #ffffff;
+    color: #8C1A3E;
+    transition: all .3s ease;
+  }
+
+  .santa-rita-product-card__button:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+
+  .santa-rita-product-card__form {
+    margin: 0;
+  }
+
+  .santa-rita-best-sellers__empty {
+    grid-column: 1 / -1;
+    padding: 28px;
+    border: 1px dashed #d9c9bf;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #6b5d5d;
+  }
+
+  .santa-rita-best-sellers__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 26px;
+    margin-top: 32px;
+  }
+
+  .santa-rita-best-sellers__dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .santa-rita-best-sellers__dots button {
+    width: 12px;
+    height: 12px;
+    padding: 0;
+    border: 1px solid #8C1A3E;
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+    .santa-rita-best-sellers__dots button:hover{
+      background: #8C1A3E;
+      transition: background .3s ease;
+    }
+
+  .santa-rita-best-sellers__dots button.is-active {
+    background: #8C1A3E;
+  }
+
+  .santa-rita-best-sellers__arrows {
+    display: flex;
+    gap: 14px;
+  }
+
+  .santa-rita-best-sellers__arrows button {
+    display: grid;
+    width: 60px;
+    height: 60px;
+    place-items: center;
+    border: 1px solid #8C1A3E;
+    border-radius: 999px;
+    background: transparent;
+    color: #8C1A3E;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all .3s ease;
+  }
+
+    .santa-rita-best-sellers__arrows button:hover{
+      background: #8C1A3E;
+    }
+
+    .santa-rita-best-sellers__arrows button:hover svg path{
+      stroke: #ffffff;
+    }
+
+  .santa-rita-best-sellers__arrows button:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  @media screen and (max-width: 989px) {
+    .santa-rita-best-sellers__track {
+      grid-auto-columns: calc((100% - 20px) / 2);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-best-sellers__container {
+      padding: 42px 20px 48px;
+    }
+
+    .santa-rita-best-sellers__header {
+      margin-bottom: 24px;
+    }
+
+    .santa-rita-best-sellers__header p {
+      font-size: 16px;
+    }
+
+    .santa-rita-best-sellers__track {
+      grid-auto-columns: min(82vw, 260px);
+      gap: 14px;
+    }
+
+    .santa-rita-product-card {
+      min-height: 450px;
+    }
+
+    .santa-rita-best-sellers__footer {
+      justify-content: space-between;
+      margin-top: 24px;
+    }
+
+    .santa-rita-best-sellers__arrows button {
+      width: 42px;
+      height: 42px;
+      font-size: 24px;
+    }
+
+    .santa-rita-best-sellers__header h2{
+      margin-bottom: 15px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Santa Rita más vendidos",
+  "tag": "section",
+  "class": "section-santa-rita-best-sellers",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Título",
+      "default": "Más vendidos"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Texto",
+      "default": "Los vinos más elegidos en Santa Rita."
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Productos destacados",
+      "limit": 12
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Colección fallback",
+      "info": "Se usa sólo si no seleccionas productos manuales."
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Cantidad máxima",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Slider"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Mover automáticamente",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Velocidad autoplay",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 5,
+      "unit": "s"
+    },
+    {
+      "type": "checkbox",
+      "id": "infinite_loop",
+      "label": "Loop infinito",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Datos placeholder"
+    },
+    {
+      "type": "paragraph",
+      "content": "Estos datos se muestran cuando todavía no existen metafields. Si luego se crean metafields custom.pack_label, custom.unit_price_label, custom.liter_price_label, custom.rating_count, custom.origin o custom.card_eyebrow, la card usa esos valores por producto."
+    },
+    {
+      "type": "text",
+      "id": "pack_label",
+      "label": "Formato",
+      "default": "x12 un."
+    },
+    {
+      "type": "text",
+      "id": "unit_price_label",
+      "label": "Precio por unidad",
+      "default": "$2.970"
+    },
+    {
+      "type": "text",
+      "id": "liter_price_label",
+      "label": "Precio por litro",
+      "default": "$3.960"
+    },
+    {
+      "type": "text",
+      "id": "rating_count",
+      "label": "Cantidad de reseñas",
+      "default": "134"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Santa Rita más vendidos",
+      "settings": {
+        "heading": "Más vendidos",
+        "text": "Los vinos más elegidos en Santa Rita.",
+        "collection": "all",
+        "max_products": 8,
+        "autoplay": true,
+        "autoplay_speed": 5,
+        "infinite_loop": true
+      }
+    }
+  ]
+}
+{% endschema %}

@@ -38,6 +38,19 @@
         "button_text_color": "#ffffff"
       }
     },
+    "santa_rita_best_sellers": {
+      "type": "santa-rita-best-sellers",
+      "settings": {
+        "heading": "Más vendidos",
+        "text": "Los vinos más elegidos en Santa Rita.",
+        "collection": "all",
+        "max_products": 8,
+        "pack_label": "x12 un.",
+        "unit_price_label": "$2.970",
+        "liter_price_label": "$3.960",
+        "rating_count": "134"
+      }
+    },
     "hero_jVaWmY": {
       "type": "hero",
       "blocks": {
@@ -315,6 +328,7 @@
   },
   "order": [
     "santa_rita_banner_slider",
+    "santa_rita_best_sellers",
     "hero_jVaWmY",
     "product_list_fa6P9H"
   ]

@@ -1,0 +1,118 @@
+{% liquid
+  assign variant = product.selected_or_first_available_variant
+  assign pack_label = product.metafields.custom.pack_label | default: section_settings.pack_label
+  assign unit_price_label = product.metafields.custom.unit_price_label | default: section_settings.unit_price_label
+  assign liter_price_label = product.metafields.custom.liter_price_label | default: section_settings.liter_price_label
+  assign rating_count = product.metafields.custom.rating_count | default: section_settings.rating_count
+  assign origin = product.metafields.custom.origin | default: product.vendor
+  assign eyebrow = product.metafields.custom.card_eyebrow | default: product.type
+  assign discount_percent = 0
+
+  if variant.compare_at_price > variant.price
+    assign discount_value = variant.compare_at_price | minus: variant.price
+    assign discount_percent = discount_value | times: 100 | divided_by: variant.compare_at_price | round
+  endif
+%}
+
+<article class="santa-rita-product-card">
+  <div class="santa-rita-product-card__badges">
+    {% if discount_percent > 0 %}
+      <span class="santa-rita-product-card__badge santa-rita-product-card__badge--discount">-{{ discount_percent }}%</span>
+    {% else %}
+      <span class="santa-rita-product-card__badge santa-rita-product-card__badge--blank"></span>
+    {% endif %}
+
+    {% if pack_label != blank %}
+      <span class="santa-rita-product-card__badge">{{ pack_label }}</span>
+    {% endif %}
+  </div>
+
+  <div class="santa-rita__product-image">
+    <a href="{{ product.url }}" class="santa-rita-product-card__media" aria-label="{{ product.title | escape }}">
+      {% if product.featured_image != blank %}
+        {{
+          product.featured_image
+          | image_url: width: 420
+          | image_tag:
+            widths: '240, 320, 420, 560',
+            sizes: '(min-width: 990px) 260px, 82vw',
+            loading: 'lazy',
+            class: 'santa-rita-product-card__image'
+        }}
+      {% else %}
+        {{ 'product-apparel-1' | placeholder_svg_tag: 'santa-rita-product-card__image santa-rita-product-card__image--placeholder' }}
+      {% endif %}
+    </a>
+
+    <div class="santa-rita-product-card__rating">
+      <div class="santa-rita__star-group">
+        {% for i in (1..5) %}
+        <span aria-label="5 estrellas">
+          <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 9 9" fill="none">
+            <g clip-path="url(#clip0_1568_13293)">
+              <path d="M2.03172 8.68672C1.8146 8.7981 1.56822 8.60291 1.6121 8.35372L2.07897 5.6931L0.0972875 3.80535C-0.087775 3.62872 0.00841247 3.30585 0.256475 3.27097L3.0116 2.87947L4.2401 0.445537C4.35091 0.226162 4.65072 0.226162 4.76154 0.445537L5.99004 2.87947L8.74516 3.27097C8.99323 3.30585 9.08941 3.62872 8.90379 3.80535L6.92266 5.6931L7.38954 8.35372C7.43341 8.60291 7.18704 8.7981 6.96991 8.68672L4.49998 7.41772L2.03172 8.68672Z" fill="#D7A040"/>
+            </g>
+            <defs>
+              <clipPath id="clip0_1568_13293">
+                <rect width="9" height="9" fill="white"/>
+              </clipPath>
+            </defs>
+          </svg>
+        </span>
+        {% endfor %}
+      </div>
+      {% if rating_count != blank %}
+        <small>{{ rating_count }} reseñas</small>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- 
+  {% if eyebrow != blank %}
+    <p class="santa-rita-product-card__eyebrow">{{ eyebrow }}</p>
+  {% endif %}
+   -->
+
+  <p class="santa-rita-product-card__eyebrow">Sauvignon Blanc - 750 CC.</p>
+
+  <h3>
+    <a href="{{ product.url }}">{{ product.title }}</a>
+  </h3>
+
+<!-- 
+  {% if origin != blank %}
+    <p class="santa-rita-product-card__origin">{{ origin }}</p>
+  {% endif %}
+-->
+
+<p class="santa-rita-product-card__origin">Valle Central de Chile</p>
+
+  <div class="santa-rita-product-card__price">
+    <strong>{{ variant.price | money }}</strong>
+    {% if variant.compare_at_price > variant.price %}
+      <s>{{ variant.compare_at_price | money }}</s>
+    {% endif %}
+  </div>
+
+  <div class="santa-rita-product-card__details">
+    <span>Por unidad <strong>{{ unit_price_label }}</strong></span>
+    <span>Por litro <strong>{{ liter_price_label }}</strong></span>
+  </div>
+
+  {% form 'product', product, class: 'santa-rita-product-card__form' %}
+    <input type="hidden" name="id" value="{{ variant.id }}">
+    <button
+      class="santa-rita-product-card__button"
+      type="submit"
+      {% unless variant.available %}
+        disabled
+      {% endunless %}
+    >
+      {% if variant.available %}
+        Agregar al carro
+      {% else %}
+        Agotado
+      {% endif %}
+    </button>
+  {% endform %}
+</article>
