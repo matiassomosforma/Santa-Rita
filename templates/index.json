@@ -8,6 +8,37 @@
  * ------------------------------------------------------------
  */{
   "sections": {
+    "santa_rita_banner_slider": {
+      "type": "santa-rita-banner-slider",
+      "blocks": {
+        "slide_intro": {
+          "type": "slide",
+          "settings": {
+            "media_type": "video",
+            "video_asset_name": "santa-rita-banner.mp4",
+            "heading": "Vinos y espumantes\nque cuentan historias,\ncon el sello de Santa Rita",
+            "text": "Cada botella guarda una pasión por descubrir.",
+            "button_label": "Ver ofertas",
+            "button_link": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "slide_intro"
+      ],
+      "settings": {
+        "height_desktop": 520,
+        "height_mobile": 460,
+        "content_position": "left",
+        "content_max_width": 640,
+        "overlay_opacity": 45,
+        "autoplay": true,
+        "autoplay_speed": 6,
+        "text_color": "#ffffff",
+        "button_background": "#9b173f",
+        "button_text_color": "#ffffff"
+      }
+    },
     "hero_jVaWmY": {
       "type": "hero",
       "blocks": {
@@ -284,6 +315,7 @@
     }
   },
   "order": [
+    "santa_rita_banner_slider",
     "hero_jVaWmY",
     "product_list_fa6P9H"
   ]

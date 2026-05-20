@@ -20,10 +20,22 @@
         "label": "t:settings.default_logo"
       },
       {
+        "type": "text",
+        "id": "logo_svg_asset",
+        "label": "Logo SVG en assets",
+        "info": "Sube el SVG a la carpeta assets y escribe el nombre exacto del archivo, por ejemplo logo-santa-rita.svg."
+      },
+      {
         "type": "image_picker",
         "id": "logo_inverse",
         "label": "t:settings.inverse_logo",
         "info": "t:content.inverse_logo_info"
+      },
+      {
+        "type": "text",
+        "id": "logo_inverse_svg_asset",
+        "label": "Logo SVG invertido en assets",
+        "info": "Opcional. Sube el SVG invertido a assets y escribe el nombre exacto del archivo."
       },
       {
         "type": "range",
@@ -34,7 +46,7 @@
         "step": 1,
         "unit": "px",
         "default": 36,
-        "visible_if": "{{ settings.logo != blank or settings.logo_inverse != blank }}",
+        "visible_if": "{{ settings.logo != blank or settings.logo_inverse != blank or settings.logo_svg_asset != blank or settings.logo_inverse_svg_asset != blank }}",
         "info": "t:info.logo_height"
       },
       {
@@ -46,7 +58,7 @@
         "step": 1,
         "unit": "px",
         "default": 28,
-        "visible_if": "{{ settings.logo != blank or settings.logo_inverse != blank }}",
+        "visible_if": "{{ settings.logo != blank or settings.logo_inverse != blank or settings.logo_svg_asset != blank or settings.logo_inverse_svg_asset != blank }}",
         "info": "t:info.logo_height"
       },
       {

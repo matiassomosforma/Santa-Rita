@@ -62,6 +62,23 @@ textarea:hover {
   background-color: var(--color-input-hover-background);
 }
 
+  .santa-rita__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 45px;
+    height: 45px;
+    padding-inline: 24px;
+    border-radius: 6px;
+    background: var(--banner-button-background);
+    color: var(--banner-button-text);
+    font-family: var(--font-body--family);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+  }
+
 /** override ios and firefox defaults */
 select {
   background-color: var(--color-background);

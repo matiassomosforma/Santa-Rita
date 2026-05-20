@@ -1,0 +1,599 @@
+{% liquid
+  assign section_id = 'SantaRitaBannerSlider-' | append: section.id
+  assign autoplay_enabled = false
+  if section.blocks.size > 1 and section.settings.autoplay
+    assign autoplay_enabled = true
+  endif
+  assign first_block = section.blocks.first
+%}
+
+{% if first_block.settings.media_type == 'video' and first_block.settings.video_asset_name != blank %}
+  <link
+    rel="preload"
+    as="video"
+    href="{{ first_block.settings.video_asset_name | asset_url }}"
+    type="video/mp4"
+  >
+{% endif %}
+
+<santa-rita-banner-slider
+  id="{{ section_id }}"
+  class="santa-rita-banner-slider"
+  style="
+    --banner-height-desktop: {{ section.settings.height_desktop }}px;
+    --banner-height-mobile: {{ section.settings.height_mobile }}px;
+    --banner-content-max-width: {{ section.settings.content_max_width }}px;
+    --banner-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    --banner-text-color: {{ section.settings.text_color }};
+    --banner-button-background: {{ section.settings.button_background }};
+    --banner-button-text: {{ section.settings.button_text_color }};
+  "
+  {% if autoplay_enabled %}
+    autoplay
+    autoplay-speed="{{ section.settings.autoplay_speed | times: 1000 }}"
+  {% endif %}
+>
+  <div class="santa-rita-banner-slider__slides">
+    {% for block in section.blocks %}
+      {% liquid
+        assign block_settings = block.settings
+        assign is_active = false
+        if forloop.first
+          assign is_active = true
+        endif
+      %}
+
+      <article
+        class="santa-rita-banner-slider__slide{% if is_active %} is-active{% endif %}"
+        data-slide
+        data-index="{{ forloop.index0 }}"
+        aria-hidden="{% if is_active %}false{% else %}true{% endif %}"
+        {{ block.shopify_attributes }}
+      >
+        <div class="santa-rita-banner-slider__media">
+          {% if block_settings.media_type == 'video' and block_settings.video != blank %}
+            {% liquid
+              assign video_preload = 'metadata'
+              if forloop.first
+                assign video_preload = 'auto'
+              endif
+            %}
+            {{
+              block_settings.video
+              | video_tag:
+                image_size: '2400x',
+                autoplay: true,
+                loop: true,
+                muted: true,
+                controls: false,
+                playsinline: true,
+                preload: video_preload,
+                class: 'santa-rita-banner-slider__video'
+            }}
+          {% elsif block_settings.media_type == 'video' and block_settings.video_asset_name != blank %}
+            <video
+              class="santa-rita-banner-slider__video"
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="{% if forloop.first %}auto{% else %}metadata{% endif %}"
+              {% if block_settings.image != blank %}
+                poster="{{ block_settings.image | image_url: width: 2000 }}"
+              {% endif %}
+            >
+              <source src="{{ block_settings.video_asset_name | asset_url }}" type="video/mp4">
+            </video>
+          {% elsif block_settings.image != blank %}
+            {{
+              block_settings.image
+              | image_url: width: 2400
+              | image_tag:
+                widths: '750, 1100, 1500, 2000, 2400',
+                sizes: '100vw',
+                class: 'santa-rita-banner-slider__image',
+                loading: 'lazy'
+            }}
+          {% else %}
+            <div class="santa-rita-banner-slider__placeholder"></div>
+          {% endif %}
+        </div>
+
+        <div class="santa-rita-banner-slider__overlay"></div>
+
+        <div class="santa-rita-banner-slider__content santa-rita-banner-slider__content--{{ section.settings.content_position }}">
+          <div class="santa-rita-banner-slider__container">
+            <div class="santa-rita-banner-slider__copy">
+              {% if block_settings.heading != blank %}
+                <h2 class="santa-rita-banner-slider__heading">{{ block_settings.heading }}</h2>
+              {% endif %}
+
+              {% if block_settings.text != blank %}
+                <p class="santa-rita-banner-slider__text">{{ block_settings.text }}</p>
+              {% endif %}
+
+              {% if block_settings.button_label != blank %}
+                <a
+                  class="santa-rita__button"
+                  href="{{ block_settings.button_link | default: '#' }}"
+                >
+                  {{ block_settings.button_label }}
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+
+  {% if section.blocks.size > 1 %}
+    <div class="santa-rita-banner-slider__controls" aria-label="Controles del banner">
+      {% for block in section.blocks %}
+        <button
+          class="santa-rita-banner-slider__dot{% if forloop.first %} is-active{% endif %}"
+          type="button"
+          data-slide-button
+          data-index="{{ forloop.index0 }}"
+          aria-label="Mostrar slide {{ forloop.index }}"
+          aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+        ></button>
+      {% endfor %}
+    </div>
+  {% endif %}
+</santa-rita-banner-slider>
+
+<script>
+  if (!customElements.get('santa-rita-banner-slider')) {
+    customElements.define(
+      'santa-rita-banner-slider',
+      class SantaRitaBannerSlider extends HTMLElement {
+        connectedCallback() {
+          this.slides = Array.from(this.querySelectorAll('[data-slide]'));
+          this.buttons = Array.from(this.querySelectorAll('[data-slide-button]'));
+          this.currentIndex = 0;
+          this.interval = null;
+          this.autoplaySpeed = Number(this.getAttribute('autoplay-speed')) || 6000;
+
+          this.buttons.forEach((button) => {
+            button.addEventListener('click', () => {
+              this.showSlide(Number(button.dataset.index));
+              this.restartAutoplay();
+            });
+          });
+
+          this.addEventListener('mouseenter', () => this.stopAutoplay());
+          this.addEventListener('mouseleave', () => this.startAutoplay());
+          this.addEventListener('focusin', () => this.stopAutoplay());
+          this.addEventListener('focusout', () => this.startAutoplay());
+
+          this.playActiveVideo();
+          this.startAutoplay();
+        }
+
+        disconnectedCallback() {
+          this.stopAutoplay();
+        }
+
+        showSlide(index) {
+          if (!this.slides.length || index === this.currentIndex) return;
+
+          this.slides[this.currentIndex]?.classList.remove('is-active');
+          this.slides[this.currentIndex]?.setAttribute('aria-hidden', 'true');
+          this.buttons[this.currentIndex]?.classList.remove('is-active');
+          this.buttons[this.currentIndex]?.setAttribute('aria-current', 'false');
+
+          this.currentIndex = index;
+
+          this.slides[this.currentIndex]?.classList.add('is-active');
+          this.slides[this.currentIndex]?.setAttribute('aria-hidden', 'false');
+          this.buttons[this.currentIndex]?.classList.add('is-active');
+          this.buttons[this.currentIndex]?.setAttribute('aria-current', 'true');
+          this.playActiveVideo();
+        }
+
+        playActiveVideo() {
+          this.slides.forEach((slide, index) => {
+            const video = slide.querySelector('video');
+            if (!video) return;
+
+            video.muted = true;
+            video.loop = true;
+            video.playsInline = true;
+            video.setAttribute('muted', '');
+            video.setAttribute('playsinline', '');
+            video.setAttribute('preload', index === this.currentIndex ? 'auto' : 'metadata');
+
+            if (index === this.currentIndex) {
+              video.load();
+              video.play().catch(() => {});
+            } else {
+              video.pause();
+            }
+          });
+        }
+
+        startAutoplay() {
+          if (!this.hasAttribute('autoplay') || this.slides.length < 2 || this.interval) return;
+
+          this.interval = window.setInterval(() => {
+            this.showSlide((this.currentIndex + 1) % this.slides.length);
+          }, this.autoplaySpeed);
+        }
+
+        stopAutoplay() {
+          window.clearInterval(this.interval);
+          this.interval = null;
+        }
+
+        restartAutoplay() {
+          this.stopAutoplay();
+          this.startAutoplay();
+        }
+      }
+    );
+  }
+</script>
+
+{% stylesheet %}
+  .santa-rita-banner-slider {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    min-height: var(--banner-height-desktop);
+    background: #000000;
+    color: var(--banner-text-color);
+  }
+
+  .santa-rita-banner-slider__slides,
+  .santa-rita-banner-slider__slide {
+    min-height: var(--banner-height-desktop);
+  }
+
+  .santa-rita-banner-slider__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.55s ease, visibility 0.55s ease;
+  }
+
+  .santa-rita-banner-slider__slide.is-active {
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .santa-rita-banner-slider__media,
+  .santa-rita-banner-slider__overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .santa-rita-banner-slider__image,
+  .santa-rita-banner-slider__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .santa-rita-banner-slider__placeholder {
+    width: 100%;
+    height: 100%;
+    background: #000000;
+  }
+
+  .santa-rita-banner-slider__overlay {
+    background: #000000;
+    opacity: var(--banner-overlay-opacity);
+  }
+
+  .santa-rita-banner-slider__content {
+    position: relative;
+    z-index: 1;
+    min-height: var(--banner-height-desktop);
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 630px;
+    padding: clamp(40px, 7vw, 102px) clamp(24px, 4vw, 64px);
+  }
+
+  .santa-rita-banner-slider__container {
+    width: 100%;
+    max-width: 1300px;
+    margin-inline: auto;
+  }
+
+  .santa-rita-banner-slider__content--left {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .santa-rita-banner-slider__content--center {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .santa-rita-banner-slider__content--center .santa-rita-banner-slider__copy {
+    margin-inline: auto;
+  }
+
+  .santa-rita-banner-slider__copy {
+    max-width: 730px;
+  }
+
+  .santa-rita-banner-slider__heading {
+    margin: 0;
+    color: inherit;
+    font-family: var(--font-heading--family);
+    font-size: clamp(42px, 4.55vw, 56px);
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: 0;
+    white-space: pre-line;
+  }
+
+  .santa-rita-banner-slider__text {
+    margin: 26px 0 0;
+    color: inherit;
+    font-family: var(--font-body--family);
+    font-size: 24px;
+    line-height: 1.35;
+  }
+
+  .santa-rita-banner-slider__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    margin-top: 26px;
+    padding: 9px 20px;
+    border-radius: 6px;
+    background: var(--banner-button-background);
+    color: var(--banner-button-text);
+    font-family: var(--font-body--family);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  .santa-rita-banner-slider__button:hover {
+    color: var(--banner-button-text);
+    text-decoration: none;
+    opacity: 0.92;
+  }
+
+  .santa-rita-banner-slider__controls {
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    z-index: 2;
+    display: flex;
+    gap: 10px;
+    transform: translateX(-50%);
+  }
+
+  .santa-rita-banner-slider__dot {
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    border: 1px solid rgb(255 255 255 / 80%);
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .santa-rita-banner-slider__dot.is-active {
+    background: #ffffff;
+  }
+
+    .santa-rita-banner-slider__slides .santa-rita__button{
+      margin-top: 32px;
+    }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-banner-slider,
+    .santa-rita-banner-slider__slides,
+    .santa-rita-banner-slider__slide,
+    .santa-rita-banner-slider__content {
+      min-height: var(--banner-height-mobile);
+    }
+
+    .santa-rita-banner-slider__content {
+      align-items: center;
+      padding: 42px 28px;
+      align-items: end;
+      min-height: 470px;
+    }
+
+    .santa-rita-banner-slider__heading {
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .santa-rita-banner-slider__text {
+      margin-top: 18px;
+      font-size: 16px;
+    }
+
+    .santa-rita-banner-slider__button {
+      margin-top: 20px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Santa Rita banner slider",
+  "tag": "section",
+  "class": "section-santa-rita-banner-slider",
+  "settings": [
+    {
+      "type": "range",
+      "id": "height_desktop",
+      "label": "Alto desktop",
+      "min": 360,
+      "max": 760,
+      "step": 20,
+      "default": 520,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Alto mobile",
+      "min": 320,
+      "max": 680,
+      "step": 20,
+      "default": 460,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Posición del contenido",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Ancho máximo del texto",
+      "min": 360,
+      "max": 820,
+      "step": 20,
+      "default": 640,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Oscuridad del fondo",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "default": 45,
+      "unit": "%"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Cambiar slides automáticamente",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Velocidad del slider",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 6,
+      "unit": "s"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Color del texto",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Color del botón",
+      "default": "#9b173f"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Color del texto del botón",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "select",
+          "id": "media_type",
+          "label": "Tipo de fondo",
+          "options": [
+            {
+              "value": "image",
+              "label": "Imagen"
+            },
+            {
+              "value": "video",
+              "label": "Video"
+            }
+          ],
+          "default": "image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen de fondo"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video de fondo"
+        },
+        {
+          "type": "text",
+          "id": "video_asset_name",
+          "label": "Video local en assets",
+          "info": "Para probar localmente sin editor: deja un .mp4 en assets y escribe el nombre exacto, por ejemplo santa-rita-banner.mp4."
+        },
+        {
+          "type": "textarea",
+          "id": "heading",
+          "label": "Título",
+          "default": "Vinos y espumantes\nque cuentan historias,\ncon el sello de Santa Rita"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Texto",
+          "default": "Cada botella guarda una pasión por descubrir."
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Texto del botón",
+          "default": "Ver ofertas"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Link del botón"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Santa Rita banner slider",
+      "blocks": [
+        {
+          "type": "slide"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
