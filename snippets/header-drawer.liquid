@@ -73,6 +73,53 @@
         color-{{ block_settings.color_scheme }}
       "
     >
+      <div class="menu-drawer__brand-header">
+        <button
+          class="button button-unstyled menu-drawer__brand-button menu-drawer__brand-button--close"
+          type="button"
+          aria-label="{{ 'actions.close' | t }}"
+          on:click="/close"
+        >
+          <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
+            {{- 'icon-close.svg' | inline_asset_content -}}
+          </span>
+        </button>
+
+        <a href="{{ routes.root_url }}" class="menu-drawer__brand-logo" aria-label="{{ shop.name | escape }}">
+          {% render 'image',
+            image: settings.logo,
+            class: 'menu-drawer__brand-logo-image',
+            height: settings.logo_height,
+            text_fallback: shop.name
+          %}
+        </a>
+
+        {% if section.settings.show_search %}
+          <search-button class="menu-drawer__brand-search">
+            <button
+              on:click="#search-modal/showDialog"
+              class="button-unstyled menu-drawer__brand-button"
+              aria-label="{{ 'content.search_input_label' | t }}"
+              aria-haspopup="dialog"
+            >
+              <span class="svg-wrapper">
+                {{ 'icon-search.svg' | inline_asset_content }}
+              </span>
+            </button>
+          </search-button>
+        {% endif %}
+
+        <a
+          href="{{ routes.cart_url }}"
+          class="menu-drawer__brand-button menu-drawer__brand-cart"
+          aria-label="{{ 'accessibility.cart' | t }}"
+        >
+          <span class="svg-wrapper">
+            {{ 'icon-cart.svg' | inline_asset_content }}
+          </span>
+        </a>
+      </div>
+
       <button
         class="button close-button menu-drawer__close-button"
         type="button"
@@ -291,7 +338,7 @@
                             <span class="svg-wrapper icon-caret icon-caret--backward">
                               {{- 'icon-caret.svg' | inline_asset_content -}}
                             </span>
-                            <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
+                            <span class="menu-drawer__menu-item-text wrap-text">VOLVER</span>
                           </button>
                           <button
                             class="button button-unstyled close-button menu-drawer__close-button"
@@ -569,6 +616,17 @@
         class="menu-drawer__utility-links menu-drawer__animated-element"
         style="--menu-drawer-animation-index: {{ linklist.links.size }};"
       >
+        {% if shop.customer_accounts_enabled %}
+          <a
+            href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
+            class="menu-drawer__account"
+          >
+            <span class="svg-wrapper">
+              {{ 'icon-account.svg' | inline_asset_content }}
+            </span>
+            <span>{{ 'actions.log_in' | t }} / {{ 'content.account_title' | t }}</span>
+          </a>
+        {% endif %}
         {% liquid
           assign show_language = section.settings.show_language
           if localization.available_languages.size <= 1
@@ -1403,5 +1461,243 @@
 
   .drawer-localization .language-selector .svg-wrapper.icon-caret svg {
     transform: none;
+  }
+
+  /* Santa Rita mobile drawer */
+  .menu-drawer {
+    --santa-rita-drawer-header-height: 88px;
+    --santa-rita-drawer-padding: clamp(32px, 8vw, 52px);
+  }
+
+  .menu-drawer__brand-header {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr) 48px 48px;
+    align-items: center;
+    gap: 10px;
+    min-height: var(--santa-rita-drawer-header-height);
+    padding-inline: 28px 26px;
+    border-block-end: 1px solid #e9e2df;
+    background: #fbfaf8;
+    z-index: calc(var(--layer-flat) + 1);
+  }
+
+  .menu-drawer > .menu-drawer__close-button,
+  .menu-drawer__nav-buttons > .menu-drawer__close-button {
+    display: none;
+  }
+
+  .menu-drawer__brand-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    color: #21000f;
+    text-decoration: none;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .menu-drawer__brand-button--close {
+    justify-content: flex-start;
+  }
+
+  .menu-drawer__brand-button svg {
+    width: 34px;
+    height: 34px;
+    stroke-width: 1.8;
+  }
+
+  .menu-drawer__brand-button--close svg {
+    width: 35px;
+    height: 35px;
+  }
+
+  .menu-drawer__brand-logo {
+    display: flex;
+    align-items: center;
+    justify-self: start;
+    min-width: 0;
+  }
+
+  .menu-drawer__brand-logo:hover {
+    text-decoration: none;
+  }
+
+  .menu-drawer__brand-logo-image {
+    width: min(290px, 45vw);
+    height: auto;
+    max-height: 54px;
+    object-fit: contain;
+  }
+
+  @media screen and (max-width: 749px) {
+
+    .menu-drawer__brand-header{
+      display: flex;
+      justify-content: space-between;
+      min-height: 54px;
+      max-height: 54px;
+    }
+
+    .menu-drawer__navigation{
+      padding-block: 35px 0;
+    }
+
+    .menu-drawer {
+      width: 100vw;
+      max-width: none;
+      height: 100dvh;
+      background: #fbfaf8;
+      border-right: 0;
+      box-shadow: none;
+    }
+
+    .menu-drawer__utility-links{
+      padding-top: 15px !important;
+    }
+  }
+
+  .menu-drawer__navigation {
+    padding: 48px var(--santa-rita-drawer-padding) 0;
+  }
+
+  .menu-drawer__menu-item--mainlist{
+    min-height: auto !important;
+  }
+
+  .menu-drawer__menu {
+    padding-inline: 0;
+  }
+
+  .menu-drawer__menu > .menu-drawer__list-item,
+  .menu-drawer__menu-item--mainlist {
+    min-height: 72px;
+  }
+
+  .menu-drawer__menu-item--mainlist {
+    color: #21000f;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .menu-drawer__menu-item--mainlist:hover {
+    color: #21000f;
+  }
+
+  .menu-drawer__menu-item--parent {
+    min-height: 58px;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .menu-drawer__menu-item--child {
+    min-height: 42px;
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .menu-drawer__menu-item > .svg-wrapper.icon-caret--forward {
+    padding-inline-start: 24px;
+    padding-inline-end: 0;
+  }
+
+  .menu-drawer__menu-item > .svg-wrapper.icon-caret--forward svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .menu-drawer__submenu {
+    top: var(--santa-rita-drawer-header-height);
+    height: calc(100dvh - var(--santa-rita-drawer-header-height));
+    background-color: #fbfaf8;
+  }
+
+  .menu-drawer__nav-buttons {
+    padding: 46px var(--santa-rita-drawer-padding) 18px;
+  }
+
+  .menu-drawer__back-button {
+    gap: 14px;
+    min-height: 48px;
+    padding: 0;
+    color: #21000f;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .menu-drawer__back-button > .svg-wrapper {
+    margin-right: 0;
+  }
+
+  .menu-drawer__submenu .menu-drawer__menu--childlist:not(.menu-drawer__menu--grid) {
+    margin-inline: var(--santa-rita-drawer-padding);
+    padding-block-start: 18px;
+    border-block-start: 1px solid #e9e2df;
+  }
+
+  .menu-drawer__submenu .menu-drawer__menu--childlist .menu-drawer__list-item--deep,
+  .menu-drawer__submenu .menu-drawer__menu--childlist .menu-drawer__list-item--flat {
+    margin-block-end: 0;
+    border-block-end: 1px solid #e9e2df;
+  }
+
+  .menu-drawer__submenu .menu-drawer__menu--grandchildlist {
+    padding-block: 10px 20px;
+  }
+
+  .menu-drawer__featured-content {
+    margin-inline: var(--santa-rita-drawer-padding);
+    padding-block-start: 34px;
+    border-block-start: 1px solid #e9e2df;
+  }
+
+  .menu-drawer__featured-content-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .menu-drawer__featured-content-list-item,
+  .menu-drawer__featured-content-list-item:first-child,
+  .menu-drawer__featured-content-list-item:last-child,
+  .menu-drawer__featured-content-list-item--product {
+    width: auto;
+    margin-inline: 0;
+  }
+
+  .menu-drawer__featured-content img,
+  .menu-drawer__link-image {
+    border-radius: 8px;
+  }
+
+  .menu-drawer__utility-links {
+    padding: 36px 0 0;
+    margin: 24px var(--santa-rita-drawer-padding) var(--padding-sm);
+    border-block-start: 1px solid #e9e2df;
+    background-color: transparent;
+  }
+
+  .menu-drawer__account {
+    gap: 16px;
+    height: 44px;
+    color: #21000f;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .menu-drawer__account svg {
+    width: 32px;
+    height: 32px;
+    stroke-width: 1.8;
   }
 {% endstylesheet %}

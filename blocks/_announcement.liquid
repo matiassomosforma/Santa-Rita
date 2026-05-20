@@ -26,8 +26,11 @@
     {{ block.shopify_attributes }}
     aria-hidden="{% if block_index == 0 %}false{% else %}true{% endif %}"
   >
-    <p class="announcement-bar__text">
+    <p class="announcement-bar__top">
       {{ block.settings.text }}
+      <span class="announcement-bar__text">
+        {{ block.settings.span }}
+      </span>
     </p>
 
     {% if block_settings.link != blank %}
@@ -124,6 +127,12 @@
       "id": "text",
       "label": "t:settings.text",
       "default": "t:text_defaults.shop_our_latest_arrivals"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "span",
+      "label": "Texto secundario",
+      "default": "GUÍA FORBES"
     },
     {
       "type": "url",

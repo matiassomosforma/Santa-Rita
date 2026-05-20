@@ -121,6 +121,81 @@
     position: absolute;
     inset: 0;
   }
+
+  /* Santa Rita top strip */
+  #header-group .announcement-bar,
+  #header-group .section-background:has(+ .announcement-bar) {
+    background: #1E0812;
+    color: #ffffff;
+  }
+
+  #header-group .announcement-bar {
+    min-height: 42px;
+    border-block-end: 0;
+    padding-block: 0;
+  }
+
+  #header-group .announcement-bar__slider {
+    min-height: 42px;
+  }
+
+  #header-group .announcement-bar__slides {
+    width: 100%;
+    max-width: none;
+  }
+
+  #header-group .announcement-bar__top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    color: #ffffff;
+    font-family: var(--font-heading--family);
+    font-size: 14px;
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  #header-group .announcement-bar__text {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body--family);
+  }
+
+  #header-group .announcement-bar__text::before,
+  #header-group .announcement-bar__text::after {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: rgb(255 255 255 / 42%);
+  }
+
+  @media screen and (max-width: 749px) {
+    #header-group .announcement-bar,
+    #header-group .announcement-bar__slider {
+      min-height: 54px;
+    }
+
+    #header-group .announcement-bar__top {
+      gap: 14px;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    #header-group .announcement-bar__text {
+      gap: 10px;
+    }
+
+    #header-group .announcement-bar__text::after {
+      width: 28px;
+    }
+
+    #header-group .announcement-bar__text::before {
+      width: 28px;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
