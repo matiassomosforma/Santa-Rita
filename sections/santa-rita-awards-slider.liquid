@@ -61,20 +61,20 @@
                       block_settings.video
                       | video_tag:
                         image_size: '1200x',
-                        autoplay: false,
+                        autoplay: true,
                         loop: true,
                         muted: true,
-                        controls: true,
                         playsinline: true,
+                        preload: 'metadata',
                         class: 'santa-rita-awards-slide__video'
                     }}
                   {% elsif block_settings.video_asset_name != blank %}
                     <video
                       class="santa-rita-awards-slide__video"
+                      autoplay
                       muted
                       loop
                       playsinline
-                      controls
                       preload="metadata"
                       {% if block_settings.image != blank %}
                         poster="{{ block_settings.image | image_url: width: 900 }}"
@@ -168,6 +168,7 @@
           this.prevButton?.addEventListener('click', () => this.goTo(this.index - 1));
           this.nextButton?.addEventListener('click', () => this.goTo(this.index + 1));
           window.addEventListener('resize', this.handleResize);
+          this.setupVideos();
 
           requestAnimationFrame(() => {
             this.createDots();
@@ -177,6 +178,24 @@
 
         disconnectedCallback() {
           window.removeEventListener('resize', this.handleResize);
+        }
+
+        setupVideos() {
+          this.querySelectorAll('.santa-rita-awards-slide__video').forEach((video) => {
+            video.muted = true;
+            video.loop = true;
+            video.playsInline = true;
+            video.removeAttribute('controls');
+            video.play().catch(() => {});
+
+            const slide = video.closest('.santa-rita-awards-slide');
+            if (!slide) return;
+
+            slide.addEventListener('mouseenter', () => video.setAttribute('controls', ''));
+            slide.addEventListener('mouseleave', () => video.removeAttribute('controls'));
+            slide.addEventListener('focusin', () => video.setAttribute('controls', ''));
+            slide.addEventListener('focusout', () => video.removeAttribute('controls'));
+          });
         }
 
         getStep() {
@@ -393,7 +412,7 @@
     align-items: center;
     justify-content: flex-end;
     gap: 34px;
-    margin-top: 0;
+    margin-bottom: 38px;
     padding-right: var(--awards-container-gutter);
   }
 
