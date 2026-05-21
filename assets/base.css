@@ -70,13 +70,21 @@ textarea:hover {
     height: 45px;
     padding-inline: 24px;
     border-radius: 6px;
-    background: var(--banner-button-background);
-    color: var(--banner-button-text);
+    background: #8C1A3E;
+    border: 1px solid #8C1A3E;
+    color:white;
     font-family: var(--font-body--family);
     font-size: 16px;
     font-weight: 500;
     line-height: 1;
     text-decoration: none;
+    cursor: pointer;
+    transition: all .3s ease;
+  }
+
+  .santa-rita__button:hover{
+    background: transparent;
+    color: #8C1A3E;
   }
 
 /** override ios and firefox defaults */

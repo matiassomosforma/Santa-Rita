@@ -1,0 +1,352 @@
+<footer class="santa-rita-footer">
+  <div class="santa-rita-footer__container">
+    <div class="santa-rita-footer__top">
+      <div class="santa-rita-footer__newsletter">
+        <h2>{{ section.settings.newsletter_heading }}</h2>
+        <p>{{ section.settings.newsletter_text }}</p>
+
+        {% form 'customer', class: 'santa-rita-footer__form' %}
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <label class="visually-hidden" for="SantaRitaFooterEmail-{{ section.id }}">
+            Correo electrónico
+          </label>
+          <input
+            id="SantaRitaFooterEmail-{{ section.id }}"
+            type="email"
+            name="contact[email]"
+            value="{{ form.email }}"
+            autocorrect="off"
+            autocapitalize="off"
+            autocomplete="email"
+            placeholder="Correo electrónico"
+            required
+          >
+          <button type="submit">{{ section.settings.newsletter_button }}</button>
+        {% endform %}
+      </div>
+
+      <nav class="santa-rita-footer__column" aria-label="{{ section.settings.categories_heading }}">
+        <h2>{{ section.settings.categories_heading }}</h2>
+        {% if section.settings.categories_menu != blank %}
+          <ul>
+            {% for link in section.settings.categories_menu.links %}
+              <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <ul>
+            <li><a href="/pages/arma-tu-caja">Arma tu caja</a></li>
+            <li><a href="/pages/club-bodega">Club Bodega</a></li>
+            <li><a href="/blogs/news">Blog</a></li>
+            <li><a href="/pages/tours">Tours</a></li>
+            <li><a href="/pages/hotel-casa-real">Hotel Casa Real</a></li>
+            <li><a href="/pages/gastronomia">Gastronomía</a></li>
+            <li><a href="/pages/eventos">Eventos</a></li>
+          </ul>
+        {% endif %}
+      </nav>
+
+      <nav class="santa-rita-footer__column" aria-label="{{ section.settings.info_heading }}">
+        <h2>{{ section.settings.info_heading }}</h2>
+        {% if section.settings.info_menu != blank %}
+          <ul>
+            {% for link in section.settings.info_menu.links %}
+              <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <ul>
+            <li><a href="/pages/seguimiento-del-pedido">Seguimiento del pedido</a></li>
+            <li><a href="/pages/cambios-y-devoluciones">Cambios y devoluciones</a></li>
+            <li><a href="/pages/plazos-y-costos-de-despacho">Plazos y costos de despacho</a></li>
+            <li><a href="/pages/bases-de-concurso">Bases de concurso</a></li>
+          </ul>
+        {% endif %}
+      </nav>
+
+      <nav class="santa-rita-footer__column" aria-label="{{ section.settings.contact_heading }}">
+        <h2>{{ section.settings.contact_heading }}</h2>
+        {% if section.settings.contact_menu != blank %}
+          <ul>
+            {% for link in section.settings.contact_menu.links %}
+              <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <ul>
+            <li><a href="/pages/preguntas-frecuentes">Preguntas frecuentes</a></li>
+            <li><a href="/pages/contact">Contacto</a></li>
+          </ul>
+        {% endif %}
+      </nav>
+    </div>
+
+    <div class="santa-rita-footer__bottom">
+      <div class="santa-rita-footer__legal">
+        <a href="/policies/privacy-policy">Políticas de privacidad</a>
+        <span aria-hidden="true">|</span>
+        <a href="/policies/terms-of-service">Términos y Condiciones</a>
+        <span aria-hidden="true">|</span>
+      </div>
+
+      <p>
+        {{ section.settings.copyright_text }}
+        {% if section.settings.partner_label != blank %}
+          <a href="{{ section.settings.partner_link | default: '#' }}" target="_blank" rel="noopener">
+            {{ section.settings.partner_label }}
+          </a>
+        {% endif %}
+      </p>
+    </div>
+  </div>
+</footer>
+
+{% stylesheet %}
+  .santa-rita-footer {
+    background: #FFFCF7;
+    border-top: 1px solid #EFEAE3;
+    color: #1e0812;
+  }
+
+  .santa-rita-footer__container {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding: 60px clamp(24px, 8vw, 122px) 0;
+  }
+
+  .santa-rita-footer__top {
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) minmax(120px, 0.68fr) minmax(190px, 1fr) minmax(160px, 1fr);
+    gap: clamp(42px, 6vw, 92px);
+    padding-bottom: 64px;
+  }
+
+  .santa-rita-footer h2 {
+    margin: 0 0 18px;
+    color: inherit;
+    font-family: var(--font-heading--family);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .santa-rita-footer__newsletter p {
+    margin: 0 0 28px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.25;
+  }
+
+  .santa-rita-footer__form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    border-bottom: 1px solid rgb(30 8 18 / 42%);
+  }
+
+  .santa-rita-footer__form input {
+    min-width: 0;
+    height: 38px;
+    padding: 0 12px 0 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 14px;
+    line-height: 1;
+    outline: 0;
+  }
+
+  .santa-rita-footer__form input::placeholder {
+    color: rgb(30 8 18 / 45%);
+  }
+
+  .santa-rita-footer__form button {
+    height: 38px;
+    padding: 0 8px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+
+  .santa-rita-footer__column ul {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .santa-rita-footer__column a,
+  .santa-rita-footer__legal a {
+    color: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+    text-decoration: none;
+    transition: all .3s ease;
+  }
+
+  .santa-rita-footer__column a:hover,
+  .santa-rita-footer__legal a:hover{
+    text-decoration: underline;
+  }
+
+  .santa-rita-footer__bottom {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: center;
+    min-height: 62px;
+    border-top: 1px solid rgb(30 8 18 / 8%);
+  }
+
+  .santa-rita-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    align-items: center;
+  }
+
+  .santa-rita-footer__legal span {
+    color: inherit;
+    font-weight: 400;
+  }
+
+  .santa-rita-footer__bottom p {
+    margin: 0;
+    color: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: right;
+  }
+
+    .santa-rita-footer__bottom p a{
+      text-decoration: underline;
+    }
+
+  @media screen and (max-width: 989px) {
+    .santa-rita-footer__top {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .santa-rita-footer__bottom {
+      grid-template-columns: 1fr;
+      padding: 22px 0;
+    }
+
+    .santa-rita-footer__bottom p {
+      text-align: left;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-footer__container {
+      padding-inline: 20px;
+    }
+
+    .santa-rita-footer__top {
+      grid-template-columns: 1fr;
+      gap: 34px;
+      padding-bottom: 40px;
+    }
+
+    .santa-rita-footer__legal {
+      gap: 16px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Santa Rita footer",
+  "tag": "section",
+  "class": "section-santa-rita-footer",
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Título newsletter",
+      "default": "NEWSLETTER"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_text",
+      "label": "Texto newsletter",
+      "default": "Recibe las mejores ofertas y promociones"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_button",
+      "label": "Texto botón newsletter",
+      "default": "SUSCRIBIR"
+    },
+    {
+      "type": "text",
+      "id": "categories_heading",
+      "label": "Título categorías",
+      "default": "CATEGORÍAS"
+    },
+    {
+      "type": "link_list",
+      "id": "categories_menu",
+      "label": "Menú categorías"
+    },
+    {
+      "type": "text",
+      "id": "info_heading",
+      "label": "Título información",
+      "default": "INFORMACIÓN"
+    },
+    {
+      "type": "link_list",
+      "id": "info_menu",
+      "label": "Menú información"
+    },
+    {
+      "type": "text",
+      "id": "contact_heading",
+      "label": "Título contacto",
+      "default": "CONTACTO"
+    },
+    {
+      "type": "link_list",
+      "id": "contact_menu",
+      "label": "Menú contacto"
+    },
+    {
+      "type": "text",
+      "id": "copyright_text",
+      "label": "Copyright",
+      "default": "© 2026 Viña Santa Rita S.A | Diseño y desarrollo por"
+    },
+    {
+      "type": "text",
+      "id": "partner_label",
+      "label": "Texto enlace partner",
+      "default": "Moovmedia Group"
+    },
+    {
+      "type": "url",
+      "id": "partner_link",
+      "label": "Enlace partner"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Santa Rita footer"
+    }
+  ]
+}
+{% endschema %}
