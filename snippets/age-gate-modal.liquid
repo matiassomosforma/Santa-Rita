@@ -1,5 +1,6 @@
 {% liquid
   assign should_render_age_gate = settings.age_gate_enabled
+  assign age_gate_logo_svg_asset = settings.age_gate_logo_svg_asset | default: settings.logo_svg_asset | strip
 
   if customer and settings.age_gate_show_for_logged_in_customers == false
     assign should_render_age_gate = false
@@ -54,8 +55,21 @@
         </p>
 
         <div class="age-gate__logo" aria-label="{{ shop.name | escape }}">
-          {% if settings.logo_svg_asset != blank %}
-            {{ settings.logo_svg_asset | inline_asset_content }}
+          {% if settings.age_gate_logo != blank %}
+            {{
+              settings.age_gate_logo
+              | image_url: width: 360
+              | image_tag: class: 'age-gate__logo-image', loading: 'eager'
+            }}
+          {% elsif age_gate_logo_svg_asset != blank %}
+            <img
+              src="{{ age_gate_logo_svg_asset | asset_url }}"
+              class="age-gate__logo-image"
+              alt="{{ shop.name | escape }}"
+              width="360"
+              height="48"
+              loading="eager"
+            >
           {% elsif settings.logo != blank %}
             {{
               settings.logo

@@ -2066,6 +2066,20 @@
         "visible_if": "{{ settings.age_gate_enabled == true }}"
       },
       {
+        "type": "image_picker",
+        "id": "age_gate_logo",
+        "label": "Logo del modal",
+        "visible_if": "{{ settings.age_gate_enabled == true }}"
+      },
+      {
+        "type": "text",
+        "id": "age_gate_logo_svg_asset",
+        "label": "Logo SVG del modal en assets",
+        "default": "logo-santarita.svg",
+        "info": "Opcional. Escribe el nombre exacto del SVG en assets. Si subes un logo arriba, este campo no se usa.",
+        "visible_if": "{{ settings.age_gate_enabled == true }}"
+      },
+      {
         "type": "text",
         "id": "age_gate_heading",
         "label": "Título",
