@@ -65,6 +65,8 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
+            "image": "shopify://shop_images/image_8.png",
+            "video_asset_name": "",
             "title": "Floresta",
             "subtitle": "Cabernet Franc",
             "link": ""
@@ -74,6 +76,8 @@
           "type": "slide",
           "settings": {
             "media_type": "video",
+            "video": "shopify://files/videos/Banner_Home1080X1350 1.mp4",
+            "video_asset_name": "",
             "title": "",
             "subtitle": "",
             "link": ""
@@ -83,6 +87,8 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
+            "image": "shopify://shop_images/Captura_de_Pantalla_2026-03-22_a_la_s_19.45.38_1.png",
+            "video_asset_name": "",
             "title": "Pewen de Apalta",
             "subtitle": "Carmenere",
             "link": ""
@@ -99,19 +105,8 @@
         "heading": "Vinos premiados\nmundialmente",
         "text": "Descubre los vinos de selección.",
         "card_width": 250,
-        "background": "#1E0812",
+        "background": "#1e0812",
         "text_color": "#ffffff"
-      }
-    },
-    "santa_rita_blog_slider": {
-      "type": "santa-rita-blog-slider",
-      "settings": {
-        "heading": "Historias para descubrir",
-        "text": "Conoce el blog de Santa Rita Online.",
-        "blog": "",
-        "article_limit": 9,
-        "excerpt_length": 90,
-        "button_label": "Ver más"
       }
     },
     "santa_rita_best_sellers_nR6Laz": {
@@ -130,13 +125,24 @@
         "liter_price_label": "$3.960",
         "rating_count": "134"
       }
+    },
+    "santa_rita_blog_slider": {
+      "type": "santa-rita-blog-slider",
+      "settings": {
+        "heading": "Historias para descubrir",
+        "text": "Conoce el blog de Santa Rita Online.",
+        "blog": "news",
+        "article_limit": 9,
+        "excerpt_length": 90,
+        "button_label": "Ver más"
+      }
     }
   },
   "order": [
     "santa_rita_banner_slider",
     "santa_rita_best_sellers",
     "santa_rita_awards_slider",
-    "santa_rita_blog_slider",
-    "santa_rita_best_sellers_nR6Laz"
+    "santa_rita_best_sellers_nR6Laz",
+    "santa_rita_blog_slider"
   ]
 }

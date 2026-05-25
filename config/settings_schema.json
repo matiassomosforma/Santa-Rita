@@ -2041,6 +2041,76 @@
         "id": "popover_drop_shadow",
         "label": "t:settings.drop_shadow",
         "default": true
+      },
+      {
+        "type": "header",
+        "content": "Modal de mayoría de edad"
+      },
+      {
+        "type": "checkbox",
+        "id": "age_gate_enabled",
+        "label": "Activar modal de mayoría de edad",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "age_gate_show_for_logged_in_customers",
+        "label": "Mostrar también a clientes con sesión iniciada",
+        "default": false,
+        "visible_if": "{{ settings.age_gate_enabled == true }}"
+      },
+      {
+        "type": "image_picker",
+        "id": "age_gate_image",
+        "label": "Imagen del modal",
+        "visible_if": "{{ settings.age_gate_enabled == true }}"
+      },
+      {
+        "type": "text",
+        "id": "age_gate_heading",
+        "label": "Título",
+        "default": "Te damos la bienvenida a",
+        "visible_if": "{{ settings.age_gate_enabled == true }}"
+      },
+      {
+        "type": "text",
+        "id": "age_gate_question",
+        "label": "Pregunta",
+        "default": "¿Eres mayor de edad?",
+        "visible_if": "{{ settings.age_gate_enabled == true }}"
+      },
+      {
+        "type": "text",
+        "id": "age_gate_reject_label",
+        "label": "Texto botón No",
+        "default": "No",
+        "visible_if": "{{ settings.age_gate_enabled == true }}"
+      },
+      {
+        "type": "text",
+        "id": "age_gate_accept_label",
+        "label": "Texto botón Sí",
+        "default": "Sí",
+        "visible_if": "{{ settings.age_gate_enabled == true }}"
+      },
+      {
+        "type": "text",
+        "id": "age_gate_redirect_url",
+        "label": "URL para menores de edad",
+        "default": "https://www.google.com/",
+        "info": "Puede ser una ruta interna como /pages/no-apto o una URL externa completa.",
+        "visible_if": "{{ settings.age_gate_enabled == true }}"
+      },
+      {
+        "type": "range",
+        "id": "age_gate_remember_days",
+        "label": "Recordar aceptación durante",
+        "min": 5,
+        "max": 365,
+        "step": 5,
+        "unit": "d",
+        "default": 30,
+        "visible_if": "{{ settings.age_gate_enabled == true }}"
       }
     ]
   },

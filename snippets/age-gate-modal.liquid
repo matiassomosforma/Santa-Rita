@@ -1,0 +1,267 @@
+{% liquid
+  assign should_render_age_gate = settings.age_gate_enabled
+
+  if customer and settings.age_gate_show_for_logged_in_customers == false
+    assign should_render_age_gate = false
+  endif
+%}
+
+{% if should_render_age_gate %}
+  <script
+    src="{{ 'age-gate-modal.js' | asset_url }}"
+    type="module"
+    fetchpriority="low"
+  ></script>
+
+  <div
+    class="age-gate"
+    data-age-gate
+    data-storage-key="santa-rita-age-gate-accepted"
+    data-remember-days="{{ settings.age_gate_remember_days | default: 30 }}"
+    data-redirect-url="{{ settings.age_gate_redirect_url | default: 'https://www.google.com/' | escape }}"
+    hidden
+  >
+    <div
+      class="age-gate__panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="AgeGateTitle"
+      aria-describedby="AgeGateQuestion"
+      tabindex="-1"
+    >
+      <div class="age-gate__media">
+        {% if settings.age_gate_image != blank %}
+          {{
+            settings.age_gate_image
+            | image_url: width: 720
+            | image_tag:
+              class: 'age-gate__image',
+              widths: '360, 520, 720, 900',
+              sizes: '(min-width: 750px) 50vw, 100vw',
+              loading: 'eager'
+          }}
+        {% else %}
+          {{ 'image' | placeholder_svg_tag: 'age-gate__image age-gate__image--placeholder' }}
+        {% endif %}
+      </div>
+
+      <div class="age-gate__content">
+        <p
+          class="age-gate__title"
+          id="AgeGateTitle"
+        >
+          {{ settings.age_gate_heading | default: 'Te damos la bienvenida a' }}
+        </p>
+
+        <div class="age-gate__logo" aria-label="{{ shop.name | escape }}">
+          {% if settings.logo_svg_asset != blank %}
+            {{ settings.logo_svg_asset | inline_asset_content }}
+          {% elsif settings.logo != blank %}
+            {{
+              settings.logo
+              | image_url: width: 360
+              | image_tag: class: 'age-gate__logo-image', loading: 'eager'
+            }}
+          {% else %}
+            <span>{{ shop.name }}</span>
+          {% endif %}
+        </div>
+
+        <p
+          class="age-gate__question"
+          id="AgeGateQuestion"
+        >
+          {{ settings.age_gate_question | default: '¿Eres mayor de edad?' }}
+        </p>
+
+        <div class="age-gate__actions">
+          <button
+            type="button"
+            class="age-gate__button age-gate__button--secondary"
+            data-age-gate-reject
+          >
+            {{ settings.age_gate_reject_label | default: 'No' }}
+          </button>
+
+          <button
+            type="button"
+            class="age-gate__button age-gate__button--primary"
+            data-age-gate-accept
+          >
+            {{ settings.age_gate_accept_label | default: 'Sí' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .age-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 2147483647;
+      display: grid;
+      place-items: center;
+      padding: 32px;
+      background: rgba(0, 0, 0, 0.18);
+    }
+
+    .age-gate[hidden] {
+      display: none;
+    }
+
+    .age-gate__panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 1fr);
+      width: min(100%, 885px);
+      height: min(662px, calc(100dvh - 64px));
+      min-height: 520px;
+      overflow: hidden;
+      background: #fffdf8;
+      border-radius: 8px;
+          box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.25);
+      outline: none;
+    }
+
+    .age-gate__media {
+      min-height: 100%;
+      background: #e7dfd3;
+    }
+
+    .age-gate__image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .age-gate__image--placeholder {
+      background: #e7dfd3;
+    }
+
+    .age-gate__content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 48px 64px;
+      color: #2b1c1f;
+      text-align: center;
+    }
+
+    .age-gate__title {
+      margin: 0;
+      font-family: var(--font-heading--family);
+      font-size: clamp(20px, 2vw, 20px);
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .age-gate__logo {
+      display: flex;
+      justify-content: center;
+      width: min(100%, 360px);
+      color: currentColor;
+    }
+
+    .age-gate__logo svg,
+    .age-gate__logo-image {
+      display: block;
+      width: min(100%, 360px);
+      height: auto;
+      max-height: 60px;
+      object-fit: contain;
+    }
+
+    .age-gate__question {
+      margin: 28px 0 0;
+      font-size: 18px;
+      line-height: 1.4;
+    }
+
+    .age-gate__actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      width: min(100%, 352px);
+    }
+
+    .age-gate__button {
+      min-height: 48px;
+      padding: 0 24px;
+      border: 1px solid #9d1238;
+      border-radius: 10px;
+      font: inherit;
+      font-weight: 600;
+      line-height: 1;
+      cursor: pointer;
+      transition:
+        background-color 160ms ease,
+        color 160ms ease,
+        border-color 160ms ease;
+    }
+
+    .age-gate__button--secondary {
+      background: transparent;
+      color: #9d1238;
+    }
+
+    .age-gate__button--secondary:hover {
+      background: rgba(157, 18, 56, 0.08);
+    }
+
+    .age-gate__button--primary {
+      background: #9d1238;
+      color: #ffffff;
+    }
+
+    .age-gate__button--primary:hover {
+      background: #7e0d2c;
+      border-color: #7e0d2c;
+    }
+
+    body.age-gate-is-open {
+      overflow: hidden;
+    }
+
+    @media screen and (max-width: 749px) {
+      .age-gate {
+        padding: 18px;
+      }
+
+      .age-gate__panel {
+        grid-template-columns: 1fr;
+        width: min(100%, 420px);
+        height: auto;
+        min-height: 0;
+        max-height: calc(100dvh - 36px);
+        overflow-y: auto;
+      }
+
+      .age-gate__media {
+        aspect-ratio: 1 / 0.82;
+        min-height: auto;
+         display: none;
+      }
+
+       .age-gate__image{
+        display: none;
+      }
+
+      .age-gate__content {
+        gap: 16px;
+        padding: 80px 30px 80px 30px;
+      }
+
+      .age-gate__question {
+        margin-top: 14px;
+      }
+
+      .age-gate__actions {
+        width: 100%;
+      
+     
+    }
+  </style>
+{% endif %}
