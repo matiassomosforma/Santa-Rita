@@ -396,6 +396,20 @@
     },
     {
       "type": "text",
+      "id": "product_hero_subtitle_override",
+      "label": "Subtítulo manual",
+      "info": "Opcional. Si se deja vacío usa el metacampo custom.cepa, luego custom.varietal, luego custom.subtitle.",
+      "visible_if": "{{ section.settings.use_santa_rita_product_hero == true }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "product_hero_debug_metafields",
+      "label": "Mostrar debug de metacampos",
+      "default": false,
+      "visible_if": "{{ section.settings.use_santa_rita_product_hero == true }}"
+    },
+    {
+      "type": "text",
       "id": "product_hero_pack_label",
       "label": "Texto de formato por defecto",
       "default": "12 Unidades | 750cc.",
