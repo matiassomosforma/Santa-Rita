@@ -1,0 +1,602 @@
+{% liquid
+  assign product = closest.product | default: product
+  assign variant = product.selected_or_first_available_variant
+  assign image = variant.featured_image | default: product.featured_image
+  assign breadcrumb_collection = blank
+  assign subtitle = product.metafields.custom.subtitle.value | default: product.metafields.custom.cepa.value | default: product.metafields.custom.varietal.value | default: product.type
+  assign pack_label = product.metafields.custom.pack_label.value | default: product.metafields.custom.pack_label | default: section.settings.product_hero_pack_label | default: '12 Unidades | 750cc.'
+  assign rating = product.metafields.reviews.rating.value.rating | default: product.metafields.custom.rating.value | default: section.settings.product_hero_default_rating | default: '4.2'
+  assign rating_count = product.metafields.reviews.rating_count | default: product.metafields.custom.rating_count.value | default: product.metafields.custom.rating_count | default: section.settings.product_hero_default_rating_count | default: '134'
+  assign description = product.description | strip_html
+  assign discount_percent = 0
+
+  if variant.compare_at_price > variant.price
+    assign discount_value = variant.compare_at_price | minus: variant.price
+    assign discount_percent = discount_value | times: 100 | divided_by: variant.compare_at_price | round
+  endif
+
+  assign rating_number = rating | times: 1.0
+  assign filled_stars = rating_number | floor
+  assign can_add_to_cart = variant.available
+  assign add_to_cart_text = 'Agregar'
+  assign product_variant_media = ''
+
+  if image != blank
+    assign product_variant_media = image | image_url: width: 120
+  endif
+
+  unless can_add_to_cart
+    assign add_to_cart_text = 'products.product.sold_out' | t
+  endunless
+
+  for product_collection in product.collections
+    if product_collection.handle == 'vinos' or product_collection.title == 'Vinos'
+      assign breadcrumb_collection = product_collection
+      break
+    endif
+  endfor
+
+  assign breadcrumb_collection = breadcrumb_collection | default: product.collections.first
+%}
+
+<section class="santa-rita-product-hero color-{{ section.settings.color_scheme }}">
+  <div class="santa-rita-product-hero__inner">
+    {% if section.settings.product_hero_show_breadcrumbs != false %}
+      <nav class="santa-rita-product-hero__breadcrumbs" aria-label="Breadcrumb">
+        <a href="{{ routes.root_url }}">Inicio</a>
+        <span aria-hidden="true">></span>
+        {% if breadcrumb_collection != blank %}
+          <a href="{{ breadcrumb_collection.url }}">Vinos</a>
+        {% else %}
+          <a href="{{ routes.all_products_collection_url }}">Vinos</a>
+        {% endif %}
+        <span aria-hidden="true">></span>
+        <span>{{ product.title }}</span>
+      </nav>
+    {% endif %}
+
+    <div class="santa-rita-product-hero__grid">
+      <div class="santa-rita-product-hero__media">
+        {% if image != blank %}
+          {{
+            image
+            | image_url: width: 780
+            | image_tag:
+              class: 'santa-rita-product-hero__image',
+              widths: '360, 520, 680, 780, 960',
+              sizes: '(min-width: 990px) 420px, 70vw',
+              loading: 'eager'
+          }}
+        {% else %}
+          {{ 'product-apparel-1' | placeholder_svg_tag: 'santa-rita-product-hero__image santa-rita-product-hero__image--placeholder' }}
+        {% endif %}
+      </div>
+
+      <div class="santa-rita-product-hero__details">
+        {% if discount_percent > 0 %}
+          <span class="santa-rita-product-hero__discount">-{{ discount_percent }}%</span>
+        {% endif %}
+
+        <h1 class="santa-rita-product-hero__title">{{ product.title }}</h1>
+
+        {% if subtitle != blank %}
+          <p class="santa-rita-product-hero__subtitle">{{ subtitle }}</p>
+        {% endif %}
+
+        {% if rating != blank %}
+          <div class="santa-rita-product-hero__rating" aria-label="{{ rating_number | round: 1 }} de 5 estrellas">
+            <span class="santa-rita-product-hero__rating-number">{{ rating_number | round: 1 }}</span>
+            <span class="santa-rita-product-hero__stars" aria-hidden="true">
+              {% for index in (1..5) %}
+                <span class="santa-rita-product-hero__star{% if index <= filled_stars %} is-filled{% endif %}">★</span>
+              {% endfor %}
+            </span>
+            {% if rating_count != blank %}
+              <span class="santa-rita-product-hero__rating-count">({{ rating_count }})</span>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <div class="santa-rita-product-hero__price">
+          <strong>{{ variant.price | money }}</strong>
+          {% if variant.compare_at_price > variant.price %}
+            <s>{{ variant.compare_at_price | money }}</s>
+          {% endif %}
+        </div>
+
+        {% if pack_label != blank %}
+          <p class="santa-rita-product-hero__pack">{{ pack_label }}</p>
+        {% endif %}
+
+        {% assign product_form_id = 'SantaRitaProductHeroForm-' | append: section.id %}
+        <product-form-component
+          data-section-id="{{ section.id }}"
+          data-product-id="{{ product.id }}"
+          data-product-url="{{ product.url }}"
+          data-quantity-default="1"
+          data-quantity-error-max="{{ 'products.product.quantity_error_max' | t }}"
+          on:submit="/handleSubmit"
+        >
+          <div
+            class="visually-hidden"
+            aria-live="assertive"
+            role="status"
+            aria-atomic="true"
+            ref="liveRegion"
+          ></div>
+
+          {% form 'product', product, id: product_form_id, data-type: 'add-to-cart-form' %}
+            <input
+              type="hidden"
+              name="id"
+              ref="variantId"
+              value="{{ variant.id }}"
+            >
+            <add-to-cart-component
+              ref="addToCartButtonContainer"
+              data-product-variant-media="{{ product_variant_media }}"
+              data-add-to-cart-animation="{{ settings.add_to_cart_animation }}"
+            >
+              <button
+                type="submit"
+                name="add"
+                ref="addToCartButton"
+                on:click="/handleClick"
+                class="santa-rita-product-hero__add"
+                {% unless can_add_to_cart %}
+                  disabled
+                {% endunless %}
+              >
+                {% if can_add_to_cart %}
+                  <span class="santa-rita-product-hero__add-icon" aria-hidden="true">
+                    {{ 'icon-add-to-cart.svg' | inline_asset_content }}
+                  </span>
+                {% endif %}
+                <span>{{ add_to_cart_text }}</span>
+              </button>
+            </add-to-cart-component>
+          {% endform %}
+        </product-form-component>
+
+        {% if description != blank %}
+          <p class="santa-rita-product-hero__description">{{ description | truncatewords: 62 }}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .santa-rita-product-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: #FFFCF7;
+    color: #21191a;
+  }
+
+  .santa-rita-product-hero::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: clamp(220px, 33vw, 343px);
+    z-index: -1;
+    background: #fff7f1;
+    clip-path: polygon(
+      100% 21.817%,
+      99.444% 22.578%,
+      98.889% 23.339%,
+      98.333% 24.096%,
+      97.778% 24.853%,
+      97.222% 25.605%,
+      96.667% 26.352%,
+      96.111% 27.095%,
+      95.556% 27.831%,
+      95% 28.559%,
+      94.444% 29.271%,
+      93.889% 29.966%,
+      93.333% 30.641%,
+      92.778% 31.295%,
+      92.222% 31.924%,
+      91.667% 32.527%,
+      91.111% 33.092%,
+      90.556% 33.615%,
+      90% 34.095%,
+      89.444% 34.526%,
+      88.889% 34.964%,
+      88.333% 35.396%,
+      87.778% 35.831%,
+      87.222% 36.268%,
+      86.667% 36.793%,
+      86.111% 37.328%,
+      85.556% 37.847%,
+      85% 38.347%,
+      84.444% 38.804%,
+      83.889% 39.184%,
+      83.333% 39.522%,
+      82.778% 39.819%,
+      82.222% 40.071%,
+      81.667% 40.290%,
+      81.111% 40.471%,
+      80.556% 40.631%,
+      80% 40.770%,
+      79.444% 40.892%,
+      78.889% 40.992%,
+      78.333% 41.071%,
+      77.778% 41.127%,
+      77.222% 41.164%,
+      76.667% 41.183%,
+      76.111% 41.193%,
+      75.556% 41.193%,
+      75% 41.183%,
+      74.444% 41.164%,
+      73.889% 41.127%,
+      73.333% 41.071%,
+      72.778% 40.992%,
+      72.222% 40.892%,
+      71.667% 40.770%,
+      71.111% 40.631%,
+      70.556% 40.471%,
+      70% 40.290%,
+      69.444% 40.071%,
+      68.889% 39.819%,
+      68.333% 39.522%,
+      67.778% 39.184%,
+      67.222% 38.804%,
+      66.667% 38.347%,
+      66.111% 37.847%,
+      65.556% 37.328%,
+      65% 36.793%,
+      64.444% 36.268%,
+      63.889% 35.831%,
+      63.333% 35.396%,
+      62.778% 34.964%,
+      62.222% 34.526%,
+      61.667% 34.095%,
+      61.111% 33.615%,
+      60.556% 33.092%,
+      60% 32.527%,
+      59.444% 31.924%,
+      58.889% 31.295%,
+      58.333% 30.641%,
+      57.778% 29.966%,
+      57.222% 29.271%,
+      56.667% 28.559%,
+      56.111% 27.831%,
+      55.556% 27.095%,
+      55% 26.352%,
+      54.444% 25.605%,
+      53.889% 24.853%,
+      53.333% 24.096%,
+      52.778% 23.339%,
+      52.222% 22.578%,
+      51.667% 21.817%,
+      51.111% 21.055%,
+      50.556% 20.294%,
+      50% 19.533%,
+      49.444% 18.772%,
+      48.889% 18.011%,
+      48.333% 17.255%,
+      47.778% 16.502%,
+      47.222% 15.753%,
+      46.667% 15.008%,
+      46.111% 14.272%,
+      45.556% 13.548%,
+      45% 12.838%,
+      44.444% 12.142%,
+      43.889% 11.458%,
+      43.333% 10.790%,
+      42.778% 10.137%,
+      42.222% 9.498%,
+      41.667% 8.883%,
+      41.111% 8.294%,
+      40.556% 7.733%,
+      40% 7.203%,
+      39.444% 6.699%,
+      38.889% 6.221%,
+      38.333% 5.770%,
+      37.778% 5.346%,
+      37.222% 4.950%,
+      36.667% 4.579%,
+      36.111% 4.238%,
+      35.556% 3.924%,
+      35% 3.635%,
+      34.444% 3.373%,
+      33.889% 3.123%,
+      33.333% 2.890%,
+      32.778% 2.671%,
+      32.222% 2.464%,
+      31.667% 2.271%,
+      31.111% 2.094%,
+      30.556% 1.941%,
+      30% 1.798%,
+      29.444% 1.666%,
+      28.889% 1.547%,
+      28.333% 1.441%,
+      27.778% 1.342%,
+      27.222% 1.258%,
+      26.667% 1.179%,
+      26.111% 1.113%,
+      25.556% 1.061%,
+      25% 1.048%,
+      24.444% 1.061%,
+      23.889% 1.113%,
+      23.333% 1.179%,
+      22.778% 1.258%,
+      22.222% 1.342%,
+      21.667% 1.441%,
+      21.111% 1.547%,
+      20.556% 1.666%,
+      20% 1.798%,
+      19.444% 1.941%,
+      18.889% 2.094%,
+      18.333% 2.271%,
+      17.778% 2.464%,
+      17.222% 2.671%,
+      16.667% 2.890%,
+      16.111% 3.123%,
+      15.556% 3.373%,
+      15% 3.635%,
+      14.444% 3.924%,
+      13.889% 4.238%,
+      13.333% 4.579%,
+      12.778% 4.950%,
+      12.222% 5.346%,
+      11.667% 5.770%,
+      11.111% 6.221%,
+      10.556% 6.699%,
+      10% 7.203%,
+      9.444% 7.733%,
+      8.889% 8.294%,
+      8.333% 8.883%,
+      7.778% 9.498%,
+      7.222% 10.137%,
+      6.667% 10.790%,
+      6.111% 11.458%,
+      5.556% 12.142%,
+      5% 12.838%,
+      4.444% 13.548%,
+      3.889% 14.272%,
+      3.333% 15.008%,
+      2.778% 15.753%,
+      2.222% 16.502%,
+      1.667% 17.255%,
+      1.111% 18.011%,
+      0.556% 18.772%,
+      0% 19.533%,
+      0% 100%,
+      100% 100%
+    );
+  }
+
+  .santa-rita-product-hero__inner {
+    width: min(100% - 40px, 1120px);
+    margin: 0 auto;
+    padding: 30px 0 64px;
+  }
+
+  .santa-rita-product-hero__breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    align-items: center;
+    margin-bottom: 46px;
+    font-size: 12px;
+    line-height: 1.3;
+    color: #271f20;
+  }
+
+  .santa-rita-product-hero__breadcrumbs a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .santa-rita-product-hero__breadcrumbs a:hover {
+    text-decoration: underline;
+  }
+
+  .santa-rita-product-hero__grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 1.08fr) minmax(320px, 0.92fr);
+    gap: clamp(48px, 7vw, 112px);
+    align-items: start;
+  }
+
+  .santa-rita-product-hero__media {
+    display: flex;
+    justify-content: center;
+    min-height: 430px;
+  }
+
+  .santa-rita-product-hero__image {
+    display: block;
+    width: min(100%, 360px);
+    height: min(56vw, 470px);
+    object-fit: contain;
+  }
+
+  .santa-rita-product-hero__image--placeholder {
+    background: transparent;
+  }
+
+  .santa-rita-product-hero__details {
+    max-width: 520px;
+    padding-top: 6px;
+  }
+
+  .santa-rita-product-hero__discount {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    padding: 0 12px;
+    margin-bottom: 18px;
+    border-radius: 999px;
+    background: #9d1238;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .santa-rita-product-hero__title {
+    max-width: 500px;
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: clamp(42px, 4.1vw, 56px);
+    font-weight: 700;
+    line-height: 0.98;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-product-hero__subtitle {
+    margin: 18px 0 0;
+    font-size: 20px;
+    line-height: 1.35;
+  }
+
+  .santa-rita-product-hero__rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 18px;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .santa-rita-product-hero__stars {
+    display: inline-flex;
+    gap: 1px;
+    color: #b7a8a1;
+    font-size: 17px;
+  }
+
+  .santa-rita-product-hero__star.is-filled {
+    color: #b0123f;
+  }
+
+  .santa-rita-product-hero__rating-count {
+    color: #5b5051;
+  }
+
+  .santa-rita-product-hero__price {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 28px;
+  }
+
+  .santa-rita-product-hero__price strong {
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .santa-rita-product-hero__price s {
+    color: #7d7071;
+    font-size: 15px;
+  }
+
+  .santa-rita-product-hero__pack {
+    margin: 8px 0 0;
+    color: #7d7071;
+    font-size: 13px;
+    line-height: 1.3;
+  }
+
+  .santa-rita-product-hero__add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: min(100%, 490px);
+    min-height: 48px;
+    margin-top: 22px;
+    padding: 0 28px;
+    border: 0;
+    border-radius: 10px;
+    background: #9d1238;
+    color: #ffffff;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 160ms ease;
+  }
+
+  .santa-rita-product-hero__add:hover {
+    background: #7f0f2f;
+  }
+
+  .santa-rita-product-hero__add:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .santa-rita-product-hero__add-icon {
+    display: inline-flex;
+    width: 16px;
+    height: 16px;
+  }
+
+  .santa-rita-product-hero__add-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .santa-rita-product-hero__description {
+    max-width: 490px;
+    margin: 44px 0 0;
+    font-size: 15px;
+    line-height: 1.42;
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-product-hero::after {
+      height: 260px;
+    }
+
+    .santa-rita-product-hero__inner {
+      width: min(100% - 32px, 520px);
+      padding: 22px 0 42px;
+    }
+
+    .santa-rita-product-hero__breadcrumbs {
+      margin-bottom: 28px;
+    }
+
+    .santa-rita-product-hero__grid {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+
+    .santa-rita-product-hero__media {
+      min-height: 320px;
+    }
+
+    .santa-rita-product-hero__image {
+      width: min(100%, 280px);
+      height: 340px;
+    }
+
+    .santa-rita-product-hero__details {
+      max-width: none;
+      padding-top: 0;
+    }
+
+    .santa-rita-product-hero__title {
+      font-size: clamp(38px, 12vw, 48px);
+    }
+
+    .santa-rita-product-hero__add,
+    .santa-rita-product-hero__description {
+      width: 100%;
+      max-width: none;
+    }
+
+    .santa-rita-product-hero__description {
+      margin-top: 30px;
+    }
+  }
+</style>
