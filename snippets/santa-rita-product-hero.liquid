@@ -3,7 +3,6 @@
   assign variant = product.selected_or_first_available_variant
   assign image = variant.featured_image | default: product.featured_image
   assign breadcrumb_collection = blank
-  assign subtitle = product.metafields.custom.subtitle.value | default: product.metafields.custom.cepa.value | default: product.metafields.custom.varietal.value | default: product.type
   assign pack_label = product.metafields.custom.pack_label.value | default: product.metafields.custom.pack_label | default: section.settings.product_hero_pack_label | default: '12 Unidades | 750cc.'
   assign rating = product.metafields.reviews.rating.value.rating | default: product.metafields.custom.rating.value | default: section.settings.product_hero_default_rating | default: '4.2'
   assign rating_count = product.metafields.reviews.rating_count | default: product.metafields.custom.rating_count.value | default: product.metafields.custom.rating_count | default: section.settings.product_hero_default_rating_count | default: '134'
@@ -20,6 +19,20 @@
   assign can_add_to_cart = variant.available
   assign add_to_cart_text = 'Agregar'
   assign product_variant_media = ''
+
+  capture subtitle
+    if product.metafields.custom.subtitle != blank
+      echo product.metafields.custom.subtitle.value | default: product.metafields.custom.subtitle
+    elsif product.metafields.custom.cepa != blank
+      echo product.metafields.custom.cepa.value | default: product.metafields.custom.cepa
+    elsif product.metafields.custom.varietal != blank
+      echo product.metafields.custom.varietal.value | default: product.metafields.custom.varietal
+    else
+      echo product.type
+    endif
+  endcapture
+
+  assign subtitle = subtitle | strip
 
   if image != blank
     assign product_variant_media = image | image_url: width: 120
