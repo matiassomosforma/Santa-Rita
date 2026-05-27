@@ -206,7 +206,10 @@
             <div class="santa-rita-tasting-profile__chips">
               {% if chips_metafield != blank %}
                 {% for chip in chips_metafield.value %}
-                  {% assign chip_label = chip | strip %}
+                  {% liquid
+                    assign chip_label = chip.nombre.value | default: chip.name.value | default: chip.titulo.value | default: chip.title.value | default: chip.texto.value | default: chip.system.name | default: chip
+                    assign chip_label = chip_label | strip
+                  %}
                   {% if chip_label != blank %}
                     <span>{{ chip_label }}</span>
                   {% endif %}
