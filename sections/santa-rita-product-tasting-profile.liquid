@@ -1,0 +1,689 @@
+{% liquid
+  assign product = closest.product | default: product
+  assign aromas_metafield = product.metafields.custom['aromas']
+  assign pairings_metafield = product.metafields.custom['maridajes']
+  assign mouthfeel_metafield = product.metafields.custom['presencia_boca']
+  assign chips_metafield = product.metafields.custom['perfil_chips']
+  assign temperature_metafield = product.metafields.custom['temperatura_servicio']
+
+  if pairings_metafield == blank
+    assign pairings_metafield = product.metafields.custom['con_que_disfrutarlo']
+  endif
+
+  if mouthfeel_metafield == blank
+    assign mouthfeel_metafield = product.metafields.custom['presencia_en_boca']
+  endif
+
+  assign mouthfeel = mouthfeel_metafield.value | default: mouthfeel_metafield | default: section.settings.default_mouthfeel
+  assign mouthfeel_handle = mouthfeel | handleize
+  assign mouthfeel_progress = '25%'
+
+  case mouthfeel_handle
+    when 'semidulce'
+      assign mouthfeel_progress = '50%'
+    when 'dulce'
+      assign mouthfeel_progress = '75%'
+    else
+      assign mouthfeel_handle = 'seco'
+  endcase
+
+  assign temperature = temperature_metafield.value | default: temperature_metafield | default: section.settings.default_temperature
+%}
+
+{% if section.settings.enable_section %}
+  <section class="santa-rita-tasting-profile color-{{ section.settings.color_scheme }}">
+    <div class="santa-rita-tasting-profile__inner">
+      {% if section.settings.heading != blank %}
+        <h2 class="santa-rita-tasting-profile__heading">{{ section.settings.heading }}</h2>
+      {% endif %}
+
+      <div class="santa-rita-tasting-profile__grid">
+        <div class="santa-rita-tasting-profile__panel">
+          <h3 class="santa-rita-tasting-profile__title">Aromas</h3>
+          <div class="santa-rita-tasting-profile__items">
+            {% if aromas_metafield != blank %}
+              {% for aroma in aromas_metafield.value %}
+                {% liquid
+                  assign item_label = aroma | strip
+                  assign item_handle = item_label | handleize
+                  assign item_image = blank
+
+                  case item_handle
+                    when 'citrico'
+                      assign item_image = section.settings.image_aroma_citrico
+                    when 'frutas-verdes'
+                      assign item_image = section.settings.image_aroma_frutas_verdes
+                    when 'tropical'
+                      assign item_image = section.settings.image_aroma_tropical
+                    when 'toques-herbales'
+                      assign item_image = section.settings.image_aroma_toques_herbales
+                  endcase
+                %}
+                {% if item_label != blank %}
+                  <div class="santa-rita-tasting-profile__item">
+                    <span class="santa-rita-tasting-profile__thumb">
+                      {% if item_image != blank %}
+                        {{
+                          item_image
+                          | image_url: width: 160
+                          | image_tag:
+                            class: 'santa-rita-tasting-profile__image',
+                            widths: '80, 120, 160',
+                            sizes: '80px',
+                            loading: 'lazy'
+                        }}
+                      {% else %}
+                        <span class="santa-rita-tasting-profile__fallback">{{ item_label | slice: 0, 1 }}</span>
+                      {% endif %}
+                    </span>
+                    <span class="santa-rita-tasting-profile__label">{{ item_label }}</span>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              {% assign default_aromas = section.settings.default_aromas | split: ',' %}
+              {% for aroma in default_aromas %}
+                {% liquid
+                  assign item_label = aroma | strip
+                  assign item_handle = item_label | handleize
+                  assign item_image = blank
+
+                  case item_handle
+                    when 'citrico'
+                      assign item_image = section.settings.image_aroma_citrico
+                    when 'frutas-verdes'
+                      assign item_image = section.settings.image_aroma_frutas_verdes
+                    when 'tropical'
+                      assign item_image = section.settings.image_aroma_tropical
+                    when 'toques-herbales'
+                      assign item_image = section.settings.image_aroma_toques_herbales
+                  endcase
+                %}
+                {% if item_label != blank %}
+                  <div class="santa-rita-tasting-profile__item">
+                    <span class="santa-rita-tasting-profile__thumb">
+                      {% if item_image != blank %}
+                        {{
+                          item_image
+                          | image_url: width: 160
+                          | image_tag:
+                            class: 'santa-rita-tasting-profile__image',
+                            widths: '80, 120, 160',
+                            sizes: '80px',
+                            loading: 'lazy'
+                        }}
+                      {% else %}
+                        <span class="santa-rita-tasting-profile__fallback">{{ item_label | slice: 0, 1 }}</span>
+                      {% endif %}
+                    </span>
+                    <span class="santa-rita-tasting-profile__label">{{ item_label }}</span>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="santa-rita-tasting-profile__center">
+          <div class="santa-rita-tasting-profile__panel">
+            <h3 class="santa-rita-tasting-profile__title">Presencia en boca</h3>
+            <div class="santa-rita-tasting-profile__mouthfeel" style="--mouthfeel-progress: {{ mouthfeel_progress }};">
+              {% assign mouthfeel_options = 'Seco,Semidulce,Dulce' | split: ',' %}
+              {% for option in mouthfeel_options %}
+                {% assign option_handle = option | handleize %}
+                <div class="santa-rita-tasting-profile__mouthfeel-option{% if mouthfeel_handle == option_handle %} is-active{% endif %}">
+                  <span class="santa-rita-tasting-profile__drop" aria-hidden="true">
+                    {% case option_handle %}
+                      {% when 'semidulce' %}
+                        <svg id="Capa_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 18.8 26.2">
+                          <!-- Generator: Adobe Illustrator 30.4.0, SVG Export Plug-In . SVG Version: 2.1.4 Build 226)  -->
+                          <defs>
+                            <style>
+                              .st0 {
+                                fill: #fff;
+                              }
+                            </style>
+                          </defs>
+                          <path class="st0" d="M16.1,23.5s0,0,0,0c1.8-1.8,2.7-4.1,2.7-6.6s-.5-3.2-1.5-5.3-1.9-3.5-3.2-5.5c-1.2-1.8-2.4-3.3-3.2-4.3-.4-.5-.8-1-1.1-1.3l-.4-.4-.4.4c-.3.3-.6.7-1.1,1.3-.8,1-2,2.5-3.2,4.3-1.4,2-2.5,3.8-3.2,5.5C.6,13.3.2,14.9,0,16.2c0,.2,0,.4,0,.6,0,2.4.9,4.7,2.5,6.4,0,0,.1.2.2.3,1.7,1.7,4,2.7,6.5,2.7,0,0,.1,0,.2,0,0,0,.2,0,.3,0,2.3,0,4.4-.9,6.1-2.4.1-.1.2-.2.3-.3ZM5.5,6.6c1.2-1.8,2.4-3.3,3.2-4.3.3-.3.5-.6.7-.8.2.2.4.5.7.8.8,1,2,2.5,3.2,4.3,1.3,1.9,2.4,3.7,3.2,5.4.2.5.4.9.6,1.3-1.8-1.2-4.6-.3-4.6-.3,0,0-7.4-1.4-10.8.8.2-.6.4-1.2.7-1.8.8-1.6,1.8-3.4,3.2-5.4Z"/>
+                        </svg>
+                      {% when 'dulce' %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="27" viewBox="0 0 19 27" fill="none">
+                          <path d="M9.40298 26.25C6.90916 26.25 4.51747 25.2593 2.75407 23.4959C0.990669 21.7325 0 19.3408 0 16.847C0 10.5784 9.40298 0 9.40298 0C9.40298 0 18.806 10.5784 18.806 16.847C18.806 19.3408 17.8153 21.7325 16.0519 23.4959C14.2885 25.2593 11.8968 26.25 9.40298 26.25Z" fill="white"/>
+                        </svg>
+                      {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="27" viewBox="0 0 19 27" fill="none">
+                          <path d="M10.1689 1.66602V1.66699L10.1699 1.66797C10.1708 1.66895 10.1721 1.67081 10.1738 1.67285C10.1774 1.67703 10.1832 1.68301 10.1904 1.69141C10.2051 1.70848 10.2271 1.73464 10.2559 1.76855C10.3134 1.83636 10.3977 1.93724 10.5059 2.06738C10.7225 2.32821 11.0332 2.70789 11.4062 3.18066C12.1527 4.12663 13.1488 5.44327 14.1475 6.92871C15.1522 8.4232 16.1811 10.0441 16.959 11.71C17.7377 13.3777 18.25 15.0606 18.25 16.6816C18.2499 19.0899 17.3128 21.3978 15.6475 23.0977C13.9823 24.7973 11.7255 25.75 9.375 25.75C7.02454 25.75 4.76775 24.7973 3.10254 23.0977C1.43715 21.3978 0.500076 19.0899 0.5 16.6816C0.5 15.0606 1.0123 13.3777 1.79102 11.71C2.56887 10.0441 3.59782 8.4232 4.60254 6.92871C5.6012 5.44327 6.59726 4.12663 7.34375 3.18066C7.71683 2.70789 8.02748 2.32821 8.24414 2.06738C8.35225 1.93724 8.43661 1.83636 8.49414 1.76855C8.52292 1.73464 8.54494 1.70848 8.55957 1.69141C8.56677 1.68301 8.57257 1.67703 8.57617 1.67285C8.57793 1.67081 8.57923 1.66895 8.58008 1.66797L8.58105 1.66699C8.58103 1.66697 8.58093 1.66675 8.58008 1.66602L9.375 0.758789L10.1689 1.66602ZM8.99023 4.67285C8.30371 5.50095 7.66391 6.20429 6.33594 8.17285H6.33496C5.37599 9.59654 4.45607 11.2156 3.77344 12.7188C3.10034 14.2009 2.625 15.6414 2.625 16.6816C2.62515 20.4884 5.62062 23.5605 9.375 23.5605C13.1294 23.5605 16.1248 20.4884 16.125 16.6816C16.125 15.6414 15.6497 14.2009 14.9766 12.7188C14.2939 11.2156 13.374 9.59654 12.415 8.17285H12.4141C11.0861 6.20429 10.4463 5.50095 9.75977 4.67285L9.375 4.20801L8.99023 4.67285Z" fill="white" stroke="#8C1A3E"/>
+                        </svg>
+                    {% endcase %}
+                  </span>
+                  <span>{{ option }}</span>
+                </div>
+              {% endfor %}
+              <span class="santa-rita-tasting-profile__mouthfeel-track" aria-hidden="true"></span>
+            </div>
+
+            <div class="santa-rita-tasting-profile__chips">
+              {% if chips_metafield != blank %}
+                {% for chip in chips_metafield.value %}
+                  {% assign chip_label = chip | strip %}
+                  {% if chip_label != blank %}
+                    <span>{{ chip_label }}</span>
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                {% assign default_chips = section.settings.default_chips | split: ',' %}
+                {% for chip in default_chips %}
+                  {% assign chip_label = chip | strip %}
+                  {% if chip_label != blank %}
+                    <span>{{ chip_label }}</span>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="santa-rita-tasting-profile__panel santa-rita-tasting-profile__service">
+            <h3 class="santa-rita-tasting-profile__title">Cómo servirlo</h3>
+            {% if temperature != blank %}
+              <div class="santa-rita-tasting-profile__temperature">
+                <span aria-hidden="true">
+                  <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                    <path d="M10 4a2 2 0 0 1 4 0v8.35a4.5 4.5 0 1 1-4 0V4Zm2 10.3a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Zm0-10.8a.5.5 0 0 0-.5.5v10.03l-.75.43a3 3 0 1 0 2.5 0l-.75-.43V4a.5.5 0 0 0-.5-.5Z" />
+                  </svg>
+                </span>
+                <p>{{ temperature }}</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="santa-rita-tasting-profile__panel">
+          <h3 class="santa-rita-tasting-profile__title">Con qué disfrutarlo</h3>
+          <div class="santa-rita-tasting-profile__items">
+            {% if pairings_metafield != blank %}
+              {% for pairing in pairings_metafield.value %}
+                {% liquid
+                  assign item_label = pairing | strip
+                  assign item_handle = item_label | handleize
+                  assign item_image = blank
+
+                  case item_handle
+                    when 'pescado'
+                      assign item_image = section.settings.image_pairing_pescado
+                    when 'aceitunas'
+                      assign item_image = section.settings.image_pairing_aceitunas
+                    when 'quesos'
+                      assign item_image = section.settings.image_pairing_quesos
+                    when 'ensaladas'
+                      assign item_image = section.settings.image_pairing_ensaladas
+                  endcase
+                %}
+                {% if item_label != blank %}
+                  <div class="santa-rita-tasting-profile__item">
+                    <span class="santa-rita-tasting-profile__thumb">
+                      {% if item_image != blank %}
+                        {{
+                          item_image
+                          | image_url: width: 160
+                          | image_tag:
+                            class: 'santa-rita-tasting-profile__image',
+                            widths: '80, 120, 160',
+                            sizes: '80px',
+                            loading: 'lazy'
+                        }}
+                      {% else %}
+                        <span class="santa-rita-tasting-profile__fallback">{{ item_label | slice: 0, 1 }}</span>
+                      {% endif %}
+                    </span>
+                    <span class="santa-rita-tasting-profile__label">{{ item_label }}</span>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              {% assign default_pairings = section.settings.default_pairings | split: ',' %}
+              {% for pairing in default_pairings %}
+                {% liquid
+                  assign item_label = pairing | strip
+                  assign item_handle = item_label | handleize
+                  assign item_image = blank
+
+                  case item_handle
+                    when 'pescado'
+                      assign item_image = section.settings.image_pairing_pescado
+                    when 'aceitunas'
+                      assign item_image = section.settings.image_pairing_aceitunas
+                    when 'quesos'
+                      assign item_image = section.settings.image_pairing_quesos
+                    when 'ensaladas'
+                      assign item_image = section.settings.image_pairing_ensaladas
+                  endcase
+                %}
+                {% if item_label != blank %}
+                  <div class="santa-rita-tasting-profile__item">
+                    <span class="santa-rita-tasting-profile__thumb">
+                      {% if item_image != blank %}
+                        {{
+                          item_image
+                          | image_url: width: 160
+                          | image_tag:
+                            class: 'santa-rita-tasting-profile__image',
+                            widths: '80, 120, 160',
+                            sizes: '80px',
+                            loading: 'lazy'
+                        }}
+                      {% else %}
+                        <span class="santa-rita-tasting-profile__fallback">{{ item_label | slice: 0, 1 }}</span>
+                      {% endif %}
+                    </span>
+                    <span class="santa-rita-tasting-profile__label">{{ item_label }}</span>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+<style>
+  .santa-rita-tasting-profile {
+    background: #fffbf6;
+    color: #25171b;
+    padding: 72px 20px 78px;
+  }
+
+  .santa-rita-tasting-profile__inner {
+    max-width: 1160px;
+    margin: 0 auto;
+  }
+
+  .santa-rita-tasting-profile__heading {
+    margin: 0 0 60px;
+    font-family: var(--font-heading--family);
+    font-size: clamp(28px, 3vw, 36px);
+    line-height: 1.05;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .santa-rita-tasting-profile__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 1.15fr) minmax(0, 1fr);
+    gap: 125px;
+    align-items: start;
+  }
+
+  .santa-rita-tasting-profile__center {
+    display: grid;
+    gap: 38px;
+  }
+
+  .santa-rita-tasting-profile__title {
+    margin: 0 0 40px 0;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(37, 23, 27, 0.18);
+    font-family: var(--font-body--family);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .santa-rita-tasting-profile__items {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(90px, 1fr));
+    gap: 34px 24px;
+  }
+
+  .santa-rita-tasting-profile__item {
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .santa-rita-tasting-profile__thumb {
+    display: grid;
+    width: 85px;
+    height: 85px;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 50%;
+    background: #fff1ea;
+  }
+
+  .santa-rita-tasting-profile__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .santa-rita-tasting-profile__fallback {
+    color: #a80f45;
+    font-family: var(--font-primary--family);
+    font-size: 32px;
+    line-height: 1;
+  }
+
+  .santa-rita-tasting-profile__label {
+    color: rgba(37, 23, 27, 0.68);
+    font-size: 15px;
+    line-height: 1.2;
+  }
+
+  .santa-rita-tasting-profile__mouthfeel {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 350px;
+    margin: 0 auto 32px;
+    padding-bottom: 32px;
+  }
+
+  .santa-rita-tasting-profile__mouthfeel-option {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    color: rgba(37, 23, 27, 0.5);
+    font-size: 16px;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .santa-rita-tasting-profile__mouthfeel-option.is-active {
+    color: #25171b;
+  }
+
+  .santa-rita-tasting-profile__drop {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 50%;
+    background: #cf93a8;
+    color: #ffffff;
+  }
+
+  .santa-rita-tasting-profile__mouthfeel-option.is-active .santa-rita-tasting-profile__drop {
+    background: #a80f45;
+  }
+
+  .santa-rita-tasting-profile__drop svg {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 24px;
+    max-height: 27px;
+  }
+
+  .santa-rita-tasting-profile__temperature svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+  }
+
+  .santa-rita-tasting-profile__mouthfeel-track {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 6px;
+    overflow: visible;
+    border-radius: 999px;
+    background: #dedede;
+  }
+
+  .santa-rita-tasting-profile__mouthfeel-track::before,
+  .santa-rita-tasting-profile__mouthfeel-track::after {
+    position: absolute;
+    content: "";
+  }
+
+  .santa-rita-tasting-profile__mouthfeel-track::before {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--mouthfeel-progress);
+    border-radius: inherit;
+    background: #a80f45;
+  }
+
+  .santa-rita-tasting-profile__mouthfeel-track::after {
+    top: 50%;
+    left: var(--mouthfeel-progress);
+    box-sizing: content-box;
+    width: 14px;
+    height: 14px;
+    border: 5px solid rgba(168, 15, 69, 0.2);
+    border-radius: 50%;
+    background: #a80f45;
+    background-clip: padding-box;
+    transform: translate(-50%, -50%);
+    animation: santa-rita-mouthfeel-pulse 1.6s ease-out infinite;
+  }
+
+  @keyframes santa-rita-mouthfeel-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(168, 15, 69, 0.28);
+    }
+
+    70% {
+      box-shadow: 0 0 0 10px rgba(168, 15, 69, 0);
+    }
+
+    100% {
+      box-shadow: 0 0 0 0 rgba(168, 15, 69, 0);
+    }
+  }
+
+  .santa-rita-tasting-profile__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-start;
+  }
+
+  .santa-rita-tasting-profile__chips span {
+    display: inline-flex;
+    min-height: 22px;
+    align-items: center;
+    border-radius: 999px;
+    background: #FCEADD;
+    padding: 3px 16px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .santa-rita-tasting-profile__temperature {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .santa-rita-tasting-profile__temperature span {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: #a80f45;
+    color: #ffffff;
+  }
+
+  .santa-rita-tasting-profile__temperature p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  @media screen and (max-width: 989px) {
+    .santa-rita-tasting-profile {
+      padding: 56px 18px 62px;
+    }
+
+    .santa-rita-tasting-profile__heading {
+      margin-bottom: 36px;
+    }
+
+    .santa-rita-tasting-profile__grid {
+      grid-template-columns: 1fr;
+      gap: 46px;
+    }
+
+    .santa-rita-tasting-profile__panel {
+      max-width: 420px;
+      margin: 0 auto;
+      width: 100%;
+    }
+  }
+
+  @media screen and (max-width: 520px) {
+    .santa-rita-tasting-profile__items {
+      gap: 28px 16px;
+    }
+
+    .santa-rita-tasting-profile__thumb {
+      width: 66px;
+      height: 66px;
+    }
+
+    .santa-rita-tasting-profile__mouthfeel {
+      gap: 12px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "SR perfil producto",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_section",
+      "label": "Mostrar sección",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Título",
+      "default": "Lo que lo hace único"
+    },
+    {
+      "type": "paragraph",
+      "content": "El producto puede usar custom.aromas, custom.maridajes, custom.presencia_boca, custom.perfil_chips y custom.temperatura_servicio. Las imágenes se configuran una vez aquí y se muestran cuando el texto coincide."
+    },
+    {
+      "type": "textarea",
+      "id": "default_aromas",
+      "label": "Aromas por defecto",
+      "default": "Cítrico, Frutas verdes, Tropical, Toques herbales"
+    },
+    {
+      "type": "textarea",
+      "id": "default_pairings",
+      "label": "Maridajes por defecto",
+      "default": "Pescado, Aceitunas, Quesos, Ensaladas"
+    },
+    {
+      "type": "select",
+      "id": "default_mouthfeel",
+      "label": "Presencia en boca por defecto",
+      "default": "Seco",
+      "options": [
+        {
+          "value": "Seco",
+          "label": "Seco"
+        },
+        {
+          "value": "Semidulce",
+          "label": "Semidulce"
+        },
+        {
+          "value": "Dulce",
+          "label": "Dulce"
+        }
+      ]
+    },
+    {
+      "type": "textarea",
+      "id": "default_chips",
+      "label": "Etiquetas por defecto",
+      "default": "85% Sauvignon Blanc, De cuerpo medio, Clásico"
+    },
+    {
+      "type": "text",
+      "id": "default_temperature",
+      "label": "Temperatura por defecto",
+      "default": "Entre 9 °C y 10 °C"
+    },
+    {
+      "type": "header",
+      "content": "Imágenes de aromas"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_aroma_citrico",
+      "label": "Cítrico"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_aroma_frutas_verdes",
+      "label": "Frutas verdes"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_aroma_tropical",
+      "label": "Tropical"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_aroma_toques_herbales",
+      "label": "Toques herbales"
+    },
+    {
+      "type": "header",
+      "content": "Imágenes de maridaje"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_pairing_pescado",
+      "label": "Pescado"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_pairing_aceitunas",
+      "label": "Aceitunas"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_pairing_quesos",
+      "label": "Quesos"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_pairing_ensaladas",
+      "label": "Ensaladas"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Esquema de color",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Santa Rita perfil producto"
+    }
+  ]
+}
+{% endschema %}

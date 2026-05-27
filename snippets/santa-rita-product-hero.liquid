@@ -106,6 +106,7 @@
           <p class="santa-rita-product-hero__subtitle">{{ subtitle }}</p>
         {% endif %}
 
+        {% comment %}
         <pre
           class="santa-rita-product-hero__debug"
           data-santa-rita-product-debug
@@ -152,6 +153,7 @@ resolved subtitle: {{ subtitle }}</pre>
             });
           })();
         </script>
+        {% endcomment %}
 
         {% if rating != blank %}
           <div class="santa-rita-product-hero__rating" aria-label="{{ rating_number | round: 1 }} de 5 estrellas">
@@ -514,15 +516,15 @@ resolved subtitle: {{ subtitle }}</pre>
     max-width: 500px;
     margin: 0;
     font-family: var(--font-heading--family);
-    font-size: clamp(42px, 4.1vw, 56px);
+    font-size: clamp(42px, 4.1vw, 48px);
     font-weight: 700;
-    line-height: 0.98;
+    line-height: normal;
     letter-spacing: 0;
   }
 
   .santa-rita-product-hero__subtitle {
     margin: 18px 0 0;
-    font-size: 20px;
+    font-size: 24px;
     line-height: 1.35;
   }
 
@@ -571,7 +573,7 @@ resolved subtitle: {{ subtitle }}</pre>
   }
 
   .santa-rita-product-hero__price strong {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 800;
     line-height: 1;
   }
@@ -631,7 +633,7 @@ resolved subtitle: {{ subtitle }}</pre>
   .santa-rita-product-hero__description {
     max-width: 490px;
     margin: 44px 0 0;
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.42;
   }
 

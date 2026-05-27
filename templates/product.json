@@ -264,6 +264,19 @@
         "padding-block-end": 0
       }
     },
+    "santa_rita_tasting_profile": {
+      "type": "santa-rita-product-tasting-profile",
+      "settings": {
+        "enable_section": true,
+        "heading": "Lo que lo hace único",
+        "default_aromas": "Cítrico, Frutas verdes, Tropical, Toques herbales",
+        "default_pairings": "Pescado, Aceitunas, Quesos, Ensaladas",
+        "default_mouthfeel": "Seco",
+        "default_chips": "85% Sauvignon Blanc, De cuerpo medio, Clásico",
+        "default_temperature": "Entre 9 °C y 10 °C",
+        "color_scheme": "scheme-1"
+      }
+    },
     "product_recommendations_qggXJq": {
       "type": "product-recommendations",
       "blocks": {
@@ -408,6 +421,7 @@
   },
   "order": [
     "main",
+    "santa_rita_tasting_profile",
     "product_recommendations_qggXJq"
   ]
 }
