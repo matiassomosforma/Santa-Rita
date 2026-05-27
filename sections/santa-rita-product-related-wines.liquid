@@ -1,0 +1,650 @@
+<script
+  src="{{ 'product-recommendations.js' | asset_url }}"
+  type="module"
+  fetchpriority="low"
+></script>
+
+{% liquid
+  assign product = closest.product | default: product
+  assign product_limit = section.settings.max_products
+%}
+
+<product-recommendations
+  id="santa-rita-related-wines-{{ section.id }}"
+  class="santa-rita-related-wines"
+  data-url="{{ routes.product_recommendations_url }}?limit={{ product_limit }}"
+  data-section-id="{{ section.id }}"
+  data-product-id="{{ product.id }}"
+  data-intent="related"
+  data-recommendations-performed="{{ recommendations.performed }}"
+  {{ section.shopify_attributes }}
+>
+  {% if recommendations.performed %}
+    {% liquid
+      assign related_products = recommendations.products
+    %}
+
+    {% if related_products != blank or collections.all.products != blank %}
+      <santa-rita-related-wines-slider
+        class="santa-rita-related-wines__slider"
+        {% if section.settings.autoplay %}
+          autoplay
+          autoplay-speed="{{ section.settings.autoplay_speed | times: 1000 }}"
+        {% endif %}
+        {% if section.settings.infinite_loop %}
+          infinite-loop
+        {% endif %}
+      >
+        <div class="santa-rita-related-wines__container">
+          <header class="santa-rita-related-wines__header">
+            <h2>{{ section.settings.heading }}</h2>
+          </header>
+
+          <div class="santa-rita-related-wines__viewport" data-related-viewport>
+            <div class="santa-rita-related-wines__track" data-related-track>
+              {% liquid
+                assign rendered_product_count = 0
+                assign rendered_product_ids = '|'
+              %}
+
+              {% for related_product in related_products limit: product_limit %}
+                {% render 'santa-rita-best-seller-card',
+                  product: related_product,
+                  section_settings: section.settings
+                %}
+                {% liquid
+                  assign rendered_product_count = rendered_product_count | plus: 1
+                  assign rendered_product_ids = rendered_product_ids | append: related_product.id | append: '|'
+                %}
+              {% endfor %}
+
+              {% if rendered_product_count < product_limit %}
+                {% for fallback_product in collections.all.products %}
+                  {% liquid
+                    assign fallback_product_token = fallback_product.id | prepend: '|' | append: '|'
+                    assign is_current_product = false
+                    assign is_rendered_product = false
+
+                    if fallback_product.id == product.id
+                      assign is_current_product = true
+                    endif
+
+                    if rendered_product_ids contains fallback_product_token
+                      assign is_rendered_product = true
+                    endif
+                  %}
+
+                  {% unless is_current_product or is_rendered_product %}
+                    {% render 'santa-rita-best-seller-card',
+                      product: fallback_product,
+                      section_settings: section.settings
+                    %}
+                    {% liquid
+                      assign rendered_product_count = rendered_product_count | plus: 1
+                      assign rendered_product_ids = rendered_product_ids | append: fallback_product.id | append: '|'
+                    %}
+                  {% endunless %}
+
+                  {% if rendered_product_count >= product_limit %}
+                    {% break %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="santa-rita-related-wines__footer">
+            <div class="santa-rita-related-wines__dots" data-related-dots aria-label="Paginacion de productos"></div>
+            <div class="santa-rita-related-wines__arrows">
+              <button type="button" data-related-prev aria-label="Productos anteriores">
+                <span aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="33" height="20" viewBox="0 0 33 20" fill="none">
+                    <path d="M11 0C11 1.06 9.99212 2.64286 8.97187 3.97143C7.66012 5.68571 6.09263 7.18143 4.2955 8.32286C2.948 9.17857 1.3145 10 0 10M0 10C1.3145 10 2.94938 10.8214 4.2955 11.6771C6.09263 12.82 7.66012 14.3157 8.97187 16.0271C9.99212 17.3571 11 18.9429 11 20M0 10H33" stroke="#8C1A3E"/>
+                  </svg>
+                </span>
+              </button>
+              <button type="button" data-related-next aria-label="Productos siguientes">
+                <span aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="33" height="20" viewBox="0 0 33 20" fill="none">
+                    <path d="M22 0C22 1.06 23.0079 2.64286 24.0281 3.97143C25.3399 5.68571 26.9074 7.18143 28.7045 8.32286C30.052 9.17857 31.6855 10 33 10M33 10C31.6855 10 30.0506 10.8214 28.7045 11.6771C26.9074 12.82 25.3399 14.3157 24.0281 16.0271C23.0079 17.3571 22 18.9429 22 20M33 10H0" stroke="#8C1A3E"/>
+                  </svg>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </santa-rita-related-wines-slider>
+    {% endif %}
+  {% endif %}
+</product-recommendations>
+
+<script>
+  if (!customElements.get('santa-rita-related-wines-slider')) {
+    customElements.define(
+      'santa-rita-related-wines-slider',
+      class SantaRitaRelatedWinesSlider extends HTMLElement {
+        connectedCallback() {
+          this.viewport = this.querySelector('[data-related-viewport]');
+          this.track = this.querySelector('[data-related-track]');
+          this.prevButton = this.querySelector('[data-related-prev]');
+          this.nextButton = this.querySelector('[data-related-next]');
+          this.dotsContainer = this.querySelector('[data-related-dots]');
+          this.autoplayTimer = null;
+          this.handleResize = () => this.setupDots();
+
+          if (!this.viewport || !this.track) return;
+
+          this.prevButton?.addEventListener('click', () => this.scrollByPage(-1, true));
+          this.nextButton?.addEventListener('click', () => this.scrollByPage(1, true));
+          this.viewport.addEventListener('scroll', () => this.updateState(), { passive: true });
+          this.addEventListener('mouseenter', () => this.stopAutoplay());
+          this.addEventListener('mouseleave', () => this.startAutoplay());
+          this.addEventListener('focusin', () => this.stopAutoplay());
+          this.addEventListener('focusout', () => this.startAutoplay());
+          window.addEventListener('resize', this.handleResize);
+
+          this.setupDots();
+          this.startAutoplay();
+        }
+
+        disconnectedCallback() {
+          window.removeEventListener('resize', this.handleResize);
+          this.stopAutoplay();
+        }
+
+        getStep() {
+          const card = this.track.querySelector('.santa-rita-product-card');
+          if (!card) return this.viewport.clientWidth;
+          const gap = parseFloat(window.getComputedStyle(this.track).columnGap || '0');
+          return card.getBoundingClientRect().width + gap;
+        }
+
+        getPageCount() {
+          const total = this.track.querySelectorAll('.santa-rita-product-card').length;
+          const visible = Math.max(1, Math.round(this.viewport.clientWidth / this.getStep()));
+          return Math.max(1, total - visible + 1);
+        }
+
+        getMaxScroll() {
+          return Math.max(0, this.viewport.scrollWidth - this.viewport.clientWidth);
+        }
+
+        setupDots() {
+          if (!this.dotsContainer) return;
+          this.dotsContainer.innerHTML = '';
+          const count = this.getPageCount();
+
+          for (let i = 0; i < count; i++) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.setAttribute('aria-label', `Ir al grupo ${i + 1}`);
+            button.addEventListener('click', () => this.scrollToIndex(i, true));
+            this.dotsContainer.append(button);
+          }
+
+          this.updateState();
+        }
+
+        scrollToIndex(index, userAction = false) {
+          if (userAction) this.restartAutoplay();
+          this.viewport.scrollTo({ left: index * this.getStep(), behavior: 'smooth' });
+        }
+
+        scrollByPage(direction, userAction = false) {
+          if (userAction) this.restartAutoplay();
+
+          const maxScroll = this.getMaxScroll();
+          const nextLeft = this.viewport.scrollLeft + direction * this.getStep();
+
+          if (this.hasAttribute('infinite-loop')) {
+            if (nextLeft > maxScroll - 4) {
+              this.viewport.scrollTo({ left: 0, behavior: 'smooth' });
+              return;
+            }
+
+            if (nextLeft < 0) {
+              this.viewport.scrollTo({ left: maxScroll, behavior: 'smooth' });
+              return;
+            }
+          }
+
+          this.viewport.scrollBy({ left: direction * this.getStep(), behavior: 'smooth' });
+        }
+
+        updateState() {
+          const step = this.getStep();
+          const activeIndex = Math.round(this.viewport.scrollLeft / step);
+          const maxScroll = this.getMaxScroll();
+          const infinite = this.hasAttribute('infinite-loop');
+
+          Array.from(this.dotsContainer?.children || []).forEach((dot, index) => {
+            const isActive = index === activeIndex;
+            dot.classList.toggle('is-active', isActive);
+            dot.setAttribute('aria-current', isActive ? 'true' : 'false');
+          });
+
+          if (this.prevButton) this.prevButton.disabled = !infinite && this.viewport.scrollLeft <= 4;
+          if (this.nextButton) this.nextButton.disabled = !infinite && this.viewport.scrollLeft >= maxScroll - 4;
+        }
+
+        startAutoplay() {
+          if (!this.hasAttribute('autoplay') || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          this.stopAutoplay();
+
+          const speed = Number(this.getAttribute('autoplay-speed') || 5000);
+          this.autoplayTimer = window.setInterval(() => {
+            this.scrollByPage(1);
+          }, speed);
+        }
+
+        stopAutoplay() {
+          if (!this.autoplayTimer) return;
+          window.clearInterval(this.autoplayTimer);
+          this.autoplayTimer = null;
+        }
+
+        restartAutoplay() {
+          this.stopAutoplay();
+          this.startAutoplay();
+        }
+      }
+    );
+  }
+</script>
+
+<style>
+  .santa-rita-related-wines {
+    display: block;
+    background: #fffbf6;
+    color: #21000f;
+  }
+
+  .santa-rita-related-wines__container {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding: 58px clamp(24px, 6.8vw, 120px) 64px;
+  }
+
+  .santa-rita-related-wines__header {
+    margin-bottom: 34px;
+  }
+
+  .santa-rita-related-wines__header h2 {
+    margin: 0;
+    color: #1e0812;
+    font-family: var(--font-heading--family);
+    font-size: clamp(26px, 2.3vw, 36px);
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .santa-rita-related-wines__viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-block: 15px;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .santa-rita-related-wines__viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .santa-rita-related-wines__track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - 60px) / 4);
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card {
+    position: relative;
+    display: flex;
+    min-height: 455px;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #ffffff;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 0 2px 0 rgba(140, 26, 62, 0.13) inset, 0 10px 10px 0 rgba(140, 26, 62, 0.05);
+    scroll-snap-align: start;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card:hover {
+    box-shadow: 0 0 2px 0 rgb(140 26 62 / 41%) inset, 0 10px 10px 0 rgb(140 26 62 / 19%);
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__badges {
+    position: absolute;
+    inset: 14px 14px auto;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__badge {
+    display: inline-flex;
+    min-width: 48px;
+    min-height: 20px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #aea2a6;
+    border-radius: 12px;
+    background: #f5f4ed;
+    color: #21000f;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 0 10px;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__badge--discount {
+    border-color: #9b173f;
+    background: #9b173f;
+    color: #ffffff;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__badge--blank {
+    opacity: 0;
+  }
+
+  .santa-rita-related-wines .santa-rita__product-image {
+    position: relative;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__media {
+    position: relative;
+    display: grid;
+    min-height: 170px;
+    place-items: end center;
+    margin-bottom: 25px;
+    padding-top: 30px;
+    text-decoration: none;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__image {
+    width: auto;
+    max-width: 78%;
+    height: 166px;
+    object-fit: contain;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__rating {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    min-height: 24px;
+    align-items: flex-end;
+    flex-direction: column;
+    gap: 5px;
+    padding-inline: 16px;
+    color: #c98d00;
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  .santa-rita-related-wines .santa-rita__star-group {
+    display: flex;
+    gap: 2px;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__rating small {
+    color: #6e5a61;
+    font-size: 10px;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__eyebrow,
+  .santa-rita-related-wines .santa-rita-product-card__origin {
+    margin: 0;
+    padding-inline: 16px;
+    color: #8d183f;
+    font-size: 11px;
+    line-height: 1.25;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card h3 {
+    margin: 7px 0 4px;
+    padding-inline: 16px;
+    color: #2b1e1e;
+    font-family: var(--font-heading--family);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.08;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__origin {
+    margin-top: 3px;
+    color: #6b5d5d;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__price {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 14px;
+    padding-inline: 16px;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__price strong {
+    color: #1e0812;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__price s {
+    color: #6e6262;
+    font-size: 12px;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 12px 16px;
+    padding-top: 12px;
+    border-top: 0.5px solid rgba(110, 90, 97, 0.5);
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__details span {
+    display: flex;
+    min-height: 48px;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 3px;
+    background: #eee8e2;
+    color: #655b58;
+    font-size: 11px;
+    line-height: 1.1;
+    padding: 8px 10px;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__details strong {
+    margin-top: 4px;
+    color: #21000f;
+    font-size: 12px;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__form {
+    margin: auto 0 0;
+  }
+
+  .santa-rita-related-wines .santa-rita-product-card__button {
+    width: calc(100% - 32px);
+    min-height: 40px;
+    margin: 0 16px 16px;
+    border: 1px solid #8c1a3e;
+    border-radius: 7px;
+    background: #8c1a3e;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .santa-rita-related-wines__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 26px;
+    margin-top: 22px;
+  }
+
+  .santa-rita-related-wines__dots,
+  .santa-rita-related-wines__arrows {
+    display: flex;
+    align-items: center;
+  }
+
+  .santa-rita-related-wines__dots {
+    gap: 6px;
+  }
+
+  .santa-rita-related-wines__dots button {
+    width: 8px;
+    height: 8px;
+    border: 1px solid #8c1a3e;
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .santa-rita-related-wines__dots button.is-active {
+    background: #8c1a3e;
+  }
+
+  .santa-rita-related-wines__arrows {
+    gap: 14px;
+  }
+
+  .santa-rita-related-wines__arrows button {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-items: center;
+    border: 1px solid #8c1a3e;
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .santa-rita-related-wines__arrows button:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  @media screen and (max-width: 989px) {
+    .santa-rita-related-wines__track {
+      grid-auto-columns: calc((100% - 20px) / 2);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-related-wines__container {
+      padding: 42px 20px 48px;
+    }
+
+    .santa-rita-related-wines__header {
+      margin-bottom: 22px;
+    }
+
+    .santa-rita-related-wines__track {
+      grid-auto-columns: min(82vw, 260px);
+      gap: 14px;
+    }
+
+    .santa-rita-related-wines__footer {
+      justify-content: space-between;
+    }
+
+    .santa-rita-related-wines__arrows button {
+      width: 42px;
+      height: 42px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "SR vinos relacionados",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titulo",
+      "default": "Tus proximos vinos"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Cantidad maxima",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Velocidad autoplay",
+      "min": 3,
+      "max": 9,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "infinite_loop",
+      "label": "Loop infinito",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "pack_label",
+      "label": "Etiqueta pack por defecto",
+      "default": "x12 un."
+    },
+    {
+      "type": "text",
+      "id": "unit_price_label",
+      "label": "Precio unidad por defecto",
+      "default": "$2.970"
+    },
+    {
+      "type": "text",
+      "id": "liter_price_label",
+      "label": "Precio litro por defecto",
+      "default": "$3.960"
+    },
+    {
+      "type": "text",
+      "id": "rating_count",
+      "label": "Resenas por defecto",
+      "default": "134"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Santa Rita vinos relacionados"
+    }
+  ]
+}
+{% endschema %}

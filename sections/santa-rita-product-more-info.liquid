@@ -1,0 +1,337 @@
+{% liquid
+  assign product = closest.product | default: product
+
+  assign more_info_items_metafield = product.metafields.custom['informacion_producto_items']
+  if more_info_items_metafield == blank
+    assign more_info_items_metafield = product.metafields.custom['mas_info_producto']
+  endif
+  if more_info_items_metafield == blank
+    assign more_info_items_metafield = product.metafields.custom['more_info_items']
+  endif
+
+  assign expert_comment_metafield = product.metafields.custom['comentario_experto']
+  if expert_comment_metafield == blank
+    assign expert_comment_metafield = product.metafields.custom['expert_comment']
+  endif
+
+  assign technical_data_metafield = product.metafields.custom['datos_tecnicos']
+  if technical_data_metafield == blank
+    assign technical_data_metafield = product.metafields.custom['technical_data']
+  endif
+
+  assign pairing_recommendation_metafield = product.metafields.custom['maridaje_recomendado']
+  if pairing_recommendation_metafield == blank
+    assign pairing_recommendation_metafield = product.metafields.custom['recommended_pairing']
+  endif
+%}
+
+{% if more_info_items_metafield != blank or expert_comment_metafield != blank or technical_data_metafield != blank or pairing_recommendation_metafield != blank or request.design_mode %}
+  <section class="santa-rita-product-more-info" aria-labelledby="santa-rita-product-more-info-title" data-santa-rita-product-more-info>
+    <div class="santa-rita-product-more-info__inner">
+      <h2 id="santa-rita-product-more-info-title" class="santa-rita-product-more-info__title">
+        {{ section.settings.heading }}
+      </h2>
+
+      {% if more_info_items_metafield != blank %}
+        <div class="santa-rita-product-more-info__items">
+          {% for info_item in more_info_items_metafield.value %}
+            {% liquid
+              assign info_title = info_item.titulo.value | default: info_item.title.value | default: info_item.nombre.value | default: info_item.name.value | default: info_item.system.name
+              assign info_content = info_item.contenido.value | default: info_item.content.value | default: info_item.texto.value | default: info_item.descripcion.value | default: info_item.description.value
+            %}
+
+            {% if info_title != blank %}
+              <details class="santa-rita-product-more-info__item">
+                <summary class="santa-rita-product-more-info__summary">
+                  <span>{{ info_title }}</span>
+                  <span class="santa-rita-product-more-info__icon" aria-hidden="true"></span>
+                </summary>
+
+                {% if info_content != blank %}
+                  <div class="santa-rita-product-more-info__answer">
+                    {% if info_item.contenido != blank %}
+                      {{ info_item.contenido | metafield_tag }}
+                    {% elsif info_item.content != blank %}
+                      {{ info_item.content | metafield_tag }}
+                    {% elsif info_item.texto != blank %}
+                      {{ info_item.texto | metafield_tag }}
+                    {% elsif info_item.descripcion != blank %}
+                      {{ info_item.descripcion | metafield_tag }}
+                    {% elsif info_item.description != blank %}
+                      {{ info_item.description | metafield_tag }}
+                    {% else %}
+                      <p>{{ info_content }}</p>
+                    {% endif %}
+                  </div>
+                {% endif %}
+              </details>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% elsif expert_comment_metafield != blank or technical_data_metafield != blank or pairing_recommendation_metafield != blank %}
+        <div class="santa-rita-product-more-info__items">
+          {% if expert_comment_metafield != blank %}
+            <details class="santa-rita-product-more-info__item">
+              <summary class="santa-rita-product-more-info__summary">
+                <span>Comentario experto</span>
+                <span class="santa-rita-product-more-info__icon" aria-hidden="true"></span>
+              </summary>
+
+              <div class="santa-rita-product-more-info__answer">
+                {{ expert_comment_metafield | metafield_tag }}
+              </div>
+            </details>
+          {% endif %}
+
+          {% if technical_data_metafield != blank %}
+            <details class="santa-rita-product-more-info__item">
+              <summary class="santa-rita-product-more-info__summary">
+                <span>Datos técnicos</span>
+                <span class="santa-rita-product-more-info__icon" aria-hidden="true"></span>
+              </summary>
+
+              <div class="santa-rita-product-more-info__answer">
+                {{ technical_data_metafield | metafield_tag }}
+              </div>
+            </details>
+          {% endif %}
+
+          {% if pairing_recommendation_metafield != blank %}
+            <details class="santa-rita-product-more-info__item">
+              <summary class="santa-rita-product-more-info__summary">
+                <span>Maridaje recomendado</span>
+                <span class="santa-rita-product-more-info__icon" aria-hidden="true"></span>
+              </summary>
+
+              <div class="santa-rita-product-more-info__answer">
+                {{ pairing_recommendation_metafield | metafield_tag }}
+              </div>
+            </details>
+          {% endif %}
+        </div>
+      {% elsif request.design_mode %}
+        <p class="santa-rita-product-more-info__empty">
+          Agrega informacion en el metacampo custom.informacion_producto_items para mostrar esta seccion en la tienda.
+        </p>
+      {% endif %}
+    </div>
+  </section>
+{% endif %}
+
+<style>
+  .santa-rita-product-more-info {
+    background: #FFF7F1;
+    color: #25171b;
+    padding: 58px 20px 46px;
+  }
+
+  .santa-rita-product-more-info__inner {
+    max-width: 1020px;
+    margin: 0 auto;
+  }
+
+  .santa-rita-product-more-info__title {
+    margin: 0 0 34px;
+    font-family: var(--font-heading--family);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  .santa-rita-product-more-info__items {
+    border-top: 1px solid rgba(37, 23, 27, 0.08);
+  }
+
+  .santa-rita-product-more-info__item {
+    overflow: hidden;
+    border-bottom: 1px solid rgba(37, 23, 27, 0.08);
+    transition: height 280ms ease;
+  }
+
+  .santa-rita-product-more-info__summary {
+    display: grid;
+    align-items: center;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 24px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+    list-style: none;
+    padding: 22px 8px 22px 0;
+  }
+
+  .santa-rita-product-more-info__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .santa-rita-product-more-info__icon {
+    width: 11px;
+    height: 11px;
+    border-right: 1px solid rgba(37, 23, 27, 0.62);
+    border-bottom: 1px solid rgba(37, 23, 27, 0.62);
+    transform: rotate(45deg) translateY(-2px);
+    transform-origin: center;
+    transition: transform 220ms ease;
+  }
+
+  .santa-rita-product-more-info__item[open] .santa-rita-product-more-info__icon {
+    transform: rotate(225deg) translate(-2px, -1px);
+  }
+
+  .santa-rita-product-more-info__answer {
+    max-width: 820px;
+    margin: -6px 0 24px;
+    color: #25171b;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .santa-rita-product-more-info__answer > * {
+    margin-top: 0;
+  }
+
+  .santa-rita-product-more-info__answer > *:last-child {
+    margin-bottom: 0;
+  }
+
+  .santa-rita-product-more-info__empty {
+    margin: 0;
+    color: rgba(37, 23, 27, 0.62);
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-product-more-info {
+      padding: 44px 18px 38px;
+    }
+
+    .santa-rita-product-more-info__title {
+      margin-bottom: 22px;
+      font-size: 26px;
+    }
+
+    .santa-rita-product-more-info__summary {
+      gap: 18px;
+      font-size: 14px;
+      padding: 17px 0;
+    }
+
+    .santa-rita-product-more-info__answer {
+      margin: -2px 0 18px;
+      font-size: 14px;
+    }
+  }
+</style>
+
+<script>
+  (() => {
+    const initProductMoreInfo = (root = document) => {
+      const sections = root.matches?.('[data-santa-rita-product-more-info]')
+        ? [root]
+        : Array.from(root.querySelectorAll('[data-santa-rita-product-more-info]'));
+
+      sections.forEach((section) => {
+        if (section.dataset.moreInfoInitialized === 'true') return;
+        section.dataset.moreInfoInitialized = 'true';
+
+        section.querySelectorAll('.santa-rita-product-more-info__item').forEach((details) => {
+          const summary = details.querySelector('.santa-rita-product-more-info__summary');
+
+          if (!summary) return;
+
+          summary.addEventListener('click', (event) => {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            event.preventDefault();
+
+            if (details.dataset.animating === 'true') return;
+
+            const isOpen = details.hasAttribute('open');
+            const startHeight = details.offsetHeight;
+            details.dataset.animating = 'true';
+            details.style.height = `${startHeight}px`;
+            let didFinish = false;
+
+            const finishAnimation = () => {
+              if (didFinish) return;
+              didFinish = true;
+              details.style.height = '';
+              details.dataset.animating = 'false';
+            };
+
+            if (isOpen) {
+              const endHeight = summary.offsetHeight;
+              const closeDetails = () => {
+                details.removeAttribute('open');
+                finishAnimation();
+              };
+
+              requestAnimationFrame(() => {
+                details.style.height = `${endHeight}px`;
+              });
+
+              details.addEventListener(
+                'transitionend',
+                (transitionEvent) => {
+                  if (transitionEvent.propertyName !== 'height') return;
+                  closeDetails();
+                },
+                { once: true }
+              );
+
+              window.setTimeout(closeDetails, 340);
+            } else {
+              details.setAttribute('open', '');
+              const endHeight = details.scrollHeight;
+
+              requestAnimationFrame(() => {
+                details.style.height = `${endHeight}px`;
+              });
+
+              details.addEventListener(
+                'transitionend',
+                (transitionEvent) => {
+                  if (transitionEvent.propertyName !== 'height') return;
+                  finishAnimation();
+                },
+                { once: true }
+              );
+
+              window.setTimeout(finishAnimation, 340);
+            }
+          });
+        });
+      });
+    };
+
+    initProductMoreInfo();
+
+    document.addEventListener('shopify:section:load', (event) => {
+      initProductMoreInfo(event.target);
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SR mas info producto",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titulo",
+      "default": "Mas informacion del producto"
+    },
+    {
+      "type": "paragraph",
+      "content": "Usa el metacampo de producto custom.informacion_producto_items como lista de metaobjetos. Cada metaobjeto debe tener titulo y contenido."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Santa Rita mas info producto"
+    }
+  ]
+}
+{% endschema %}

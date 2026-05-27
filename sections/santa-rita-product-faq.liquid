@@ -5,10 +5,14 @@
   if faq_items_metafield == blank
     assign faq_items_metafield = product.metafields.custom['preguntas_frecuentes']
   endif
+
+  if faq_items_metafield == blank
+    assign faq_items_metafield = product.metafields.custom['faq_product']
+  endif
 %}
 
 {% if faq_items_metafield != blank %}
-  <section class="santa-rita-product-faq" aria-labelledby="santa-rita-product-faq-title">
+  <section class="santa-rita-product-faq" aria-labelledby="santa-rita-product-faq-title" data-santa-rita-product-faq>
     <div class="santa-rita-product-faq__inner">
       <h2 id="santa-rita-product-faq-title" class="santa-rita-product-faq__title">
         {{ section.settings.heading }}
@@ -68,7 +72,7 @@
 
 <style>
   .santa-rita-product-faq {
-    background: #fffbf6;
+    background: #FFF7F1;
     color: #25171b;
     padding: 56px 20px 70px;
   }
@@ -81,7 +85,7 @@
   .santa-rita-product-faq__title {
     margin: 0 0 42px;
     font-family: var(--font-heading--family);
-    font-size: 34px;
+    font-size: 36px;
     font-weight: 700;
     line-height: 1.15;
   }
@@ -91,7 +95,9 @@
   }
 
   .santa-rita-product-faq__item {
+    overflow: hidden;
     border-bottom: 1px solid rgba(37, 23, 27, 0.08);
+    transition: height 280ms ease;
   }
 
   .santa-rita-product-faq__summary {
@@ -100,8 +106,8 @@
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 24px;
     cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 20px;
+    font-weight: 500;
     line-height: 1.35;
     list-style: none;
     padding: 24px 10px 24px 0;
@@ -131,6 +137,7 @@
 
   .santa-rita-product-faq__icon::after {
     transform: translate(-50%, -50%) rotate(90deg);
+    transition: opacity 180ms ease;
   }
 
   .santa-rita-product-faq__item[open] .santa-rita-product-faq__icon::after {
@@ -140,8 +147,8 @@
   .santa-rita-product-faq__answer {
     max-width: 760px;
     margin: -8px 0 24px;
-    color: rgba(37, 23, 27, 0.68);
-    font-size: 15px;
+    color: #000000;
+    font-size: 18px;
     line-height: 1.5;
   }
 
@@ -185,6 +192,94 @@
   }
 </style>
 
+<script>
+  (() => {
+    const initProductFaq = (root = document) => {
+      const sections = root.matches?.('[data-santa-rita-product-faq]')
+        ? [root]
+        : Array.from(root.querySelectorAll('[data-santa-rita-product-faq]'));
+
+      sections.forEach((section) => {
+        if (section.dataset.faqInitialized === 'true') return;
+        section.dataset.faqInitialized = 'true';
+
+        section.querySelectorAll('.santa-rita-product-faq__item').forEach((details) => {
+          const summary = details.querySelector('.santa-rita-product-faq__summary');
+
+          if (!summary) return;
+
+          summary.addEventListener('click', (event) => {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            event.preventDefault();
+
+            if (details.dataset.animating === 'true') return;
+
+            const isOpen = details.hasAttribute('open');
+            const startHeight = details.offsetHeight;
+            details.dataset.animating = 'true';
+            details.style.height = `${startHeight}px`;
+            let didFinish = false;
+
+            const finishAnimation = () => {
+              if (didFinish) return;
+              didFinish = true;
+              details.style.height = '';
+              details.dataset.animating = 'false';
+            };
+
+            if (isOpen) {
+              const endHeight = summary.offsetHeight;
+              const closeDetails = () => {
+                details.removeAttribute('open');
+                finishAnimation();
+              };
+
+              requestAnimationFrame(() => {
+                details.style.height = `${endHeight}px`;
+              });
+
+              details.addEventListener(
+                'transitionend',
+                (transitionEvent) => {
+                  if (transitionEvent.propertyName !== 'height') return;
+                  closeDetails();
+                },
+                { once: true }
+              );
+
+              window.setTimeout(closeDetails, 340);
+            } else {
+              details.setAttribute('open', '');
+              const endHeight = details.scrollHeight;
+
+              requestAnimationFrame(() => {
+                details.style.height = `${endHeight}px`;
+              });
+
+              details.addEventListener(
+                'transitionend',
+                (transitionEvent) => {
+                  if (transitionEvent.propertyName !== 'height') return;
+                  finishAnimation();
+                },
+                { once: true }
+              );
+
+              window.setTimeout(finishAnimation, 340);
+            }
+          });
+        });
+      });
+    };
+
+    initProductFaq();
+
+    document.addEventListener('shopify:section:load', (event) => {
+      initProductFaq(event.target);
+    });
+  })();
+</script>
+
 {% schema %}
 {
   "name": "SR preguntas producto",
@@ -197,7 +292,7 @@
     },
     {
       "type": "paragraph",
-      "content": "Se muestra solo si el producto tiene custom.faq_items o custom.preguntas_frecuentes. Usa una lista de metaobjetos con campos pregunta y respuesta."
+      "content": "Se muestra solo si el producto tiene custom.faq_items, custom.faq_product o custom.preguntas_frecuentes. Usa una lista de metaobjetos con campos pregunta y respuesta."
     }
   ],
   "presets": [
