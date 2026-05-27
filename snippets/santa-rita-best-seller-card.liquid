@@ -5,7 +5,14 @@
   assign liter_price_label = product.metafields.custom.liter_price_label | default: section_settings.liter_price_label
   assign rating_count = product.metafields.custom.rating_count | default: section_settings.rating_count
   assign origin = product.metafields.custom.origin | default: product.vendor
-  assign eyebrow = product.metafields.custom.card_eyebrow | default: product.type
+  assign cepa = product.metafields.custom.cepa
+  assign cc = product.metafields.custom.cc
+  assign eyebrow = cepa | default: product.metafields.custom.card_eyebrow | default: product.type
+
+  if cepa != blank and cc != blank
+    assign eyebrow = cepa | append: ' - ' | append: cc
+  endif
+
   assign discount_percent = 0
 
   if variant.compare_at_price > variant.price
@@ -67,13 +74,9 @@
     </div>
   </div>
 
-  <!-- 
   {% if eyebrow != blank %}
     <p class="santa-rita-product-card__eyebrow">{{ eyebrow }}</p>
   {% endif %}
-   -->
-
-  <p class="santa-rita-product-card__eyebrow">Sauvignon Blanc - 750 CC.</p>
 
   <h3>
     <a href="{{ product.url }}">{{ product.title }}</a>
