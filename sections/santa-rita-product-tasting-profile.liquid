@@ -43,13 +43,13 @@
 %}
 
 {% if section.settings.enable_section %}
-  <section class="santa-rita-tasting-profile color-{{ section.settings.color_scheme }}">
+  <section class="santa-rita-tasting-profile color-{{ section.settings.color_scheme }}" data-santa-rita-tasting-profile="{{ section.id }}">
     <div class="santa-rita-tasting-profile__inner">
       {% if section.settings.heading != blank %}
         <h2 class="santa-rita-tasting-profile__heading">{{ section.settings.heading }}</h2>
       {% endif %}
 
-      <div class="santa-rita-tasting-profile__grid">
+      <div class="santa-rita-tasting-profile__grid" data-tasting-profile-slider>
         <div class="santa-rita-tasting-profile__panel">
           <h3 class="santa-rita-tasting-profile__title">Aromas</h3>
           <div class="santa-rita-tasting-profile__items">
@@ -364,6 +364,53 @@
           </div>
         </div>
       </div>
+
+      <div class="santa-rita-tasting-profile__slider-controls" aria-hidden="false">
+        <div class="santa-rita-tasting-profile__slider-arrows">
+          <button
+            class="santa-rita-tasting-profile__slider-button"
+            type="button"
+            aria-label="Ver bloque anterior"
+            data-tasting-profile-prev
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="10" viewBox="0 0 17 10" fill="none">
+              <path d="M5.5 0C5.5 0.53 4.99606 1.32143 4.48594 1.98571C3.83006 2.84286 3.04631 3.59071 2.14775 4.16143C1.474 4.58929 0.65725 5 0 5M0 5C0.65725 5 1.47469 5.41071 2.14775 5.83857C3.04631 6.41 3.83006 7.15786 4.48594 8.01357C4.99606 8.67857 5.5 9.47143 5.5 10M0 5H16.5" stroke="#1E0812"/>
+            </svg>
+          </button>
+          <button
+            class="santa-rita-tasting-profile__slider-button"
+            type="button"
+            aria-label="Ver bloque siguiente"
+            data-tasting-profile-next
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="10" viewBox="0 0 17 10" fill="none">
+              <path d="M11 0C11 0.53 11.5039 1.32143 12.0141 1.98571C12.6699 2.84286 13.4537 3.59071 14.3522 4.16143C15.026 4.58929 15.8428 5 16.5 5M16.5 5C15.8428 5 15.0253 5.41071 14.3522 5.83857C13.4537 6.41 12.6699 7.15786 12.0141 8.01357C11.5039 8.67857 11 9.47143 11 10M16.5 5H0" stroke="#1E0812"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="santa-rita-tasting-profile__slider-dots" role="tablist" aria-label="Secciones del perfil">
+          <button
+            class="santa-rita-tasting-profile__slider-dot is-active"
+            type="button"
+            aria-label="Ver Aromas"
+            aria-current="true"
+            data-tasting-profile-dot="0"
+          ></button>
+          <button
+            class="santa-rita-tasting-profile__slider-dot"
+            type="button"
+            aria-label="Ver Presencia en boca"
+            data-tasting-profile-dot="1"
+          ></button>
+          <button
+            class="santa-rita-tasting-profile__slider-dot"
+            type="button"
+            aria-label="Ver Con qué disfrutarlo"
+            data-tasting-profile-dot="2"
+          ></button>
+        </div>
+      </div>
     </div>
   </section>
 {% endif %}
@@ -434,6 +481,7 @@
     overflow: hidden;
     border-radius: 50%;
     background: #fff1ea;
+    padding: 15px;
   }
 
   .santa-rita-tasting-profile__image {
@@ -605,6 +653,10 @@
     font-weight: 500;
   }
 
+  .santa-rita-tasting-profile__slider-controls {
+    display: none;
+  }
+
   @media screen and (max-width: 989px) {
     .santa-rita-tasting-profile {
       padding: 56px 18px 62px;
@@ -615,8 +667,26 @@
     }
 
     .santa-rita-tasting-profile__grid {
-      grid-template-columns: 1fr;
-      gap: 46px;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-behavior: smooth;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      align-items: flex-start;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .santa-rita-tasting-profile__grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .santa-rita-tasting-profile__grid > * {
+      width: 100%;
+      min-width: 100%;
+      flex: 0 0 100%;
+      scroll-snap-align: start;
     }
 
     .santa-rita-tasting-profile__panel {
@@ -624,16 +694,82 @@
       margin: 0 auto;
       width: 100%;
     }
+
+    .santa-rita-tasting-profile__center {
+      align-content: start;
+      width: 100%;
+    }
+
+    .santa-rita-tasting-profile__slider-controls {
+      display: flex;
+      max-width: 420px;
+      align-items: center;
+      justify-content: space-between;
+      margin: 28px auto 0;
+    }
+
+    .santa-rita-tasting-profile__slider-arrows,
+    .santa-rita-tasting-profile__slider-dots {
+      display: flex;
+      align-items: center;
+    }
+
+    .santa-rita-tasting-profile__slider-arrows {
+      gap: 14px;
+    }
+
+    .santa-rita-tasting-profile__slider-dots {
+      gap: 4px;
+    }
+
+    .santa-rita-tasting-profile__slider-button,
+    .santa-rita-tasting-profile__slider-dot {
+      appearance: none;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .santa-rita-tasting-profile__slider-button {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border: 1px solid rgba(37, 23, 27, 0.28);
+      border-radius: 50%;
+      background: transparent;
+      color: #25171b;
+    }
+
+    .santa-rita-tasting-profile__slider-button svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .santa-rita-tasting-profile__slider-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: rgba(37, 23, 27, 0.28);
+    }
+
+    .santa-rita-tasting-profile__slider-dot.is-active {
+      background: #25171b;
+    }
   }
 
   @media screen and (max-width: 520px) {
     .santa-rita-tasting-profile__items {
-      gap: 28px 16px;
+      gap: 24px;
+      max-width: calc(100% - 150px);
+      margin: 0 auto;
     }
 
     .santa-rita-tasting-profile__thumb {
-      width: 66px;
-      height: 66px;
+      width: 82px;
+      height: 82px;
+      padding: 15px;
     }
 
     .santa-rita-tasting-profile__mouthfeel {
@@ -641,6 +777,96 @@
     }
   }
 </style>
+
+<script>
+  (() => {
+    const initTastingProfileSlider = (root = document) => {
+      const sections = root.matches?.('[data-santa-rita-tasting-profile]')
+        ? [root]
+        : Array.from(root.querySelectorAll('[data-santa-rita-tasting-profile]'));
+
+      sections.forEach((section) => {
+        if (section.dataset.sliderInitialized === 'true') return;
+
+        const slider = section.querySelector('[data-tasting-profile-slider]');
+        const prevButton = section.querySelector('[data-tasting-profile-prev]');
+        const nextButton = section.querySelector('[data-tasting-profile-next]');
+        const dots = Array.from(section.querySelectorAll('[data-tasting-profile-dot]'));
+        const slides = slider ? Array.from(slider.children) : [];
+
+        if (!slider || slides.length < 2 || !prevButton || !nextButton || dots.length === 0) return;
+
+        section.dataset.sliderInitialized = 'true';
+        const mobileQuery = window.matchMedia('(max-width: 989px)');
+
+        const updateDots = () => {
+          const slideWidth = slider.clientWidth || 1;
+          const activeIndex = Math.max(0, Math.min(slides.length - 1, Math.round(slider.scrollLeft / slideWidth)));
+          const activeSlide = slides[activeIndex];
+
+          if (mobileQuery.matches && activeSlide) {
+            slider.style.height = `${activeSlide.offsetHeight}px`;
+          } else {
+            slider.style.removeProperty('height');
+          }
+
+          dots.forEach((dot, index) => {
+            const isActive = index === activeIndex;
+            dot.classList.toggle('is-active', isActive);
+            if (isActive) {
+              dot.setAttribute('aria-current', 'true');
+            } else {
+              dot.removeAttribute('aria-current');
+            }
+          });
+        };
+
+        const scrollToSlide = (index) => {
+          const nextIndex = Math.max(0, Math.min(slides.length - 1, index));
+          slider.scrollTo({
+            left: slider.clientWidth * nextIndex,
+            behavior: 'smooth',
+          });
+        };
+
+        prevButton.addEventListener('click', () => {
+          const activeIndex = Math.round(slider.scrollLeft / (slider.clientWidth || 1));
+          scrollToSlide(activeIndex - 1);
+        });
+
+        nextButton.addEventListener('click', () => {
+          const activeIndex = Math.round(slider.scrollLeft / (slider.clientWidth || 1));
+          scrollToSlide(activeIndex + 1);
+        });
+
+        dots.forEach((dot) => {
+          dot.addEventListener('click', () => {
+            scrollToSlide(Number(dot.dataset.tastingProfileDot || 0));
+          });
+        });
+
+        slider.addEventListener('scroll', () => {
+          window.requestAnimationFrame(updateDots);
+        });
+
+        slides.forEach((slide) => {
+          slide.querySelectorAll('img').forEach((image) => {
+            image.addEventListener('load', updateDots);
+          });
+        });
+
+        window.addEventListener('resize', updateDots);
+        updateDots();
+      });
+    };
+
+    initTastingProfileSlider();
+
+    document.addEventListener('shopify:section:load', (event) => {
+      initTastingProfileSlider(event.target);
+    });
+  })();
+</script>
 
 {% schema %}
 {
