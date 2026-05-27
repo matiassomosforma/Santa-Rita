@@ -1,7 +1,9 @@
 {% liquid
   assign product = closest.product | default: product
+  assign aroma_items_metafield = product.metafields.custom['aromas_items']
   assign aromas_metafield = product.metafields.custom['aromas']
   assign aromas_images_metafield = product.metafields.custom['aromas_imagenes']
+  assign pairing_items_metafield = product.metafields.custom['maridajes_items']
   assign pairings_metafield = product.metafields.custom['maridajes']
   assign pairings_images_metafield = product.metafields.custom['maridajes_imagenes']
   assign mouthfeel_metafield = product.metafields.custom['presencia_boca']
@@ -10,6 +12,10 @@
 
   if pairings_metafield == blank
     assign pairings_metafield = product.metafields.custom['con_que_disfrutarlo']
+  endif
+
+  if pairing_items_metafield == blank
+    assign pairing_items_metafield = product.metafields.custom['con_que_disfrutarlo_items']
   endif
 
   if pairings_images_metafield == blank
@@ -47,7 +53,34 @@
         <div class="santa-rita-tasting-profile__panel">
           <h3 class="santa-rita-tasting-profile__title">Aromas</h3>
           <div class="santa-rita-tasting-profile__items">
-            {% if aromas_metafield != blank %}
+            {% if aroma_items_metafield != blank %}
+              {% for aroma_item in aroma_items_metafield.value %}
+                {% liquid
+                  assign item_label = aroma_item.nombre.value | default: aroma_item.name.value | default: aroma_item.titulo.value | default: aroma_item.title.value | default: aroma_item.texto.value | default: aroma_item.system.name
+                  assign item_image = aroma_item.imagen.value | default: aroma_item.image.value | default: aroma_item.foto.value | default: aroma_item.photo.value
+                %}
+                {% if item_label != blank %}
+                  <div class="santa-rita-tasting-profile__item">
+                    <span class="santa-rita-tasting-profile__thumb">
+                      {% if item_image != blank %}
+                        {{
+                          item_image
+                          | image_url: width: 160
+                          | image_tag:
+                            class: 'santa-rita-tasting-profile__image',
+                            widths: '80, 120, 160',
+                            sizes: '80px',
+                            loading: 'lazy'
+                        }}
+                      {% else %}
+                        <span class="santa-rita-tasting-profile__fallback">{{ item_label | slice: 0, 1 }}</span>
+                      {% endif %}
+                    </span>
+                    <span class="santa-rita-tasting-profile__label">{{ item_label }}</span>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% elsif aromas_metafield != blank %}
               {% for aroma in aromas_metafield.value %}
                 {% liquid
                   assign item_label = aroma | strip
@@ -208,7 +241,34 @@
         <div class="santa-rita-tasting-profile__panel">
           <h3 class="santa-rita-tasting-profile__title">Con qué disfrutarlo</h3>
           <div class="santa-rita-tasting-profile__items">
-            {% if pairings_metafield != blank %}
+            {% if pairing_items_metafield != blank %}
+              {% for pairing_item in pairing_items_metafield.value %}
+                {% liquid
+                  assign item_label = pairing_item.nombre.value | default: pairing_item.name.value | default: pairing_item.titulo.value | default: pairing_item.title.value | default: pairing_item.texto.value | default: pairing_item.system.name
+                  assign item_image = pairing_item.imagen.value | default: pairing_item.image.value | default: pairing_item.foto.value | default: pairing_item.photo.value
+                %}
+                {% if item_label != blank %}
+                  <div class="santa-rita-tasting-profile__item">
+                    <span class="santa-rita-tasting-profile__thumb">
+                      {% if item_image != blank %}
+                        {{
+                          item_image
+                          | image_url: width: 160
+                          | image_tag:
+                            class: 'santa-rita-tasting-profile__image',
+                            widths: '80, 120, 160',
+                            sizes: '80px',
+                            loading: 'lazy'
+                        }}
+                      {% else %}
+                        <span class="santa-rita-tasting-profile__fallback">{{ item_label | slice: 0, 1 }}</span>
+                      {% endif %}
+                    </span>
+                    <span class="santa-rita-tasting-profile__label">{{ item_label }}</span>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            {% elsif pairings_metafield != blank %}
               {% for pairing in pairings_metafield.value %}
                 {% liquid
                   assign item_label = pairing | strip
@@ -597,7 +657,7 @@
     },
     {
       "type": "paragraph",
-      "content": "El producto puede usar custom.aromas, custom.aromas_imagenes, custom.maridajes, custom.maridajes_imagenes, custom.presencia_boca, custom.perfil_chips y custom.temperatura_servicio. Las imágenes configuradas en el producto tienen prioridad; las imágenes de esta sección se usan cuando el texto coincide."
+      "content": "Para pares de texto e imagen usa custom.aromas_items y custom.maridajes_items como listas de metaobjects con campos nombre e imagen. Como respaldo, el producto también puede usar custom.aromas, custom.aromas_imagenes, custom.maridajes, custom.maridajes_imagenes, custom.presencia_boca, custom.perfil_chips y custom.temperatura_servicio."
     },
     {
       "type": "textarea",
