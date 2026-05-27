@@ -1,0 +1,339 @@
+{% render 'santa-rita-product-wine-reviews' %}
+
+<style>
+  .santa-rita-wine-reviews {
+    background: #ffffff;
+    color: #25171b;
+    padding: 64px 20px 72px;
+  }
+
+  .santa-rita-wine-reviews__inner {
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+
+  .santa-rita-wine-reviews__title {
+    margin: 0 0 42px;
+    font-family: var(--font-heading--family);
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.1;
+    text-align: center;
+  }
+
+  .santa-rita-wine-reviews__summary {
+    display: grid;
+    max-width: 620px;
+    align-items: center;
+    grid-template-columns: 1fr 1.1fr auto;
+    gap: 38px;
+    margin: 0 auto 42px;
+  }
+
+  .santa-rita-wine-reviews__score,
+  .santa-rita-wine-reviews__breakdown {
+    min-height: 92px;
+  }
+
+  .santa-rita-wine-reviews__score {
+    display: grid;
+    align-content: center;
+    justify-items: end;
+    border-right: 1px solid rgba(37, 23, 27, 0.18);
+    padding-right: 32px;
+  }
+
+  .santa-rita-wine-reviews__score-value {
+    margin: 0;
+    color: #a80f45;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .santa-rita-wine-reviews__stars {
+    display: inline-flex;
+    gap: 2px;
+    color: #c22c58;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .santa-rita-wine-reviews__count {
+    margin: 6px 0 0;
+    color: rgba(37, 23, 27, 0.62);
+    font-size: 13px;
+    line-height: 1.2;
+  }
+
+  .santa-rita-wine-reviews__breakdown {
+    display: grid;
+    align-content: center;
+    gap: 8px;
+    border-right: 1px solid rgba(37, 23, 27, 0.18);
+    padding-right: 38px;
+  }
+
+  .santa-rita-wine-reviews__bar {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 120px auto;
+    gap: 8px;
+    color: #25171b;
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  .santa-rita-wine-reviews__meter {
+    width: 120px;
+    height: 5px;
+  }
+
+  .santa-rita-wine-reviews__meter::-webkit-meter-bar {
+    border: 0;
+    border-radius: 999px;
+    background: #d4d2cf;
+  }
+
+  .santa-rita-wine-reviews__meter::-webkit-meter-optimum-value {
+    border-radius: 999px;
+    background: #6d5762;
+  }
+
+  .santa-rita-wine-reviews__meter::-moz-meter-bar {
+    border-radius: 999px;
+    background: #6d5762;
+  }
+
+  .santa-rita-wine-reviews__add-button,
+  .santa-rita-wine-reviews__more-button {
+    min-height: 30px;
+    border: 1px solid #a80f45;
+    border-radius: 999px;
+    background: #a80f45;
+    color: #ffffff;
+    cursor: pointer;
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 7px 24px;
+  }
+
+  .santa-rita-wine-reviews__list {
+    border-top: 1px solid rgba(37, 23, 27, 0.14);
+  }
+
+  .santa-rita-wine-reviews__item {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 180px minmax(0, 1fr) 110px;
+    gap: 36px;
+    border-bottom: 1px solid rgba(37, 23, 27, 0.14);
+    padding: 34px 110px;
+  }
+
+  .santa-rita-wine-reviews__name {
+    margin: 0 0 8px;
+    font-family: var(--font-body--family);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .santa-rita-wine-reviews__verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    color: #1f7a3c;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .santa-rita-wine-reviews__verified span {
+    display: grid;
+    width: 13px;
+    height: 13px;
+    place-items: center;
+    border-radius: 50%;
+    background: #1f7a3c;
+    color: #ffffff;
+    font-size: 9px;
+    line-height: 1;
+  }
+
+  .santa-rita-wine-reviews__content .santa-rita-wine-reviews__stars {
+    margin-bottom: 14px;
+  }
+
+  .santa-rita-wine-reviews__text {
+    margin: 0;
+    color: rgba(37, 23, 27, 0.62);
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .santa-rita-wine-reviews__date {
+    justify-self: end;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .santa-rita-wine-reviews__more-button {
+    display: none;
+  }
+
+  .santa-rita-wine-reviews__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 42px;
+  }
+
+  .santa-rita-wine-reviews__page,
+  .santa-rita-wine-reviews__ellipsis {
+    color: #25171b;
+    font-size: 14px;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  .santa-rita-wine-reviews__page.is-active {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 50%;
+    background: #a80f45;
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  .santa-rita-wine-reviews__page--prev {
+    color: rgba(37, 23, 27, 0.28);
+    font-size: 28px;
+  }
+
+  .santa-rita-wine-reviews__page--next {
+    font-size: 28px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-wine-reviews {
+      padding: 48px 18px 56px;
+    }
+
+    .santa-rita-wine-reviews__title {
+      margin-bottom: 28px;
+      font-size: 28px;
+      text-align: left;
+    }
+
+    .santa-rita-wine-reviews__summary {
+      grid-template-columns: minmax(0, 1fr) minmax(108px, 0.8fr);
+      gap: 20px;
+      margin-bottom: 18px;
+    }
+
+    .santa-rita-wine-reviews__score {
+      min-height: 0;
+      justify-items: start;
+      border-right: 0;
+      padding-right: 0;
+    }
+
+    .santa-rita-wine-reviews__score-value {
+      font-size: 28px;
+    }
+
+    .santa-rita-wine-reviews__breakdown {
+      min-height: 0;
+      border-right: 0;
+      padding-right: 0;
+    }
+
+    .santa-rita-wine-reviews__bar {
+      grid-template-columns: minmax(64px, 1fr) auto;
+    }
+
+    .santa-rita-wine-reviews__meter {
+      width: 100%;
+    }
+
+    .santa-rita-wine-reviews__add-button {
+      grid-column: 1 / -1;
+      width: fit-content;
+      min-width: 156px;
+      margin-top: -2px;
+      font-size: 14px;
+      padding-inline: 22px;
+    }
+
+    .santa-rita-wine-reviews__list {
+      border-top: 0;
+    }
+
+    .santa-rita-wine-reviews__item {
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      border-bottom: 0;
+      padding: 20px 0 0;
+    }
+
+    .santa-rita-wine-reviews__item:nth-child(n + 2) {
+      display: none;
+    }
+
+    .santa-rita-wine-reviews__reviewer {
+      grid-column: 1;
+    }
+
+    .santa-rita-wine-reviews__date {
+      align-self: start;
+      grid-column: 2;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .santa-rita-wine-reviews__content {
+      grid-column: 1 / -1;
+    }
+
+    .santa-rita-wine-reviews__content .santa-rita-wine-reviews__stars {
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+
+    .santa-rita-wine-reviews__text {
+      font-size: 13px;
+    }
+
+    .santa-rita-wine-reviews__more-button {
+      display: block;
+      width: 100%;
+      margin-top: 22px;
+      background: transparent;
+      color: #a80f45;
+      font-size: 14px;
+    }
+
+    .santa-rita-wine-reviews__pagination {
+      display: none;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "SR opiniones vino",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Santa Rita opiniones vino"
+    }
+  ]
+}
+{% endschema %}

@@ -277,6 +277,16 @@
         "color_scheme": "scheme-1"
       }
     },
+    "santa_rita_wine_reviews": {
+      "type": "santa-rita-product-wine-reviews",
+      "settings": {}
+    },
+    "santa_rita_product_faq": {
+      "type": "santa-rita-product-faq",
+      "settings": {
+        "heading": "Preguntas frecuentes"
+      }
+    },
     "product_recommendations_qggXJq": {
       "type": "product-recommendations",
       "blocks": {
@@ -422,6 +432,8 @@
   "order": [
     "main",
     "santa_rita_tasting_profile",
+    "santa_rita_wine_reviews",
+    "santa_rita_product_faq",
     "product_recommendations_qggXJq"
   ]
 }

@@ -1,0 +1,209 @@
+{% liquid
+  assign product = closest.product | default: product
+  assign faq_items_metafield = product.metafields.custom['faq_items']
+
+  if faq_items_metafield == blank
+    assign faq_items_metafield = product.metafields.custom['preguntas_frecuentes']
+  endif
+%}
+
+{% if faq_items_metafield != blank %}
+  <section class="santa-rita-product-faq" aria-labelledby="santa-rita-product-faq-title">
+    <div class="santa-rita-product-faq__inner">
+      <h2 id="santa-rita-product-faq-title" class="santa-rita-product-faq__title">
+        {{ section.settings.heading }}
+      </h2>
+
+      <div class="santa-rita-product-faq__items">
+        {% for faq_item in faq_items_metafield.value %}
+          {% liquid
+            assign question = faq_item.pregunta.value | default: faq_item.question.value | default: faq_item.titulo.value | default: faq_item.title.value | default: faq_item.system.name
+            assign answer = faq_item.respuesta.value | default: faq_item.answer.value | default: faq_item.contenido.value | default: faq_item.content.value | default: faq_item.texto.value | default: faq_item.description.value
+          %}
+
+          {% if question != blank %}
+            <details class="santa-rita-product-faq__item">
+              <summary class="santa-rita-product-faq__summary">
+                <span>{{ question }}</span>
+                <span class="santa-rita-product-faq__icon" aria-hidden="true"></span>
+              </summary>
+
+              {% if answer != blank %}
+                <div class="santa-rita-product-faq__answer">
+                  {% if faq_item.respuesta != blank %}
+                    {{ faq_item.respuesta | metafield_tag }}
+                  {% elsif faq_item.answer != blank %}
+                    {{ faq_item.answer | metafield_tag }}
+                  {% elsif faq_item.contenido != blank %}
+                    {{ faq_item.contenido | metafield_tag }}
+                  {% elsif faq_item.content != blank %}
+                    {{ faq_item.content | metafield_tag }}
+                  {% elsif faq_item.texto != blank %}
+                    {{ faq_item.texto | metafield_tag }}
+                  {% elsif faq_item.description != blank %}
+                    {{ faq_item.description | metafield_tag }}
+                  {% else %}
+                    <p>{{ answer }}</p>
+                  {% endif %}
+                </div>
+              {% endif %}
+            </details>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% elsif request.design_mode %}
+  <section class="santa-rita-product-faq santa-rita-product-faq--empty" aria-labelledby="santa-rita-product-faq-title">
+    <div class="santa-rita-product-faq__inner">
+      <h2 id="santa-rita-product-faq-title" class="santa-rita-product-faq__title">
+        {{ section.settings.heading }}
+      </h2>
+      <p class="santa-rita-product-faq__empty">
+        Agrega preguntas en el metacampo custom.faq_items para mostrar esta seccion en la tienda.
+      </p>
+    </div>
+  </section>
+{% endif %}
+
+<style>
+  .santa-rita-product-faq {
+    background: #fffbf6;
+    color: #25171b;
+    padding: 56px 20px 70px;
+  }
+
+  .santa-rita-product-faq__inner {
+    max-width: 1020px;
+    margin: 0 auto;
+  }
+
+  .santa-rita-product-faq__title {
+    margin: 0 0 42px;
+    font-family: var(--font-heading--family);
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  .santa-rita-product-faq__items {
+    border-top: 1px solid rgba(37, 23, 27, 0.08);
+  }
+
+  .santa-rita-product-faq__item {
+    border-bottom: 1px solid rgba(37, 23, 27, 0.08);
+  }
+
+  .santa-rita-product-faq__summary {
+    display: grid;
+    align-items: center;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 24px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.35;
+    list-style: none;
+    padding: 24px 10px 24px 0;
+  }
+
+  .santa-rita-product-faq__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .santa-rita-product-faq__icon {
+    position: relative;
+    width: 14px;
+    height: 14px;
+  }
+
+  .santa-rita-product-faq__icon::before,
+  .santa-rita-product-faq__icon::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 1px;
+    content: "";
+    background: #25171b;
+    transform: translate(-50%, -50%);
+  }
+
+  .santa-rita-product-faq__icon::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+
+  .santa-rita-product-faq__item[open] .santa-rita-product-faq__icon::after {
+    opacity: 0;
+  }
+
+  .santa-rita-product-faq__answer {
+    max-width: 760px;
+    margin: -8px 0 24px;
+    color: rgba(37, 23, 27, 0.68);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .santa-rita-product-faq__answer > * {
+    margin-top: 0;
+  }
+
+  .santa-rita-product-faq__answer > *:last-child {
+    margin-bottom: 0;
+  }
+
+  .santa-rita-product-faq__empty {
+    margin: 0;
+    color: rgba(37, 23, 27, 0.62);
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-product-faq {
+      padding: 52px 18px 58px;
+    }
+
+    .santa-rita-product-faq__title {
+      margin-bottom: 24px;
+      font-size: 26px;
+    }
+
+    .santa-rita-product-faq__summary {
+      gap: 18px;
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.08;
+      padding: 16px 0;
+    }
+
+    .santa-rita-product-faq__answer {
+      margin: -2px 0 18px;
+      font-size: 14px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "SR preguntas producto",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titulo",
+      "default": "Preguntas frecuentes"
+    },
+    {
+      "type": "paragraph",
+      "content": "Se muestra solo si el producto tiene custom.faq_items o custom.preguntas_frecuentes. Usa una lista de metaobjetos con campos pregunta y respuesta."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Santa Rita preguntas producto"
+    }
+  ]
+}
+{% endschema %}
