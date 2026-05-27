@@ -1,13 +1,19 @@
 {% liquid
   assign product = closest.product | default: product
   assign aromas_metafield = product.metafields.custom['aromas']
+  assign aromas_images_metafield = product.metafields.custom['aromas_imagenes']
   assign pairings_metafield = product.metafields.custom['maridajes']
+  assign pairings_images_metafield = product.metafields.custom['maridajes_imagenes']
   assign mouthfeel_metafield = product.metafields.custom['presencia_boca']
   assign chips_metafield = product.metafields.custom['perfil_chips']
   assign temperature_metafield = product.metafields.custom['temperatura_servicio']
 
   if pairings_metafield == blank
     assign pairings_metafield = product.metafields.custom['con_que_disfrutarlo']
+  endif
+
+  if pairings_images_metafield == blank
+    assign pairings_images_metafield = product.metafields.custom['con_que_disfrutarlo_imagenes']
   endif
 
   if mouthfeel_metafield == blank
@@ -47,6 +53,7 @@
                   assign item_label = aroma | strip
                   assign item_handle = item_label | handleize
                   assign item_image = blank
+                  assign item_index = forloop.index0
 
                   case item_handle
                     when 'citrico'
@@ -58,6 +65,15 @@
                     when 'toques-herbales'
                       assign item_image = section.settings.image_aroma_toques_herbales
                   endcase
+
+                  if aromas_images_metafield != blank
+                    for metafield_image in aromas_images_metafield.value
+                      if forloop.index0 == item_index and metafield_image != blank
+                        assign item_image = metafield_image
+                        break
+                      endif
+                    endfor
+                  endif
                 %}
                 {% if item_label != blank %}
                   <div class="santa-rita-tasting-profile__item">
@@ -135,16 +151,8 @@
                   <span class="santa-rita-tasting-profile__drop" aria-hidden="true">
                     {% case option_handle %}
                       {% when 'semidulce' %}
-                        <svg id="Capa_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 18.8 26.2">
-                          <!-- Generator: Adobe Illustrator 30.4.0, SVG Export Plug-In . SVG Version: 2.1.4 Build 226)  -->
-                          <defs>
-                            <style>
-                              .st0 {
-                                fill: #fff;
-                              }
-                            </style>
-                          </defs>
-                          <path class="st0" d="M16.1,23.5s0,0,0,0c1.8-1.8,2.7-4.1,2.7-6.6s-.5-3.2-1.5-5.3-1.9-3.5-3.2-5.5c-1.2-1.8-2.4-3.3-3.2-4.3-.4-.5-.8-1-1.1-1.3l-.4-.4-.4.4c-.3.3-.6.7-1.1,1.3-.8,1-2,2.5-3.2,4.3-1.4,2-2.5,3.8-3.2,5.5C.6,13.3.2,14.9,0,16.2c0,.2,0,.4,0,.6,0,2.4.9,4.7,2.5,6.4,0,0,.1.2.2.3,1.7,1.7,4,2.7,6.5,2.7,0,0,.1,0,.2,0,0,0,.2,0,.3,0,2.3,0,4.4-.9,6.1-2.4.1-.1.2-.2.3-.3ZM5.5,6.6c1.2-1.8,2.4-3.3,3.2-4.3.3-.3.5-.6.7-.8.2.2.4.5.7.8.8,1,2,2.5,3.2,4.3,1.3,1.9,2.4,3.7,3.2,5.4.2.5.4.9.6,1.3-1.8-1.2-4.6-.3-4.6-.3,0,0-7.4-1.4-10.8.8.2-.6.4-1.2.7-1.8.8-1.6,1.8-3.4,3.2-5.4Z"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="14" viewBox="0 0 19 14" fill="none">
+                          <path d="M9.40298 13.7101C6.90916 13.7101 4.51747 12.7194 2.75407 10.956C0.990669 9.19262 0 6.80093 0 4.3071C0 -1.96156 12.4028 0.460034 12.4028 0.460034C12.4028 0.460034 18.4028 -1.38767 18.4028 3.95947C18.4028 6.4533 17.8153 9.19262 16.0519 10.956C14.2885 12.7194 11.8968 13.7101 9.40298 13.7101Z" fill="white"/>
                         </svg>
                       {% when 'dulce' %}
                         <svg xmlns="http://www.w3.org/2000/svg" width="19" height="27" viewBox="0 0 19 27" fill="none">
@@ -206,6 +214,7 @@
                   assign item_label = pairing | strip
                   assign item_handle = item_label | handleize
                   assign item_image = blank
+                  assign item_index = forloop.index0
 
                   case item_handle
                     when 'pescado'
@@ -217,6 +226,15 @@
                     when 'ensaladas'
                       assign item_image = section.settings.image_pairing_ensaladas
                   endcase
+
+                  if pairings_images_metafield != blank
+                    for metafield_image in pairings_images_metafield.value
+                      if forloop.index0 == item_index and metafield_image != blank
+                        assign item_image = metafield_image
+                        break
+                      endif
+                    endfor
+                  endif
                 %}
                 {% if item_label != blank %}
                   <div class="santa-rita-tasting-profile__item">
@@ -579,7 +597,7 @@
     },
     {
       "type": "paragraph",
-      "content": "El producto puede usar custom.aromas, custom.maridajes, custom.presencia_boca, custom.perfil_chips y custom.temperatura_servicio. Las imágenes se configuran una vez aquí y se muestran cuando el texto coincide."
+      "content": "El producto puede usar custom.aromas, custom.aromas_imagenes, custom.maridajes, custom.maridajes_imagenes, custom.presencia_boca, custom.perfil_chips y custom.temperatura_servicio. Las imágenes configuradas en el producto tienen prioridad; las imágenes de esta sección se usan cuando el texto coincide."
     },
     {
       "type": "textarea",
