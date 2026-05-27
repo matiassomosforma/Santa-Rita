@@ -6,17 +6,20 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "santa_rita_404": {
       "type": "santa-rita-404",
       "settings": {
+        "banner_image": "shopify://shop_images/404.png",
         "hero_heading": "Página no encontrada",
         "hero_text": "Descubre las ofertas de Santa Rita Online.",
         "button_label": "Ver más",
         "button_link": "shopify://collections/all",
         "products_heading": "¿No encontraste lo que estás buscando?",
         "products_text": "Conoce nuestros productos destacados.",
+        "products": [],
         "collection": "all",
         "max_products": 12,
         "autoplay": true,
