@@ -4,7 +4,7 @@
   assign unit_price_label = product.metafields.custom.unit_price_label | default: section_settings.unit_price_label
   assign liter_price_label = product.metafields.custom.liter_price_label | default: section_settings.liter_price_label
   assign rating_count = product.metafields.custom.rating_count | default: section_settings.rating_count
-  assign origin = product.metafields.custom.origin | default: product.vendor
+  assign location = product.metafields.custom.location
   assign cepa = product.metafields.custom.cepa
   assign cc = product.metafields.custom.cc
   assign eyebrow = cepa | default: product.metafields.custom.card_eyebrow | default: product.type
@@ -82,13 +82,9 @@
     <a href="{{ product.url }}">{{ product.title }}</a>
   </h3>
 
-<!-- 
-  {% if origin != blank %}
-    <p class="santa-rita-product-card__origin">{{ origin }}</p>
+  {% if location != blank %}
+    <p class="santa-rita-product-card__origin">{{ location }}</p>
   {% endif %}
--->
-
-<p class="santa-rita-product-card__origin">Valle Central de Chile</p>
 
   <div class="santa-rita-product-card__price">
     <strong>{{ variant.price | money }}</strong>
