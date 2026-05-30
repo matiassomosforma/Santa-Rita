@@ -1,154 +1,909 @@
+{% liquid
+  assign featured_article = blog.articles.first
+  assign hero_image = section.settings.hero_image
 
+  if hero_image == blank and featured_article != blank
+    assign hero_image = featured_article.image
+  endif
 
-<script
-  src="{{ 'blog-posts-list.js' | asset_url }}"
-  type="module"
-  fetchpriority="low"
-></script>
+  assign blog_heading = section.settings.blog_heading | default: 'Blog Santa Rita'
+  assign blog_text = section.settings.blog_text | default: 'Conoce las últimas novedades y los mejores datos para los amantes del vino.'
+  assign articles_per_step = 9
+  assign excerpt_length = section.settings.excerpt_length | default: 80
+  assign selected_filter_tags = section.settings.filter_tags | split: ','
+%}
 
-<blog-posts-list section-id="{{ section.id }}">
-  <div class="section-background color-{{ section.settings.color_scheme }}"></div>
-  <div
-    class="
-      section
-      color-{{ section.settings.color_scheme }}
-      blog-posts
-      spacing-style
-      size-style
-    "
-    data-testid="blog-posts"
-    style="{% render 'spacing-style', settings: section.settings %}"
+{% capture category_links %}
+  <a
+    href="{{ blog.url }}"
+    class="santa-rita-blog-page__category{% if current_tags == blank %} is-active{% endif %}"
   >
-    {% content_for 'blocks' %}
+    Todas las categorías
+  </a>
 
-    <div
-      ref="grid"
-      class="blog-posts-container"
-    >
+  {% if section.settings.filter_tags != blank %}
+    {% for selected_filter_tag in selected_filter_tags %}
       {% liquid
-        assign items_on_page = blog.articles.size
+        assign selected_filter_tag_handle = selected_filter_tag | strip | handleize
+        assign category_label = ''
+        assign category_handle = ''
+
+        for blog_tag in blog.all_tags
+          assign blog_tag_handle = blog_tag | handleize
+          if blog_tag_handle == selected_filter_tag_handle
+            assign category_label = blog_tag
+            assign category_handle = blog_tag_handle
+            break
+          endif
+        endfor
+
+        assign category_active = false
+        if current_tags contains category_label or current_tags contains category_handle
+          assign category_active = true
+        endif
       %}
-      {% for article in blog.articles %}
-        {% liquid
-          # Defaults for compact layout
-          assign col_span = 2
-          assign scale = 0.6
-          assign is_horizontal = false
 
-          case items_on_page
-            when 1
-              # Single post: full width hero
-              assign col_span = 6
-              assign scale = 1
-              assign is_horizontal = true
-            when 2
-              # Two posts: both standard side by side
-              assign col_span = 3
-              assign scale = 0.8
-            when 3
-              # Three posts: hero + 2 standard
-              if forloop.index == 1
-                assign col_span = 6
-                assign scale = 1
-                assign is_horizontal = true
-              else
-                assign col_span = 3
-                assign scale = 0.8
-              endif
-            when 4
-              # Four posts: all standard in 2x2 grid
-              assign col_span = 3
-              assign scale = 0.8
-            when 5
-              # Five posts: hero + 4 standard
-              if forloop.index == 1
-                assign col_span = 6
-                assign scale = 1
-                assign is_horizontal = true
-              else
-                assign col_span = 3
-                assign scale = 0.8
-              endif
-            else
-              # 6+ posts: hero, 2 standard, rest compact
-              if forloop.index == 1
-                assign col_span = 6
-                assign scale = 1
-                assign is_horizontal = true
-              elsif forloop.index <= 3
-                assign col_span = 3
-                assign scale = 0.8
-              else
-                assign col_span = 2
-                assign scale = 0.6
-              endif
-          endcase
-        %}
-        {% style %}
-          [data-blog-index="{{ section.id }}-{{ forloop.index }}"] {
-            --col-span: {{ col_span }};
-            --blog-post-card-scale: {{ scale }};
-          }
-
-          @media screen and (max-width: 749px) {
-            [data-blog-index="{{ section.id }}-{{ forloop.index }}"] {
-              --col-span: 6;
-              --blog-post-card-scale: 0.5;
-            }
-          }
-        {% endstyle %}
-        <div
-          class="blog-post-item{% if is_horizontal %} blog-post-item--horizontal{% endif %}"
-          data-testid="blog-post-item"
-          data-blog-index="{{ section.id }}-{{ forloop.index }}"
+      {% if category_label != blank %}
+        <a
+          href="{{ blog.url }}/tagged/{{ category_handle }}"
+          class="santa-rita-blog-page__category{% if category_active %} is-active{% endif %}"
         >
-          {% content_for 'block', id: 'static-blog-post-card', type: '_blog-post-card', article: article %}
-        </div>
-      {% endfor %}
+          {{ category_label }}
+        </a>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    {% for category_label in blog.all_tags %}
+      {% liquid
+        assign category_handle = category_label | handleize
+        assign category_active = false
+        if current_tags contains category_label or current_tags contains category_handle
+          assign category_active = true
+        endif
+      %}
+      <a
+        href="{{ blog.url }}/tagged/{{ category_handle }}"
+        class="santa-rita-blog-page__category{% if category_active %} is-active{% endif %}"
+      >
+        {{ category_label }}
+      </a>
+    {% endfor %}
+  {% endif %}
+{% endcapture %}
+
+<div class="section-background color-{{ section.settings.color_scheme }} santa-rita-blog-page__background"></div>
+
+<section
+  id="SantaRitaBlogPage-{{ section.id }}"
+  class="section color-{{ section.settings.color_scheme }} santa-rita-blog-page"
+  data-testid="blog-posts"
+>
+  <div class="santa-rita-blog-page__inner">
+    <nav class="santa-rita-blog-page__breadcrumbs" aria-label="Breadcrumb">
+      <a href="{{ routes.root_url }}">Inicio</a>
+      <span aria-hidden="true">&gt;</span>
+      <span>{{ blog.title }}</span>
+    </nav>
+
+    <header class="santa-rita-blog-page__hero">
+      <div class="santa-rita-blog-page__hero-copy">
+        <h1>{{ blog_heading }}</h1>
+        {% if blog_text != blank %}
+          <p>{{ blog_text }}</p>
+        {% endif %}
+      </div>
+
+      <div class="santa-rita-blog-page__hero-media">
+        {% if hero_image != blank %}
+          {{
+            hero_image
+            | image_url: width: 1400
+            | image_tag:
+              widths: '420, 640, 900, 1200, 1400',
+              sizes: '(min-width: 990px) 48vw, 100vw',
+              loading: 'eager',
+              fetchpriority: 'high',
+              class: 'santa-rita-blog-page__hero-image'
+          }}
+        {% else %}
+          {{ 'image' | placeholder_svg_tag: 'santa-rita-blog-page__hero-image santa-rita-blog-page__hero-image--placeholder' }}
+        {% endif %}
+      </div>
+    </header>
+
+    <div class="santa-rita-blog-page__toolbar">
+      <div class="santa-rita-blog-page__categories" aria-label="Categorías del blog">
+        {{ category_links }}
+      </div>
+
+      <button
+        type="button"
+        class="santa-rita-blog-page__mobile-filter"
+        data-blog-categories-open
+        aria-haspopup="dialog"
+        aria-controls="BlogCategoriesDrawer-{{ section.id }}"
+        aria-expanded="false"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter" viewBox="0 0 16 16">
+  <path d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"/>
+</svg>
+        Categorías
+      </button>
     </div>
+
+    <div class="santa-rita-blog-page__drawer-backdrop" data-blog-categories-backdrop hidden></div>
+    <aside
+      id="BlogCategoriesDrawer-{{ section.id }}"
+      class="santa-rita-blog-page__drawer"
+      data-blog-categories-drawer
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="BlogCategoriesTitle-{{ section.id }}"
+      hidden
+    >
+      <div class="santa-rita-blog-page__drawer-header">
+        <h2 id="BlogCategoriesTitle-{{ section.id }}">Categorías</h2>
+        <button type="button" class="santa-rita-blog-page__drawer-close" data-blog-categories-close aria-label="Cerrar categorías"></button>
+      </div>
+      <div class="santa-rita-blog-page__drawer-list">
+        {{ category_links }}
+      </div>
+    </aside>
+
+    {% paginate blog.articles by 250 %}
+      <div class="santa-rita-blog-page__list-head">
+        <div></div>
+        <div class="santa-rita-blog-page__sort">
+          <label for="BlogSort-{{ section.id }}">Ordenar por:</label>
+          <span class="santa-rita-blog-page__sort-select">
+            <select id="BlogSort-{{ section.id }}" data-blog-sort-select aria-label="Ordenar artículos">
+              <option value="" selected disabled>Seleccionar</option>
+              <option value="az">A a Z</option>
+              <option value="za">Z a A</option>
+            </select>
+            <span class="santa-rita-blog-page__sort-chevron" aria-hidden="true"></span>
+          </span>
+        </div>
+      </div>
+
+      <div
+        class="santa-rita-blog-page__grid"
+        data-blog-sort-grid
+        data-blog-load-grid
+        data-blog-step="{{ articles_per_step }}"
+      >
+        {% for article in blog.articles %}
+          {% liquid
+            assign article_tag = article.tags | first | default: 'Recomendaciones'
+            assign article_excerpt = article.excerpt_or_content | strip_html | truncate: excerpt_length
+          %}
+
+          <article
+            class="santa-rita-blog-page-card"
+            data-blog-sort-card
+            data-blog-load-card
+            data-blog-title="{{ article.title | strip_html | downcase | escape }}"
+          >
+            <a href="{{ article.url }}" class="santa-rita-blog-page-card__media" aria-label="{{ article.title | escape }}">
+              {% if article.image != blank %}
+                {{
+                  article.image
+                  | image_url: width: 900
+                  | image_tag:
+                    widths: '320, 480, 640, 900',
+                    sizes: '(min-width: 990px) 30vw, 100vw',
+                    loading: 'lazy',
+                    class: 'santa-rita-blog-page-card__image'
+                }}
+              {% else %}
+                {{ 'image' | placeholder_svg_tag: 'santa-rita-blog-page-card__image santa-rita-blog-page-card__image--placeholder' }}
+              {% endif %}
+
+              <span class="santa-rita-blog-page-card__tag">{{ article_tag }}</span>
+            </a>
+
+            <div class="santa-rita-blog-page-card__content">
+              <h2>
+                <a href="{{ article.url }}">{{ article.title }}</a>
+              </h2>
+
+              {% if article_excerpt != blank %}
+                <p>{{ article_excerpt }}</p>
+              {% endif %}
+
+              <a href="{{ article.url }}" class="santa-rita-blog-page-card__button">
+                {% if forloop.index == 2 %}Explorar{% else %}Ver más{% endif %}
+              </a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+
+      {% if paginate.items > articles_per_step %}
+        <div class="santa-rita-blog-page__load-more">
+          <button type="button" data-blog-load-more>Cargar más</button>
+        </div>
+      {% endif %}
+    {% endpaginate %}
   </div>
-</blog-posts-list>
+</section>
+
+<script>
+  (() => {
+    const initBlogPage = () => {
+      const section = document.getElementById('SantaRitaBlogPage-{{ section.id }}');
+      if (!section || section.dataset.blogPageReady === 'true') return;
+
+      const select = section.querySelector('[data-blog-sort-select]');
+      const grid = section.querySelector('[data-blog-sort-grid]');
+      const loadMoreButton = section.querySelector('[data-blog-load-more]');
+      const categoryOpenButton = section.querySelector('[data-blog-categories-open]');
+      const categoryDrawer = section.querySelector('[data-blog-categories-drawer]');
+      const categoryBackdrop = section.querySelector('[data-blog-categories-backdrop]');
+      const categoryCloseButton = section.querySelector('[data-blog-categories-close]');
+
+      if (!select || !grid) return;
+
+      section.dataset.blogPageReady = 'true';
+      const step = Number(grid.dataset.blogStep) || 9;
+      let visibleCount = step;
+
+      const getCards = () => Array.from(grid.querySelectorAll('[data-blog-load-card]'));
+
+      const getCardTitle = (card) => {
+        return card.querySelector('.santa-rita-blog-page-card__content h2 a')?.textContent.trim().toLocaleLowerCase('es') || '';
+      };
+
+      const updateLoadMoreButton = (cards) => {
+        if (!loadMoreButton) return;
+
+        loadMoreButton.textContent = visibleCount >= cards.length ? 'Mostrar menos' : 'Cargar más';
+        loadMoreButton.setAttribute('aria-expanded', visibleCount >= cards.length ? 'true' : 'false');
+      };
+
+      const applyVisibility = () => {
+        const cards = getCards();
+
+        cards.forEach((card, index) => {
+          card.hidden = index >= visibleCount;
+        });
+
+        updateLoadMoreButton(cards);
+      };
+
+      const sortCards = () => {
+        if (!select.value) return;
+
+        const cards = getCards();
+        const direction = select.value;
+
+        cards
+          .sort((firstCard, secondCard) => {
+            const result = getCardTitle(firstCard).localeCompare(getCardTitle(secondCard), 'es', {
+              numeric: true,
+              sensitivity: 'base',
+            });
+
+            return direction === 'za' ? result * -1 : result;
+          })
+          .forEach((card) => grid.append(card));
+
+        applyVisibility();
+      };
+
+      select.addEventListener('change', sortCards);
+      select.addEventListener('input', sortCards);
+      loadMoreButton?.addEventListener('click', () => {
+        const cards = getCards();
+
+        if (visibleCount >= cards.length) {
+          visibleCount = step;
+        } else {
+          visibleCount = Math.min(visibleCount + step, cards.length);
+        }
+
+        applyVisibility();
+      });
+
+      const openCategories = () => {
+        if (!categoryDrawer || !categoryBackdrop || !categoryOpenButton) return;
+
+        categoryDrawer.hidden = false;
+        categoryBackdrop.hidden = false;
+        categoryOpenButton.setAttribute('aria-expanded', 'true');
+        requestAnimationFrame(() => {
+          categoryDrawer.classList.add('is-open');
+          categoryBackdrop.classList.add('is-open');
+        });
+      };
+
+      const closeCategories = () => {
+        if (!categoryDrawer || !categoryBackdrop || !categoryOpenButton) return;
+
+        categoryDrawer.classList.remove('is-open');
+        categoryBackdrop.classList.remove('is-open');
+        categoryOpenButton.setAttribute('aria-expanded', 'false');
+        window.setTimeout(() => {
+          categoryDrawer.hidden = true;
+          categoryBackdrop.hidden = true;
+        }, 220);
+      };
+
+      categoryOpenButton?.addEventListener('click', openCategories);
+      categoryCloseButton?.addEventListener('click', closeCategories);
+      categoryBackdrop?.addEventListener('click', closeCategories);
+      section.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeCategories();
+      });
+
+      applyVisibility();
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initBlogPage);
+    } else {
+      initBlogPage();
+    }
+
+    document.addEventListener('shopify:section:load', initBlogPage);
+  })();
+</script>
 
 {% stylesheet %}
-  /**
-   * Blog posts page layout
-   */
-  .blog-posts {
-    --page-content-width: var(--narrow-page-width);
-    --page-width: calc(var(--page-content-width) + (var(--page-margin) * 2));
-    --columns-gap: 36px;
-    --rows-gap: 36px;
+  .santa-rita-blog-page__background {
+    background: #fffcf7;
   }
 
-  .blog-posts-container {
+  .santa-rita-blog-page {
+    color: #1e0812;
+  }
+
+  .santa-rita-blog-page__inner {
+    width: min(100%, 1120px);
+    margin-inline: auto;
+    padding: 22px 0 72px;
+  }
+
+  .santa-rita-blog-page__breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    align-items: center;
+    margin-bottom: 24px;
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  .santa-rita-blog-page__breadcrumbs a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .santa-rita-blog-page__hero {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 1rem;
+    grid-template-columns: minmax(280px, 0.86fr) minmax(360px, 1.14fr);
+    gap: 48px;
+    align-items: center;
+    margin-bottom: 36px;
+  }
+
+  .santa-rita-blog-page__hero-copy h1 {
+    margin: 0;
+    color: inherit;
+    font-family: var(--font-heading--family);
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-blog-page__hero-copy p {
+    margin: 28px 0 0;
+    font-size: 22px;
+    line-height: 1.35;
+  }
+
+  .santa-rita-blog-page__hero-media {
+    overflow: hidden;
+    border-radius: 6px;
+  }
+
+  .santa-rita-blog-page__hero-image {
     width: 100%;
-    column-gap: var(--columns-gap);
-    row-gap: var(--rows-gap);
+    aspect-ratio: 2.18 / 1;
+    object-fit: cover;
   }
 
-  /**
-   * Blog post item grid positioning and scaling.
-   * Layout is calculated in Liquid based on total article count.
-   * Mobile overrides are applied per-item in inline styles for proper specificity.
-   */
-  .blog-post-item {
-    grid-column: span var(--col-span);
+  .santa-rita-blog-page__hero-image--placeholder {
+    background: #dbcabb;
   }
 
-  /**
-   * When there's no image, the blog post item has a border.
-   */
-  .blog-post-item {
-    border: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20));
-    padding: 0 1rem 1rem;
+  .santa-rita-blog-page__toolbar {
+    position: relative;
+    margin-bottom: 34px;
+    padding-bottom: 30px;
   }
 
-  .blog-post-item:has(.blog-post-card__image-container) {
-    border: none;
-    padding: 0;
+  .santa-rita-blog-page__toolbar::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 100vw;
+    height: 1px;
+    background: #efe9e3;
+    transform: translateX(-50%);
+  }
+
+  .santa-rita-blog-page__categories {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+    margin-inline: calc((100vw - 100%) / -2);
+    padding-inline: calc((100vw - 100%) / 2);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scroll-padding-inline: calc((100vw - 100%) / 2);
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .santa-rita-blog-page__categories::-webkit-scrollbar {
+    display: none;
+  }
+
+  .santa-rita-blog-page__category {
+    display: inline-flex;
+    flex: 0 0 auto;
+    min-height: 32px;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 20px;
+    border: 1px solid #1e0812;
+    border-radius: 999px;
+    color: #1e0812;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+    scroll-snap-align: start;
+    transition: all .3s ease;
+  }
+
+  .santa-rita-blog-page__category:hover,
+  .santa-rita-blog-page__category.is-active {
+    background: #1e0812;
+    color: #ffffff;
+  }
+
+  .santa-rita-blog-page__mobile-filter {
+    display: none;
+  }
+
+  .santa-rita-blog-page__drawer-backdrop,
+  .santa-rita-blog-page__drawer {
+    display: none;
+  }
+
+  .santa-rita-blog-page__list-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+
+  .santa-rita-blog-page__sort {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    color: #1e0812;
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .santa-rita-blog-page__sort-select {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .santa-rita-blog-page__sort select {
+    min-width: 58px;
+    padding: 0 20px 0 0;
+    border: 0;
+    appearance: none;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .santa-rita-blog-page__sort select:focus-visible {
+    outline: 1px solid #9b173f;
+    outline-offset: 3px;
+  }
+
+  .santa-rita-blog-page__sort-chevron {
+    position: absolute;
+    right: 2px;
+    width: 9px;
+    height: 9px;
+    margin-top: -4px;
+    border-right: 2px solid #6d5762;
+    border-bottom: 2px solid #6d5762;
+    pointer-events: none;
+    transform: rotate(45deg);
+  }
+
+  .santa-rita-blog-page__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 34px 36px;
+  }
+
+  .santa-rita-blog-page-card {
+    min-width: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #fff7f1;
+    color: #21000f;
+  }
+
+  .santa-rita-blog-page-card__media {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 1.47 / 1;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .santa-rita-blog-page-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .santa-rita-blog-page-card__image--placeholder {
+    background: #dbcabb;
+    opacity: 0.72;
+  }
+
+  .santa-rita-blog-page-card__tag {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    max-width: calc(100% - 20px);
+    padding: 5px 8px;
+    border-radius: 999px;
+    background: #160009;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .santa-rita-blog-page-card__content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    gap: 12px 16px;
+    padding: 16px 18px 18px;
+  }
+
+  .santa-rita-blog-page-card__content h2 {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: inherit;
+    font-family: var(--font-heading--family);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-blog-page-card__content h2 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .santa-rita-blog-page-card__content p {
+    grid-column: 1;
+    grid-row: 2;
+    min-width: 0;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.22;
+  }
+
+  .santa-rita-blog-page-card__button {
+    align-self: end;
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+    padding: 12px 16px;
+    border-radius: 6px;
+    background: #8C1A3E;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .5s ease;
+  }
+
+  .santa-rita-blog-page-card__button:hover{
+    background: #751735;
+  }
+
+  .santa-rita-blog-page__load-more {
+    display: flex;
+    justify-content: center;
+    margin-top: 38px;
+  }
+
+  .santa-rita-blog-page__load-more a,
+  .santa-rita-blog-page__load-more button {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 24px;
+    border: 1px solid #9b173f;
+    border-radius: 999px;
+    color: #9b173f;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  @media screen and (max-width: 989px) {
+    .santa-rita-blog-page__inner {
+      width: min(100%, calc(100% - 40px));
+      padding-block: 18px 52px;
+    }
+
+    .santa-rita-blog-page__hero {
+      grid-template-columns: 1fr;
+      gap: 22px;
+    }
+
+    .santa-rita-blog-page__hero-copy h1 {
+      font-size: 36px;
+    }
+
+    .santa-rita-blog-page__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px 20px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-blog-page__inner {
+      width: min(100%, calc(100% - 32px));
+    }
+
+    .santa-rita-blog-page__breadcrumbs {
+      font-size: 10px;
+    }
+
+    .santa-rita-blog-page__hero-copy h1 {
+      font-size: 30px;
+    }
+
+    .santa-rita-blog-page__hero-copy p {
+      margin-top: 16px;
+      font-size: 13px;
+    }
+
+    .santa-rita-blog-page__categories {
+      display: none;
+    }
+
+    .santa-rita-blog-page__toolbar {
+      margin-top: 28px;
+        margin-bottom: 48px;
+        padding-block: 10px;
+        border-top: 1px solid #c2a980;
+        border-bottom: 1px solid #c2a980;
+    }
+
+    .santa-rita-blog-page__toolbar::after{
+      display: none;
+    }
+
+    .santa-rita-blog-page__mobile-filter {
+      display: inline-flex;
+      width: 100%;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #1e0812;
+      font-family: var(--font-body--family);
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .santa-rita-blog-page__mobile-filter svg {
+      width: 33px;
+      height: auto;
+      color: #6E5A61;
+      flex: 0 0 auto;
+    }
+
+    .santa-rita-blog-page__mobile-filter-icon {
+      position: relative;
+      width: 24px;
+      height: 18px;
+      color: #6d5762;
+      background: linear-gradient(currentColor, currentColor) center 14px / 9px 3px no-repeat;
+    }
+
+    .santa-rita-blog-page__mobile-filter-icon::before,
+    .santa-rita-blog-page__mobile-filter-icon::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      height: 3px;
+      border-radius: 999px;
+      background: currentColor;
+      transform: translateX(-50%);
+    }
+
+    .santa-rita-blog-page__mobile-filter-icon::before {
+      top: 0;
+      width: 24px;
+    }
+
+    .santa-rita-blog-page__mobile-filter-icon::after {
+      top: 7px;
+      width: 17px;
+    }
+
+    .santa-rita-blog-page__drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 14;
+      display: block;
+      background: rgb(30 8 18 / 18%);
+      opacity: 0;
+      transition: opacity 220ms ease;
+    }
+
+    .santa-rita-blog-page__drawer-backdrop[hidden] {
+      display: none;
+    }
+
+    .santa-rita-blog-page__drawer-backdrop.is-open {
+      opacity: 1;
+    }
+
+    .santa-rita-blog-page__drawer {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 15;
+      display: flex;
+      max-height: 50vh;
+      flex-direction: column;
+      padding: 28px 24px 24px;
+      background: #fffcf7;
+      color: #1e0812;
+      box-shadow: 0 -12px 30px rgb(30 8 18 / 12%);
+      transform: translateY(100%);
+      transition: transform 220ms ease;
+    }
+
+    .santa-rita-blog-page__drawer[hidden] {
+      display: none;
+    }
+
+    .santa-rita-blog-page__drawer.is-open {
+      transform: translateY(0);
+    }
+
+    .santa-rita-blog-page__drawer-header {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 22px;
+    }
+
+    .santa-rita-blog-page__drawer-header h2 {
+      margin: 0;
+      color: inherit;
+      font-family: var(--font-heading--family);
+      font-size: 31px;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .santa-rita-blog-page__drawer-close {
+      position: relative;
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #6d5762;
+      cursor: pointer;
+    }
+
+    .santa-rita-blog-page__drawer-close::before,
+    .santa-rita-blog-page__drawer-close::after {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 3px;
+      width: 24px;
+      height: 3px;
+      border-radius: 999px;
+      background: currentColor;
+    }
+
+    .santa-rita-blog-page__drawer-close::before {
+      transform: rotate(45deg);
+    }
+
+    .santa-rita-blog-page__drawer-close::after {
+      transform: rotate(-45deg);
+    }
+
+    .santa-rita-blog-page__drawer-list {
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+      gap: 0;
+      overflow-y: auto;
+      border-top: 1px solid #c2a980;
+      padding-top: 20px;
+    }
+
+    .santa-rita-blog-page__drawer-list .santa-rita-blog-page__category {
+      display: flex;
+      min-height: 48px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 24px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: #1e0812;
+      font-size: 20px;
+      font-weight: 400;
+      line-height: 1;
+      scroll-snap-align: none;
+    }
+
+    .santa-rita-blog-page__drawer-list .santa-rita-blog-page__category.is-active {
+      background: #f4ead8;
+    }
+
+    .santa-rita-blog-page__list-head {
+      margin-bottom: 22px;
+    }
+
+    .santa-rita-blog-page__grid {
+      grid-template-columns: 1fr;
+    }
   }
 {% endstylesheet %}
 
@@ -198,28 +953,36 @@
       "default": "scheme-1"
     },
     {
-      "type": "header",
-      "content": "t:content.padding"
+      "type": "text",
+      "id": "blog_heading",
+      "label": "Título",
+      "default": "Blog Santa Rita"
+    },
+    {
+      "type": "textarea",
+      "id": "blog_text",
+      "label": "Bajada",
+      "default": "Conoce las últimas novedades y los mejores datos para los amantes del vino."
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Imagen destacada"
+    },
+    {
+      "type": "textarea",
+      "id": "filter_tags",
+      "label": "Etiquetas para filtros",
+      "info": "Escribe las etiquetas separadas por coma. Solo se mostrarán si existen en este blog. Si queda vacío, se muestran todas las etiquetas existentes."
     },
     {
       "type": "range",
-      "id": "padding-block-start",
-      "label": "t:settings.top",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 0
-    },
-    {
-      "type": "range",
-      "id": "padding-block-end",
-      "label": "t:settings.bottom",
-      "min": 0,
-      "max": 100,
-      "step": 1,
-      "unit": "px",
-      "default": 0
+      "id": "excerpt_length",
+      "label": "Largo del resumen",
+      "min": 50,
+      "max": 160,
+      "step": 10,
+      "default": 80
     }
   ]
 }

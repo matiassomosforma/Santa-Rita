@@ -1,9 +1,10 @@
 
 
-<div class="section-background color-{{ section.settings.color_scheme }}"></div>
-<div class="section color-{{ section.settings.color_scheme }}">
+<div class="section-background color-{{ section.settings.color_scheme }} main-blog-post__background"></div>
+<div class="section color-{{ section.settings.color_scheme }} main-blog-post">
   <div
     class="
+      main-blog-post__inner
       spacing-style
       layout-panel-flex
       layout-panel-flex--column
@@ -15,15 +16,147 @@
       {% render 'spacing-style', settings: section.settings %}
     "
   >
-    <header>
+    <nav class="main-blog-post__breadcrumbs" aria-label="Breadcrumb">
+      <a href="{{ routes.root_url }}">Inicio</a>
+      <span aria-hidden="true">&gt;</span>
+      <a href="{{ blog.url }}">Blog</a>
+      <span aria-hidden="true">&gt;</span>
+      <span>{{ article.title }}</span>
+    </nav>
+
+    <a class="main-blog-post__back-link" href="{{ blog.url }}">&lt; Volver</a>
+    <div class="main-blog-post__divider" aria-hidden="true"></div>
+
+    <header class="main-blog-post__header main-blog-post__header--desktop">
       {%- content_for 'block', id: 'blog-post-title', type: 'text' %}
-      {%- content_for 'block', id: 'blog-post-details', type: '_blog-post-info-text' %}
     </header>
 
     {%- if article.image -%}
       {%- content_for 'block', id: 'blog-post-image', type: '_blog-post-featured-image' %}
     {%- endif -%}
+
+    <header class="main-blog-post__header main-blog-post__header--mobile">
+      <h1>{{ article.title }}</h1>
+    </header>
+
     {%- content_for 'block', id: 'blog-post-content', type: '_blog-post-content' %}
+
+    {% liquid
+      assign related_articles_limit = 9
+      assign related_articles_total = 0
+
+      for related_article in blog.articles limit: 12
+        unless related_article.id == article.id
+          if related_articles_total < related_articles_limit
+            assign related_articles_total = related_articles_total | plus: 1
+          endif
+        endunless
+      endfor
+    %}
+
+    {% if related_articles_total > 0 %}
+      <santa-rita-related-articles
+        class="main-blog-post__related main-blog-post__related--count-{{ related_articles_total }}"
+        data-related-articles
+      >
+        <div class="main-blog-post__related-container">
+          <header class="main-blog-post__related-header">
+            <h2>Artículos relacionados</h2>
+            <p>Sigue leyendo.</p>
+          </header>
+
+          <div class="main-blog-post__related-viewport" data-related-articles-viewport>
+            <div class="main-blog-post__related-track" data-related-articles-track>
+              {% liquid
+                assign related_articles_rendered = 0
+              %}
+
+              {% for related_article in blog.articles limit: 12 %}
+                {% unless related_article.id == article.id %}
+                  {% liquid
+                    assign related_articles_rendered = related_articles_rendered | plus: 1
+                    assign related_tag = related_article.tags | first | default: 'Recomendaciones'
+                    assign related_excerpt = related_article.excerpt_or_content | strip_html | truncate: 82
+                  %}
+
+                  {% if related_articles_rendered <= related_articles_limit %}
+                    <article class="main-blog-post__related-card">
+                      <a
+                        href="{{ related_article.url }}"
+                        class="main-blog-post__related-media"
+                        aria-label="{{ related_article.title | escape }}"
+                      >
+                        {% if related_article.image != blank %}
+                          {{
+                            related_article.image
+                            | image_url: width: 900
+                            | image_tag:
+                              widths: '320, 480, 640, 900',
+                              sizes: '(min-width: 990px) 30vw, 86vw',
+                              loading: 'lazy',
+                              class: 'main-blog-post__related-image'
+                          }}
+                        {% else %}
+                          {{
+                            'image'
+                            | placeholder_svg_tag: 'main-blog-post__related-image main-blog-post__related-image--placeholder'
+                          }}
+                        {% endif %}
+
+                        <span class="main-blog-post__related-tag">{{ related_tag }}</span>
+                      </a>
+
+                      <div class="main-blog-post__related-content">
+                        <h3>
+                          <a href="{{ related_article.url }}">{{ related_article.title }}</a>
+                        </h3>
+
+                        {% if related_excerpt != blank %}
+                          <p>{{ related_excerpt }}</p>
+                        {% endif %}
+
+                        <a href="{{ related_article.url }}" class="main-blog-post__related-button">
+                          {% if related_articles_rendered <= 2 %}
+                            <span class="main-blog-post__related-button-label--desktop">Explorar</span>
+                            <span class="main-blog-post__related-button-label--mobile">Ver más</span>
+                          {% else %}
+                            Ver más
+                          {% endif %}
+                        </a>
+                      </div>
+                    </article>
+                  {% endif %}
+                {% endunless %}
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="main-blog-post__related-footer">
+            <div
+              class="main-blog-post__related-dots"
+              data-related-articles-dots
+              aria-label="Paginación de artículos relacionados"
+            ></div>
+            <div class="main-blog-post__related-arrows">
+              <button type="button" data-related-articles-prev aria-label="Artículos anteriores">
+                <span aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="33" height="20" viewBox="0 0 33 20" fill="none">
+                    <path d="M11 0C11 1.06 9.99212 2.64286 8.97187 3.97143C7.66012 5.68571 6.09263 7.18143 4.2955 8.32286C2.948 9.17857 1.3145 10 0 10M0 10C1.3145 10 2.94938 10.8214 4.2955 11.6771C6.09263 12.82 7.66012 14.3157 8.97187 16.0271C9.99212 17.3571 11 18.9429 11 20M0 10H33" stroke="currentColor"/>
+                  </svg>
+                </span>
+              </button>
+              <button type="button" data-related-articles-next aria-label="Artículos siguientes">
+                <span aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="33" height="20" viewBox="0 0 33 20" fill="none">
+                    <path d="M22 0C22 1.06 23.0079 2.64286 24.0281 3.97143C25.3399 5.68571 26.9074 7.18143 28.7045 8.32286C30.052 9.17857 31.6855 10 33 10M33 10C31.6855 10 30.0506 10.8214 28.7045 11.6771C26.9074 12.82 25.3399 14.3157 24.0281 16.0271C23.0079 17.3571 22 18.9429 22 20M33 10H0" stroke="currentColor"/>
+                  </svg>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </santa-rita-related-articles>
+    {% endif %}
 
     {% comment %} Dynamic area for @app blocks only, at the bottom {% endcomment %}
     {% content_for 'blocks' %}
@@ -63,7 +196,459 @@
   {{ article | structured_data }}
 </script>
 
+<script>
+  if (!customElements.get('santa-rita-related-articles')) {
+    customElements.define(
+      'santa-rita-related-articles',
+      class SantaRitaRelatedArticles extends HTMLElement {
+        connectedCallback() {
+          this.viewport = this.querySelector('[data-related-articles-viewport]');
+          this.track = this.querySelector('[data-related-articles-track]');
+          this.prevButton = this.querySelector('[data-related-articles-prev]');
+          this.nextButton = this.querySelector('[data-related-articles-next]');
+          this.dotsContainer = this.querySelector('[data-related-articles-dots]');
+          this.footer = this.querySelector('.main-blog-post__related-footer');
+          this.handleResize = () => this.setupDots();
+
+          if (!this.viewport || !this.track) return;
+
+          this.prevButton?.addEventListener('click', () => this.scrollByPage(-1));
+          this.nextButton?.addEventListener('click', () => this.scrollByPage(1));
+          this.viewport.addEventListener('scroll', () => this.updateState(), { passive: true });
+          window.addEventListener('resize', this.handleResize);
+          this.setupDots();
+        }
+
+        disconnectedCallback() {
+          window.removeEventListener('resize', this.handleResize);
+        }
+
+        getColumns() {
+          if (window.matchMedia('(max-width: 749px)').matches) return 1;
+          if (window.matchMedia('(max-width: 989px)').matches) return 2;
+          return 3;
+        }
+
+        getPageWidth() {
+          return this.viewport.clientWidth;
+        }
+
+        getCards() {
+          return this.track.querySelectorAll('.main-blog-post__related-card');
+        }
+
+        hasOverflow() {
+          return this.getCards().length > this.getColumns();
+        }
+
+        getPageCount() {
+          return Math.max(1, Math.ceil(this.getCards().length / this.getColumns()));
+        }
+
+        setupDots() {
+          const hasOverflow = this.hasOverflow();
+
+          if (this.footer) this.footer.hidden = !hasOverflow;
+          if (!this.dotsContainer) return;
+
+          this.dotsContainer.innerHTML = '';
+          if (!hasOverflow) return;
+
+          for (let index = 0; index < this.getPageCount(); index += 1) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.setAttribute('aria-label', `Ir al grupo ${index + 1}`);
+            button.addEventListener('click', () => {
+              this.viewport.scrollTo({ left: index * this.getPageWidth(), behavior: 'smooth' });
+            });
+            this.dotsContainer.append(button);
+          }
+
+          this.updateState();
+        }
+
+        scrollByPage(direction) {
+          this.viewport.scrollBy({ left: direction * this.getPageWidth(), behavior: 'smooth' });
+        }
+
+        updateState() {
+          const pageWidth = this.getPageWidth();
+          const activeIndex = Math.round(this.viewport.scrollLeft / pageWidth);
+          const maxScroll = Math.max(0, this.viewport.scrollWidth - this.viewport.clientWidth);
+
+          Array.from(this.dotsContainer?.children || []).forEach((dot, index) => {
+            dot.classList.toggle('is-active', index === activeIndex);
+            dot.setAttribute('aria-current', index === activeIndex ? 'true' : 'false');
+          });
+
+          if (this.prevButton) this.prevButton.disabled = this.viewport.scrollLeft <= 4;
+          if (this.nextButton) this.nextButton.disabled = this.viewport.scrollLeft >= maxScroll - 4;
+        }
+      }
+    );
+  }
+</script>
+
 {% stylesheet %}
+  .main-blog-post__background {
+    background: #fffcf7;
+  }
+
+  .main-blog-post {
+    --blog-post-content-width: 760px;
+    --blog-post-copy-width: 680px;
+    --blog-post-text-color: #27131d;
+
+    color: var(--blog-post-text-color);
+  }
+
+  .main-blog-post__inner.section-content-wrapper {
+    width: min(100%, 1136px);
+    margin-inline: auto;
+    padding-inline: 0;
+    padding-block-end: 0 !important;
+    gap: 0;
+  }
+
+  .main-blog-post__breadcrumbs,
+  .main-blog-post__back-link {
+    width: 100%;
+    color: #271f20;
+    font-family: var(--font-body--family);
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  .main-blog-post__breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    align-items: center;
+    margin-bottom: 44px;
+  }
+
+  .main-blog-post__breadcrumbs a,
+  .main-blog-post__back-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .main-blog-post__breadcrumbs a:hover,
+  .main-blog-post__back-link:hover {
+    text-decoration: underline;
+  }
+
+  .main-blog-post__back-link {
+    display: inline-flex;
+    width: fit-content;
+    margin-bottom: 22px;
+  }
+
+  .main-blog-post__divider {
+    width: 100vw;
+    height: 1px;
+    margin-left: 50%;
+    margin-bottom: 36px;
+    background: #efe9e3;
+    transform: translateX(-50%);
+  }
+
+  .main-blog-post__header {
+    width: 100%;
+  }
+
+  .main-blog-post__header--mobile {
+    display: none;
+  }
+
+  .main-blog-post .text-block--blog-post-title,
+    .main-blog-post h1 {
+    max-width: 800px;
+    margin-inline: auto;
+  }
+
+  .main-blog-post .text-block--blog-post-title h1 {
+    max-inline-size: 100%;
+    color: #1E0812;
+    font-family: var(--font-heading--family);
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: 0;
+    width: 100%;
+  }
+
+  .main-blog-post .blog-post-featured-image {
+    width: 100%;
+    max-width: 800px;
+    margin: 36px auto 32px;
+  }
+
+  .main-blog-post .blog-post-featured-image__image {
+    aspect-ratio: 2.63 / 1;
+    border-radius: 3px;
+  }
+
+  .main-blog-post .blog-post-content {
+    width: 100%;
+    max-width: 800px;
+    color: var(--blog-post-text-color);
+    font-family: var(--font-body--family);
+    font-size: 18px;
+    line-height: 1.72;
+  }
+
+  .main-blog-post .blog-post-content p {
+    margin-block: 0 0.45em;
+    line-height: 30px;
+  }
+
+  .main-blog-post .blog-post-content strong,
+  .main-blog-post .blog-post-content b {
+    font-weight: 700;
+  }
+
+  .main-blog-post .blog-post-content :is(h2, h3) {
+    color: var(--blog-post-text-color);
+    font-family: var(--font-body--family);
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: 0;
+    margin-block: 34px 32px;
+  }
+
+  .main-blog-post .blog-post-content ul,
+  .main-blog-post .blog-post-content ol {
+    padding-inline-start: 24px;
+  }
+
+  .main-blog-post .blog-post-content li {
+    padding-inline-start: 6px;
+    margin-block: 0 25px;
+  }
+
+  .main-blog-post__related {
+    display: block;
+    width: 100vw;
+    margin-top: 72px;
+    margin-left: 50%;
+    background: #1e0812;
+    color: #ffffff;
+    transform: translateX(-50%);
+  }
+
+  .main-blog-post__related-container {
+    width: min(100%, 1136px);
+    margin-inline: auto;
+    padding: 58px 0 56px;
+  }
+
+  .main-blog-post__related-header {
+    margin-bottom: 36px;
+  }
+
+  .main-blog-post__related-header h2 {
+    margin: 0;
+    color: inherit;
+    font-family: var(--font-heading--family);
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: 0;
+  }
+
+  .main-blog-post__related-header p {
+    margin: 34px 0 0;
+    color: inherit;
+    font-family: var(--font-body--family);
+    font-size: 19px;
+    line-height: 1.35;
+  }
+
+  .main-blog-post__related-viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+  }
+
+  .main-blog-post__related-viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .main-blog-post__related-track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - 40px) / 3);
+    gap: 40px;
+  }
+
+  .main-blog-post__related-card {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 4px;
+    background: #fff7f1;
+    color: #21000f;
+    scroll-snap-align: start;
+  }
+
+  .main-blog-post__related-media {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 1.48 / 1;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .main-blog-post__related-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .main-blog-post__related-image--placeholder {
+    background: #dbcabb;
+    opacity: 0.72;
+  }
+
+  .main-blog-post__related-tag {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    max-width: calc(100% - 36px);
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #160009;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .main-blog-post__related-content {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto 1fr;
+    gap: 14px 18px;
+    flex: 1;
+    padding: 18px 20px 20px;
+  }
+
+  .main-blog-post__related-content h3 {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: inherit;
+    font-family: var(--font-heading--family);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: 0;
+  }
+
+  .main-blog-post__related-content h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .main-blog-post__related-content p {
+    margin: 0;
+    color: #2a1520;
+    font-size: 13px;
+    line-height: 1.22;
+  }
+
+  .main-blog-post__related-button {
+    align-self: end;
+    grid-column: 2;
+    grid-row: 2;
+    padding: 14px 20px;
+    border-radius: 6px;
+    background: #9b173f;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .main-blog-post__related-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 34px;
+    margin-top: 34px;
+  }
+
+  .main-blog-post__related-footer[hidden] {
+    display: none;
+  }
+
+  .main-blog-post__related--count-1 .main-blog-post__related-footer {
+    display: none;
+  }
+
+  .main-blog-post__related-dots,
+  .main-blog-post__related-arrows {
+    display: flex;
+    align-items: center;
+  }
+
+  .main-blog-post__related-dots {
+    gap: 7px;
+  }
+
+  .main-blog-post__related-dots button {
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    border: 1px solid rgb(255 255 255 / 90%);
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .main-blog-post__related-dots button.is-active {
+    background: #ffffff;
+  }
+
+  .main-blog-post__related-arrows {
+    gap: 14px;
+  }
+
+  .main-blog-post__related-arrows button {
+    display: grid;
+    width: 54px;
+    height: 54px;
+    place-items: center;
+    border: 1px solid rgb(255 255 255 / 70%);
+    border-radius: 999px;
+    background: transparent;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background 0.25s ease, border-color 0.25s ease, opacity 0.25s ease;
+  }
+
+  .main-blog-post__related-arrows button:hover {
+    border-color: #ffffff;
+    background: rgb(255 255 255 / 10%);
+  }
+
+  .main-blog-post__related-arrows button:disabled {
+    opacity: 0.34;
+    cursor: default;
+  }
+
+  .main-blog-post__related-button-label--mobile {
+    display: none;
+  }
+
   .blog-post-comments-container {
     width: 100%;
     max-width: var(--normal-content-width);
@@ -109,6 +694,215 @@
   .blog-post-comments-pagination .current,
   .blog-post-comments-pagination a:hover {
     border-bottom: 1px solid var(--color-foreground);
+  }
+
+  @media screen and (max-width: 989px) {
+    .main-blog-post__inner.section-content-wrapper {
+      width: 100%;
+      padding-block-start: 0 !important;
+    }
+
+    .main-blog-post__breadcrumbs {
+      order: 0;
+      width: calc(100% - 16px);
+      margin: 6px auto 7px;
+      font-size: 8px;
+      line-height: 1.2;
+    }
+
+    .main-blog-post__back-link,
+    .main-blog-post__divider {
+      display: none;
+    }
+
+    .main-blog-post__header--desktop {
+      display: none;
+    }
+
+    .main-blog-post__header--mobile {
+      display: block;
+      order: 0 !important;
+      width: 100%;
+    }
+
+    .main-blog-post__header--mobile h1 {
+      width: calc(100% - 32px);
+      max-width: calc(100% - 24px);
+      margin: 0 auto 24px auto;
+      color: #1e0812;
+      font-family: var(--font-heading--family);
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: 0;
+      text-align: left !important;
+    }
+
+    .main-blog-post .blog-post-featured-image {
+      order: 1 !important;
+      width: 100vw;
+      margin: 0 0 22px;
+      margin-left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .main-blog-post .blog-post-featured-image__image {
+      aspect-ratio: 1.78 / 1;
+      border-radius: 0;
+    }
+
+    .main-blog-post .blog-post-content {
+      order: 3 !important;
+      width: calc(100% - 32px);
+      max-width: calc(100% - 32px);
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .main-blog-post .blog-post-content p {
+      margin-block-end: 0.75em;
+    }
+
+    .main-blog-post .blog-post-content :is(h2, h3) {
+      font-size: 18px;
+      line-height: 1.15;
+      margin-block: 26px 18px;
+    }
+
+    .main-blog-post .blog-post-content ul,
+    .main-blog-post .blog-post-content ol {
+      padding-inline-start: 18px;
+    }
+
+    .main-blog-post .blog-post-content li {
+      padding-inline-start: 2px;
+      margin-block-end: 16px;
+    }
+
+    .main-blog-post__related {
+      order: 4 !important;
+      margin-top: 20px;
+    }
+
+    .main-blog-post__related-container {
+      width: min(100%, calc(100% - 40px));
+      padding-block: 36px 34px;
+    }
+
+    .main-blog-post__related-header {
+      margin-bottom: 22px;
+    }
+
+    .main-blog-post__related-header h2 {
+      font-size: 23px;
+      line-height: 1.08;
+    }
+
+    .main-blog-post__related-header p {
+      margin-top: 12px;
+      font-size: 12px;
+    }
+
+    .main-blog-post__related-track {
+      grid-auto-columns: 100%;
+      gap: 16px;
+    }
+
+    .main-blog-post__related-media {
+      aspect-ratio: 1.78 / 1;
+    }
+
+    .main-blog-post__related-tag {
+      top: 10px;
+      right: 10px;
+      padding: 5px 8px;
+      font-size: 9px;
+    }
+
+    .main-blog-post__related-content {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-rows: auto auto;
+      gap: 12px 14px;
+      padding: 14px 16px 16px;
+    }
+
+    .main-blog-post__related-content h3 {
+      grid-column: 1 / -1;
+      font-size: 12px;
+      line-height: 1.12;
+    }
+
+    .main-blog-post__related-content p {
+      grid-column: 1;
+      grid-row: 2;
+      min-width: 0;
+      font-size: 10px;
+      line-height: 1.22;
+    }
+
+    .main-blog-post__related-button {
+      grid-column: 2;
+      grid-row: 2;
+      align-self: center;
+      justify-self: end;
+      padding: 10px 14px;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .main-blog-post__related-button-label--desktop {
+      display: none;
+    }
+
+    .main-blog-post__related-button-label--mobile {
+      display: inline;
+    }
+
+    .main-blog-post__related-footer {
+      flex-direction: row-reverse;
+      justify-content: space-between;
+      gap: 20px;
+      margin-top: 18px;
+    }
+
+    .main-blog-post__related-arrows button {
+      width: 30px;
+      height: 30px;
+    }
+
+    .main-blog-post__related-arrows button svg {
+      width: 18px;
+      height: auto;
+    }
+
+    .main-blog-post__related-dots button {
+      width: 6px;
+      height: 6px;
+    }
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .main-blog-post__related--count-1 .main-blog-post__related-footer,
+    .main-blog-post__related--count-2 .main-blog-post__related-footer {
+      display: none;
+    }
+
+    .main-blog-post__related-container {
+      width: min(100%, calc(100% - 48px));
+    }
+
+    .main-blog-post__related-track {
+      grid-auto-columns: calc((100% - 20px) / 2);
+      gap: 20px;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .main-blog-post__related--count-1 .main-blog-post__related-footer,
+    .main-blog-post__related--count-2 .main-blog-post__related-footer,
+    .main-blog-post__related--count-3 .main-blog-post__related-footer {
+      display: none;
+    }
   }
 {% endstylesheet %}
 

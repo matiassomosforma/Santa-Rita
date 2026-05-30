@@ -13,6 +13,7 @@
       "type": "santa-rita-404",
       "settings": {
         "banner_image": "shopify://shop_images/404.png",
+        "banner_image_mobile": "shopify://shop_images/404-mobile.png",
         "hero_heading": "Página no encontrada",
         "hero_text": "Descubre las ofertas de Santa Rita Online.",
         "button_label": "Ver más",
