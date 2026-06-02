@@ -27,7 +27,7 @@
 
 <style>
   .santa-rita-page-notices {
-    background: #fffbf6;
+    background: #FFFCF7;
     color: #21000f;
   }
 
@@ -36,17 +36,16 @@
     width: min(100% - 48px, 1220px);
     gap: 28px;
     margin-inline: auto;
-    padding-block: 32px;
+    padding-block: 0 60px;
   }
 
   .santa-rita-page-notices__item {
-    padding: 24px 28px;
+    padding: 24px 24px;
     border-radius: 8px;
   }
 
   .santa-rita-page-notices__item--highlight {
-    border: 1px solid #f6efe4;
-    background: #f8f1e6;
+    background: rgba(246, 237, 217, 0.40);
   }
 
   .santa-rita-page-notices__item--outline {
@@ -78,15 +77,21 @@
 
   .santa-rita-page-notices__header h2 {
     margin: 0;
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 1.2;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: normal;
     letter-spacing: 0;
+    font-family: var(--font-primary--family);
   }
 
+  .santa-rita-page-notices__item--outline   .santa-rita-page-notices__header h2{
+  font-size: 16px;
+}
+
   .santa-rita-page-notices__text {
-    font-size: 14px;
-    line-height: 1.45;
+    font-size: 16px;
+    line-height: 24px;
+    color: #1E0812;
   }
 
   .santa-rita-page-notices__text p,
@@ -107,6 +112,7 @@
   .santa-rita-page-notices__text ol {
     padding-left: 0;
     list-style: none;
+    color: #1e0812;
   }
 
   .santa-rita-page-notices__text li {
@@ -123,10 +129,10 @@
     position: absolute;
     top: 0.42em;
     left: 0;
-    width: 10px;
-    height: 6px;
-    border-bottom: 1.5px solid currentColor;
-    border-left: 1.5px solid currentColor;
+    width: 8px;
+    height: 4px;
+    border-bottom: 1.3px solid currentColor;
+    border-left: 1.3px solid currentColor;
     transform: rotate(-45deg);
   }
 
@@ -145,7 +151,7 @@
     .santa-rita-page-notices__inner {
       width: calc(100% - 28px);
       gap: 18px;
-      padding-block: 24px;
+      padding-block: 0 24px;
     }
 
     .santa-rita-page-notices__item {
@@ -166,11 +172,11 @@
     }
 
     .santa-rita-page-notices__header h2 {
-      font-size: 13px;
+      font-size: 14px;
     }
 
     .santa-rita-page-notices__text {
-      font-size: 11px;
+      font-size: 12px;
       line-height: 1.35;
     }
 

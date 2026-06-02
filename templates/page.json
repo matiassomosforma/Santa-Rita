@@ -6,8 +6,20 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
+    "santa_rita_page_banner_4aLY34": {
+      "type": "santa-rita-page-banner",
+      "name": "Banner de pagina",
+      "settings": {
+        "desktop_image": "shopify://shop_images/404.png",
+        "mobile_image": "shopify://shop_images/404-mobile.png",
+        "heading": "Instructivo para cambios y devoluciones",
+        "subheading": "Te ayudamos a resolver cualquier inconveniente con tu pedido.",
+        "show_breadcrumbs": true
+      }
+    },
     "main": {
       "type": "main-page",
       "blocks": {
@@ -47,6 +59,7 @@
         "heading",
         "page-content"
       ],
+      "disabled": true,
       "settings": {
         "content_direction": "column",
         "gap": 32,
@@ -54,9 +67,76 @@
         "padding-block-start": 40,
         "padding-block-end": 80
       }
+    },
+    "santa_rita_page_steps_4GbPDP": {
+      "type": "santa-rita-page-steps",
+      "blocks": {
+        "step_f7jfjD": {
+          "type": "step",
+          "settings": {
+            "title": "Contáctanos",
+            "text": "<p>Comunicate con nosotros mediante el <a href=\"/pages/contact\" title=\"Contact\"><strong>formulario de contacto</strong></a> detallando numero de pedido y el motivo del cambio.</p>"
+          }
+        },
+        "step_f8RD98": {
+          "type": "step",
+          "settings": {
+            "title": "Coordinacion de retiro",
+            "text": "<p>Nuestro equipo se pondra en contacto para agendar una fecha de retiro del producto en tu domicilio.</p>"
+          }
+        },
+        "step_f7ajcK": {
+          "type": "step",
+          "settings": {
+            "title": "Preparación del envío",
+            "text": "<p>Prepara el producto en su embalaje original. Es necesario adjuntar el comprobante de compra.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "step_f7jfjD",
+        "step_f8RD98",
+        "step_f7ajcK"
+      ],
+      "name": "Pasos de pagina",
+      "settings": {
+        "heading": "Pasos a seguir"
+      }
+    },
+    "santa_rita_page_notices_fMJaK9": {
+      "type": "santa-rita-page-notices",
+      "blocks": {
+        "notice_qnQq9k": {
+          "type": "notice",
+          "settings": {
+            "title": "Politicas importantes",
+            "text": "<ul><li>Los productos deben estar <strong>cerrados y sin abrir</strong>.</li><li>Las etiquetas y sellos de seguridad deben permanecer intactos.</li><li>El producto debe estar en su condicion original, tal como fue recibido.</li></ul>",
+            "style": "highlight",
+            "show_icon": true
+          }
+        },
+        "notice_7N3Czi": {
+          "type": "notice",
+          "settings": {
+            "title": "Aclaraciones sobre reembolsos",
+            "text": "<p>Los reembolsos totales se procesan tras la inspeccion del producto en nuestra bodega. En caso de cambios por menor valor, se generara una nota de credito o reembolso parcial segun el metodo de pago.</p>",
+            "style": "outline",
+            "show_icon": false
+          }
+        }
+      },
+      "block_order": [
+        "notice_qnQq9k",
+        "notice_7N3Czi"
+      ],
+      "name": "Textos importantes",
+      "settings": {}
     }
   },
   "order": [
-    "main"
+    "santa_rita_page_banner_4aLY34",
+    "main",
+    "santa_rita_page_steps_4GbPDP",
+    "santa_rita_page_notices_fMJaK9"
   ]
 }
