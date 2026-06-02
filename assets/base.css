@@ -87,6 +87,10 @@ textarea:hover {
     color: #8C1A3E;
   }
 
+  .santa-rita__button.santa-rita__button-full:hover{
+    border: 1px solid #8C1A3E;
+  }
+
 /** override ios and firefox defaults */
 select {
   background-color: var(--color-background);

@@ -1,0 +1,194 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "santa_rita_page_banner_4aLY34": {
+      "type": "santa-rita-page-banner",
+      "name": "Banner de pagina",
+      "settings": {
+        "banner_style": "background",
+        "desktop_image": "shopify://shop_images/404.png",
+        "mobile_image": "shopify://shop_images/404-mobile.png",
+        "heading": "Plazos de entrega y costos",
+        "subheading": "Despachos de lunes a sábado, entre las 09:00 y las 19:00 hrs.",
+        "show_breadcrumbs": true
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "name": "Title",
+          "settings": {
+            "text": "<h1>{{ closest.page.title }}</h1>",
+            "width": "100%",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h2",
+            "font": "var(--font-primary--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "page-content": {
+          "type": "page-content",
+          "settings": {},
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "heading",
+        "page-content"
+      ],
+      "disabled": true,
+      "settings": {
+        "content_direction": "column",
+        "gap": 32,
+        "color_scheme": "",
+        "padding-block-start": 40,
+        "padding-block-end": 80
+      }
+    },
+    "santa_rita_dispatch_tabs_hxFie4": {
+      "type": "santa-rita-dispatch-tabs",
+      "blocks": {
+        "dispatch_item_FJJQCf": {
+          "type": "dispatch_item",
+          "settings": {
+            "zone": "metropolitana",
+            "name": "Santiago",
+            "days": "Lunes a Sabado",
+            "price": "$2.500",
+            "search_terms": "",
+            "is_suggestion": true
+          }
+        },
+        "dispatch_item_iCDcEr": {
+          "type": "dispatch_item",
+          "settings": {
+            "zone": "metropolitana",
+            "name": "Santiago",
+            "days": "Lunes a Sabado",
+            "price": "$2.500",
+            "search_terms": "",
+            "is_suggestion": false
+          }
+        },
+        "dispatch_item_jr3xif": {
+          "type": "dispatch_item",
+          "settings": {
+            "zone": "metropolitana",
+            "name": "La Florida",
+            "days": "Martes a Sabado",
+            "price": "$2.500",
+            "search_terms": "",
+            "is_suggestion": true
+          }
+        },
+        "dispatch_item_yxzNYM": {
+          "type": "dispatch_item",
+          "settings": {
+            "zone": "metropolitana",
+            "name": "Recoleta",
+            "days": "Lunes, Jueves y Sabado",
+            "price": "$2.500",
+            "search_terms": "",
+            "is_suggestion": true
+          }
+        },
+        "dispatch_item_kRNX6W": {
+          "type": "dispatch_item",
+          "settings": {
+            "zone": "regions",
+            "name": "Antofagasta",
+            "days": "Lunes a Viernes",
+            "price": "$24.900",
+            "search_terms": "",
+            "is_suggestion": true
+          }
+        },
+        "dispatch_item_GBpUrP": {
+          "type": "dispatch_item",
+          "settings": {
+            "zone": "regions",
+            "name": "Coquimbo",
+            "days": "Lunes a Viernes",
+            "price": "$5.990",
+            "search_terms": "",
+            "is_suggestion": true
+          }
+        },
+        "dispatch_item_GVDfKY": {
+          "type": "dispatch_item",
+          "settings": {
+            "zone": "regions",
+            "name": "San Pedro de Atacama",
+            "days": "Martes y Jueves",
+            "price": "$8.990",
+            "search_terms": "",
+            "is_suggestion": true
+          }
+        }
+      },
+      "block_order": [
+        "dispatch_item_FJJQCf",
+        "dispatch_item_iCDcEr",
+        "dispatch_item_jr3xif",
+        "dispatch_item_yxzNYM",
+        "dispatch_item_kRNX6W",
+        "dispatch_item_GBpUrP",
+        "dispatch_item_GVDfKY"
+      ],
+      "name": "Tabs de despacho",
+      "settings": {
+        "metropolitan_tab_label": "Region Metropolitana",
+        "regions_tab_label": "Otras Regiones",
+        "metropolitan_title": "Region Metropolitana",
+        "metropolitan_text": "Busca tu comuna y conoce los dias de entrega y el costo estimado de despacho para compras realizadas antes de las",
+        "metropolitan_cutoff": "15:00 hrs.",
+        "metropolitan_contact_url": "",
+        "metropolitan_show_alert": true,
+        "regions_title": "Otras Regiones",
+        "regions_text": "Busca tu comuna y conoce los dias de entrega y el costo estimado de despacho para compras realizadas antes de las",
+        "regions_cutoff": "09:00 hrs.",
+        "regions_contact_url": "",
+        "regions_show_alert": false,
+        "search_placeholder": "Busca tu comuna",
+        "search_button_label": "Buscar",
+        "suggestions_label": "Sugerencias",
+        "empty_text": "No encontramos resultados para tu busqueda.",
+        "alert_title": "Aclaracion",
+        "alert_text": "<p>Las comunas de <strong>Melipilla, Talagante, El Monte e Isla de Maipo</strong> son despachadas por un operador externo.</p>",
+        "contact_title": "¿No recibiste tu pedido?",
+        "contact_text": "Si tu pedido no llego en el plazo indicado, contáctanos y lo verificamos de inmediato.",
+        "contact_button_label": "Formulario de contacto",
+        "open_external_links": true
+      }
+    }
+  },
+  "order": [
+    "santa_rita_page_banner_4aLY34",
+    "main",
+    "santa_rita_dispatch_tabs_hxFie4"
+  ]
+}

@@ -13,6 +13,7 @@
       "type": "santa-rita-page-banner",
       "name": "Banner de pagina",
       "settings": {
+        "banner_style": "background",
         "desktop_image": "shopify://shop_images/404.png",
         "mobile_image": "shopify://shop_images/404-mobile.png",
         "heading": "Instructivo para cambios y devoluciones",

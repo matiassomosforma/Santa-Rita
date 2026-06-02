@@ -1,0 +1,103 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "santa_rita_page_banner_4aLY34": {
+      "type": "santa-rita-page-banner",
+      "name": "Banner de pagina",
+      "settings": {
+        "banner_style": "split",
+        "desktop_image": "shopify://shop_images/image_61_1.png",
+        "heading": "Bases de concurso",
+        "subheading": "Conoce las bases y condiciones de los sorteos de Santa Rita Online.",
+        "show_breadcrumbs": true
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "name": "Title",
+          "settings": {
+            "text": "<h1>{{ closest.page.title }}</h1>",
+            "width": "100%",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h2",
+            "font": "var(--font-primary--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "page-content": {
+          "type": "page-content",
+          "settings": {},
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "heading",
+        "page-content"
+      ],
+      "disabled": true,
+      "settings": {
+        "content_direction": "column",
+        "gap": 32,
+        "color_scheme": "",
+        "padding-block-start": 40,
+        "padding-block-end": 80
+      }
+    },
+    "santa_rita_contest_list_6Q8kNf": {
+      "type": "santa-rita-contest-list",
+      "blocks": {
+        "contest_UWi4r6": {
+          "type": "contest",
+          "settings": {
+            "title": "Base Sorteo Amaranta Redes Sociales",
+            "description": "<p>Participa en nuestro ultimo sorteo exclusivo para nuestra comunidad digital. Revisa los detalles y asegurate de cumplir con todos los requisitos para entrar en el concurso.</p>",
+            "accounts_title": "Cuentas Oficiales",
+            "accounts_text": "<p>@santaritaonline_cl</p><p>Instagram & TikTok</p>",
+            "date_title": "Fecha Finalizacion",
+            "end_date": "2026-12-31",
+            "end_date_label": "31 de Diciembre de 2026",
+            "date_note": "Anuncio de ganadores via Stories"
+          }
+        }
+      },
+      "block_order": [
+        "contest_UWi4r6"
+      ],
+      "name": "Bases de concurso",
+      "settings": {
+        "heading": "",
+        "sort_mode": "date"
+      }
+    }
+  },
+  "order": [
+    "santa_rita_page_banner_4aLY34",
+    "main",
+    "santa_rita_contest_list_6Q8kNf"
+  ]
+}
