@@ -1,0 +1,226 @@
+{% liquid
+  assign steps_columns = section.blocks.size
+
+  if steps_columns > 3
+    assign steps_columns = 3
+  elsif steps_columns < 1
+    assign steps_columns = 1
+  endif
+%}
+
+<section class="santa-rita-page-steps" {{ section.shopify_attributes }}>
+  <div class="santa-rita-page-steps__inner">
+    {% if section.settings.heading != blank %}
+      <h2 class="santa-rita-page-steps__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="santa-rita-page-steps__list" style="--steps-columns: {{ steps_columns }};">
+      {% for block in section.blocks %}
+        <article class="santa-rita-page-steps__item" {{ block.shopify_attributes }}>
+          <div class="santa-rita-page-steps__number">
+            {{ forloop.index | prepend: '0' | slice: -2, 2 }}
+          </div>
+
+          <div class="santa-rita-page-steps__content">
+            {% if block.settings.title != blank %}
+              <h3>{{ block.settings.title }}</h3>
+            {% endif %}
+
+            {% if block.settings.text != blank %}
+              <div class="santa-rita-page-steps__text">
+                {{ block.settings.text }}
+              </div>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .santa-rita-page-steps {
+    background: #fffbf6;
+    color: #21000f;
+  }
+
+  .santa-rita-page-steps__inner {
+    width: min(100% - 48px, 1220px);
+    margin-inline: auto;
+    padding-block: 44px 38px;
+  }
+
+  .santa-rita-page-steps__heading {
+    margin: 0 0 42px;
+    font-family: var(--font-heading--family);
+    font-size: clamp(24px, 2.5vw, 34px);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-page-steps__list {
+    display: grid;
+    grid-template-columns: repeat(var(--steps-columns, 3), minmax(0, 1fr));
+    gap: 36px;
+  }
+
+  .santa-rita-page-steps__item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+    border-bottom: 1px solid rgba(110, 90, 97, 0.38);
+    padding-bottom: 22px;
+  }
+
+  .santa-rita-page-steps__number {
+    display: inline-grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 50%;
+    background: #8c1a3e;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .santa-rita-page-steps__content h3 {
+    margin: 2px 0 9px;
+    color: #8c1a3e;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .santa-rita-page-steps__text {
+    color: #21000f;
+    font-size: 13px;
+    line-height: 1.28;
+  }
+
+  .santa-rita-page-steps__text p {
+    margin: 0;
+  }
+
+  .santa-rita-page-steps__text p + p {
+    margin-top: 8px;
+  }
+
+  .santa-rita-page-steps__text a {
+    color: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  @media screen and (max-width: 989px) {
+    .santa-rita-page-steps__list {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-page-steps__inner {
+      width: calc(100% - 28px);
+      padding-block: 28px 32px;
+    }
+
+    .santa-rita-page-steps__heading {
+      margin-bottom: 24px;
+      font-size: 26px;
+      line-height: 1.05;
+    }
+
+    .santa-rita-page-steps__item {
+      gap: 12px;
+      padding-block: 0 22px;
+    }
+
+    .santa-rita-page-steps__item + .santa-rita-page-steps__item {
+      padding-top: 18px;
+    }
+
+    .santa-rita-page-steps__number {
+      width: 32px;
+      height: 32px;
+      font-size: 12px;
+    }
+
+    .santa-rita-page-steps__content h3 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .santa-rita-page-steps__text {
+      font-size: 12px;
+      line-height: 1.26;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Pasos de pagina",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titulo",
+      "default": "Pasos a seguir"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Paso",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titulo",
+          "default": "Titulo del paso"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "<p>Agrega el contenido del paso. Puedes incluir enlaces desde el editor.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Pasos de pagina",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "title": "Contactanos",
+            "text": "<p>Comunicate con nosotros mediante el formulario de contacto detallando numero de pedido y el motivo del cambio.</p>"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Coordinacion de retiro",
+            "text": "<p>Nuestro equipo se pondra en contacto para agendar una fecha de retiro del producto en tu domicilio.</p>"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Preparacion del envio",
+            "text": "<p>Prepara el producto en su embalaje original. Es necesario adjuntar el comprobante de compra.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

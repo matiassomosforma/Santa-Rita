@@ -1,0 +1,254 @@
+<section class="santa-rita-page-notices" {{ section.shopify_attributes }}>
+  <div class="santa-rita-page-notices__inner">
+    {% for block in section.blocks %}
+      <article
+        class="santa-rita-page-notices__item santa-rita-page-notices__item--{{ block.settings.style }}"
+        {{ block.shopify_attributes }}
+      >
+        <div class="santa-rita-page-notices__header">
+          {% if block.settings.show_icon %}
+            <span class="santa-rita-page-notices__icon" aria-hidden="true">i</span>
+          {% endif %}
+
+          {% if block.settings.title != blank %}
+            <h2>{{ block.settings.title }}</h2>
+          {% endif %}
+        </div>
+
+        {% if block.settings.text != blank %}
+          <div class="santa-rita-page-notices__text">
+            {{ block.settings.text }}
+          </div>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<style>
+  .santa-rita-page-notices {
+    background: #fffbf6;
+    color: #21000f;
+  }
+
+  .santa-rita-page-notices__inner {
+    display: grid;
+    width: min(100% - 48px, 1220px);
+    gap: 28px;
+    margin-inline: auto;
+    padding-block: 32px;
+  }
+
+  .santa-rita-page-notices__item {
+    padding: 24px 28px;
+    border-radius: 8px;
+  }
+
+  .santa-rita-page-notices__item--highlight {
+    border: 1px solid #f6efe4;
+    background: #f8f1e6;
+  }
+
+  .santa-rita-page-notices__item--outline {
+    border: 1px solid rgba(110, 90, 97, 0.7);
+    background: transparent;
+  }
+
+  .santa-rita-page-notices__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .santa-rita-page-notices__icon {
+    display: inline-grid;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    place-items: center;
+    border: 1px solid #8c1a3e;
+    border-radius: 50%;
+    color: #8c1a3e;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    font-family: var(--font-primary--family);
+  }
+
+  .santa-rita-page-notices__header h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-page-notices__text {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .santa-rita-page-notices__text p,
+  .santa-rita-page-notices__text ul,
+  .santa-rita-page-notices__text ol {
+    margin-block: 0;
+  }
+
+  .santa-rita-page-notices__text p + p,
+  .santa-rita-page-notices__text p + ul,
+  .santa-rita-page-notices__text p + ol,
+  .santa-rita-page-notices__text ul + p,
+  .santa-rita-page-notices__text ol + p {
+    margin-top: 10px;
+  }
+
+  .santa-rita-page-notices__text ul,
+  .santa-rita-page-notices__text ol {
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .santa-rita-page-notices__text li {
+    position: relative;
+    padding-left: 20px;
+  }
+
+  .santa-rita-page-notices__text li + li {
+    margin-top: 7px;
+  }
+
+  .santa-rita-page-notices__text li::before {
+    content: "";
+    position: absolute;
+    top: 0.42em;
+    left: 0;
+    width: 10px;
+    height: 6px;
+    border-bottom: 1.5px solid currentColor;
+    border-left: 1.5px solid currentColor;
+    transform: rotate(-45deg);
+  }
+
+  .santa-rita-page-notices__text strong {
+    font-weight: 700;
+  }
+
+  .santa-rita-page-notices__text a {
+    color: inherit;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-page-notices__inner {
+      width: calc(100% - 28px);
+      gap: 18px;
+      padding-block: 24px;
+    }
+
+    .santa-rita-page-notices__item {
+      padding: 16px 14px;
+      border-radius: 5px;
+    }
+
+    .santa-rita-page-notices__header {
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .santa-rita-page-notices__icon {
+      width: 16px;
+      height: 16px;
+      flex-basis: 16px;
+      font-size: 11px;
+    }
+
+    .santa-rita-page-notices__header h2 {
+      font-size: 13px;
+    }
+
+    .santa-rita-page-notices__text {
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .santa-rita-page-notices__text li {
+      padding-left: 16px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Textos importantes",
+  "blocks": [
+    {
+      "type": "notice",
+      "name": "Texto importante",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titulo",
+          "default": "Politicas importantes"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "<ul><li>Los productos deben estar <strong>cerrados y sin abrir</strong>.</li><li>Las etiquetas y sellos de seguridad deben permanecer intactos.</li><li>El producto debe estar en su condicion original, tal como fue recibido.</li></ul>"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Estilo",
+          "options": [
+            {
+              "value": "highlight",
+              "label": "Destacado"
+            },
+            {
+              "value": "outline",
+              "label": "Borde"
+            }
+          ],
+          "default": "highlight"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_icon",
+          "label": "Mostrar icono",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Textos importantes",
+      "blocks": [
+        {
+          "type": "notice",
+          "settings": {
+            "title": "Politicas importantes",
+            "style": "highlight",
+            "show_icon": true,
+            "text": "<ul><li>Los productos deben estar <strong>cerrados y sin abrir</strong>.</li><li>Las etiquetas y sellos de seguridad deben permanecer intactos.</li><li>El producto debe estar en su condicion original, tal como fue recibido.</li></ul>"
+          }
+        },
+        {
+          "type": "notice",
+          "settings": {
+            "title": "Aclaraciones sobre reembolsos",
+            "style": "outline",
+            "show_icon": false,
+            "text": "<p>Los reembolsos totales se procesan tras la inspeccion del producto en nuestra bodega. En caso de cambios por menor valor, se generara una nota de credito o reembolso parcial segun el metodo de pago.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
