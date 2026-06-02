@@ -1,0 +1,105 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "santa_rita_page_banner_tracking": {
+      "type": "santa-rita-page-banner",
+      "name": "Banner de pagina",
+      "settings": {
+        "banner_style": "background",
+        "desktop_image": "shopify://shop_images/404.png",
+        "mobile_image": "shopify://shop_images/404-mobile.png",
+        "heading": "Seguimiento de tu pedido",
+        "subheading": "El dia previo al despacho de tu compra, recibirás un correo electrónico con el número de seguimiento de tu pedido.",
+        "show_breadcrumbs": true
+      }
+    },
+    "main": {
+      "type": "main-page",
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "name": "Title",
+          "settings": {
+            "text": "<h1>{{ closest.page.title }}</h1>",
+            "width": "100%",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h2",
+            "font": "var(--font-primary--family)",
+            "font_size": "",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "page-content": {
+          "type": "page-content",
+          "settings": {},
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "heading",
+        "page-content"
+      ],
+      "disabled": true,
+      "settings": {
+        "content_direction": "column",
+        "gap": 32,
+        "color_scheme": "",
+        "padding-block-start": 40,
+        "padding-block-end": 80
+      }
+    },
+    "santa_rita_order_tracking": {
+      "type": "santa-rita-tracking",
+      "name": "Seguimiento de pedido",
+      "settings": {
+        "tracking_base_url": "https://livetracking.simpliroute.com/widget/account/13343/tracking/",
+        "open_new_window": true,
+        "input_label": "Numero de pedido",
+        "input_placeholder": "N° de pedido",
+        "input_helper": "Sin guiones ni puntos. Ej. 360000000000",
+        "button_label": "Buscar",
+        "empty_message": "Ingresa tu numero de pedido.",
+        "question_title": "¿No tienes el número?",
+        "question_prefix": "Puedes encontrarlo en el",
+        "modal_trigger_label": "email de confirmación de tu compra",
+        "question_suffix": ".",
+        "show_notice_icon": true,
+        "notice_text": "<p><strong>Servicio exclusivo para RM.</strong><br>Otras Regiones: Por favor visitar la sección <a href=\"/pages/plazos-y-costos\">plazos y costos de despacho.</a></p>",
+        "close_label": "Cerrar modal",
+        "modal_title": "Encuentra tu N° de pedido",
+        "modal_text": "<p>Busca el correo con el asunto <strong>“Su pedido va en camino”.</strong> Ahí encontrarás tu número de seguimiento:</p>",
+        "modal_note_label": "Notas:",
+        "modal_code_label": "OT Seguimiento:",
+        "modal_example_code": "172030587;358739",
+        "modal_button_label": "Seguimiento Pedido",
+        "modal_footer_text": "<p>Puedes copiarlo y pegarlo en el buscador o hacer clic en <strong>“Seguimiento del pedido”.</strong></p>"
+      }
+    }
+  },
+  "order": [
+    "santa_rita_page_banner_tracking",
+    "main",
+    "santa_rita_order_tracking"
+  ]
+}
