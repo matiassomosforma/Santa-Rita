@@ -46,7 +46,7 @@
         <p id="tracking-error-{{ section.id }}" class="santa-rita-order-tracking__error" data-tracking-error hidden></p>
       </div>
 
-      <button type="submit" class="santa-rita-order-tracking__submit">
+      <button type="submit" class="santa-rita-order-tracking__submit santa-rita__button santa-rita__button-full">
         {{ section.settings.button_label }}
       </button>
     </form>
@@ -132,7 +132,7 @@
 
         {% if section.settings.modal_button_label != blank %}
           <a
-            class="santa-rita-order-tracking__sample-button"
+            class="santa-rita-order-tracking__sample-button santa-rita__button santa-rita__button-full"
             href="{{ tracking_base_url | append: modal_example_code | escape }}"
             {% if section.settings.open_new_window %}
               target="_blank"
@@ -265,12 +265,17 @@
     display: block;
     background: #fffbf6;
     color: #21000f;
+    padding-block: 60px 80px;
   }
 
   .santa-rita-order-tracking__inner {
-    width: min(100% - 48px, 490px);
+    width: min(100% - 48px, 745px);
     margin-inline: auto;
-    padding-block: 52px 64px;
+    padding: 64px;
+    border-radius: 12px;
+    border: 1px solid var(--Fondo-texto, #EFEAE3);
+    background: #FFF;
+    box-shadow: 0 2px 2px 0 rgba(30, 8, 18, 0.10);
   }
 
   .santa-rita-order-tracking__heading {
@@ -297,20 +302,20 @@
 
   .santa-rita-order-tracking__form {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 92px;
+    grid-template-columns: minmax(0, 1fr) 255px;
     gap: 14px;
     align-items: start;
   }
 
   .santa-rita-order-tracking__field input {
     width: 100%;
-    min-height: 60px;
+    min-height: 48px;
     border: 1px solid rgba(110, 90, 97, 0.28);
     border-radius: 4px;
     background: #ffffff;
     color: #21000f;
     font: inherit;
-    font-size: 18px;
+    font-size: 14px;
     line-height: 1;
     padding: 0 18px;
   }
@@ -332,7 +337,7 @@
   }
 
   .santa-rita-order-tracking__helper {
-    color: #667486;
+    color: #637381;
   }
 
   .santa-rita-order-tracking__error {
@@ -342,7 +347,7 @@
 
   .santa-rita-order-tracking__submit {
     display: inline-flex;
-    min-height: 60px;
+    min-height: 48px;
     align-items: center;
     justify-content: center;
     border: 0;
@@ -351,8 +356,8 @@
     color: #ffffff;
     cursor: pointer;
     font: inherit;
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 500;
     line-height: 1;
     padding-inline: 18px;
   }
@@ -365,7 +370,7 @@
 
   .santa-rita-order-tracking__question h3 {
     margin: 0 0 12px;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 700;
     line-height: 1.2;
   }
@@ -393,8 +398,8 @@
     align-items: center;
     margin-top: 30px;
     border-radius: 8px;
-    background: #f8f1e6;
-    padding: 18px 18px;
+    background: rgba(246, 237, 217, 0.40);
+    padding: 12px 18px;
   }
 
   .santa-rita-order-tracking__notice-icon {
@@ -405,7 +410,7 @@
     border: 2px solid #8c1a3e;
     border-radius: 50%;
     color: #8c1a3e;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 700;
     line-height: 1;
   }
@@ -453,10 +458,10 @@
   .santa-rita-order-tracking__dialog {
     position: relative;
     z-index: 1;
-    width: min(100%, 596px);
+    width: min(100%, 360px);
     background: #fffbf6;
     color: #21000f;
-    padding: 28px 28px 36px;
+    padding: 24px 16px;
     transform: translateY(10px);
     transition: transform 180ms ease;
   }
@@ -488,17 +493,17 @@
   .santa-rita-order-tracking__dialog h2 {
     margin: 0 44px 22px 0;
     font-family: var(--font-heading--family);
-    font-size: clamp(30px, 3.2vw, 40px);
+    font-size: 20px;
     font-weight: 700;
-    line-height: 1.05;
+    line-height: normal;
     letter-spacing: 0;
   }
 
   .santa-rita-order-tracking__modal-text {
     max-width: 520px;
     margin-bottom: 28px;
-    font-size: 18px;
-    line-height: 1.18;
+    font-size: 14px;
+    line-height: normal;
   }
 
   .santa-rita-order-tracking__modal-text strong,
@@ -515,7 +520,7 @@
   .santa-rita-order-tracking__sample-code {
     margin: 0;
     color: #9b9b9b;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 700;
     line-height: 1.45;
   }
@@ -527,25 +532,24 @@
 
   .santa-rita-order-tracking__sample-button {
     display: flex;
-    width: min(100%, 352px);
-    min-height: 52px;
+    width: 200px;
+    min-height: 40px;
+    max-height: 40px;
     align-items: center;
     justify-content: center;
     margin: 14px 0 0 auto;
     border-radius: 999px;
-    background: #b40000;
-    color: #ffffff;
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 700;
     line-height: 1;
     text-align: center;
     text-decoration: none;
-  }
+}
 
   .santa-rita-order-tracking__modal-footer {
     margin-top: 28px;
-    font-size: 18px;
-    line-height: 1.28;
+    font-size: 14px;
+    line-height: normal;
   }
 
   .santa-rita-order-tracking-modal-open {
@@ -649,12 +653,12 @@
 
     .santa-rita-order-tracking__sample-note,
     .santa-rita-order-tracking__sample-code {
-      font-size: 18px;
+      font-size: 14px;
     }
 
     .santa-rita-order-tracking__sample-button {
-      width: 100%;
-      min-height: 54px;
+      width: 80%;
+      min-height: 45px;
       margin-top: 18px;
       font-size: 25px;
     }
@@ -663,6 +667,29 @@
       margin-top: 30px;
       font-size: 25px;
       line-height: 1.2;
+    }
+
+    .santa-rita-order-tracking{
+      padding-block: 30px;
+    }
+
+    .santa-rita-order-tracking__question h3{
+    font-size: 14px;
+    font-family: var(--font-secondary--family);
+    }
+
+    .santa-rita-order-tracking__inner {
+    padding: 0;
+    border-radius: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+}
+
+    .santa-rita-order-tracking__notice-text,
+    .santa-rita-order-tracking__question p {
+        font-size: 12px;
+        line-height: normal;
     }
   }
 
@@ -686,13 +713,13 @@
     }
 
     .santa-rita-order-tracking__dialog h2 {
-      font-size: 31px;
+      font-size: 20px;
     }
 
     .santa-rita-order-tracking__modal-text,
     .santa-rita-order-tracking__modal-footer,
     .santa-rita-order-tracking__sample-button {
-      font-size: 20px;
+      font-size: 14px;
     }
 
     .santa-rita-order-tracking__sample {
