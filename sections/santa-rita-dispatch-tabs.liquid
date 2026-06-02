@@ -1,0 +1,866 @@
+<santa-rita-dispatch-tabs class="santa-rita-dispatch-tabs" {{ section.shopify_attributes }}>
+  <div class="santa-rita-dispatch-tabs__tabs" role="tablist" aria-label="Zonas de despacho">
+    <button
+      type="button"
+      class="santa-rita-dispatch-tabs__tab is-active"
+      role="tab"
+      aria-selected="true"
+      aria-controls="dispatch-panel-metropolitana-{{ section.id }}"
+      id="dispatch-tab-metropolitana-{{ section.id }}"
+      data-dispatch-tab="metropolitana"
+    >
+      {{ section.settings.metropolitan_tab_label }}
+    </button>
+    <button
+      type="button"
+      class="santa-rita-dispatch-tabs__tab"
+      role="tab"
+      aria-selected="false"
+      aria-controls="dispatch-panel-regions-{{ section.id }}"
+      id="dispatch-tab-regions-{{ section.id }}"
+      data-dispatch-tab="regions"
+    >
+      {{ section.settings.regions_tab_label }}
+    </button>
+  </div>
+
+  <div class="santa-rita-dispatch-tabs__body">
+    <section
+      class="santa-rita-dispatch-tabs__panel is-active"
+      id="dispatch-panel-metropolitana-{{ section.id }}"
+      role="tabpanel"
+      aria-labelledby="dispatch-tab-metropolitana-{{ section.id }}"
+      data-dispatch-panel="metropolitana"
+    >
+      {% render 'santa-rita-dispatch-panel',
+        dispatch_section: section,
+        zone: 'metropolitana',
+        title: section.settings.metropolitan_title,
+        text: section.settings.metropolitan_text,
+        cutoff: section.settings.metropolitan_cutoff,
+        contact_url: section.settings.metropolitan_contact_url,
+        show_alert: section.settings.metropolitan_show_alert
+      %}
+    </section>
+
+    <section
+      class="santa-rita-dispatch-tabs__panel"
+      id="dispatch-panel-regions-{{ section.id }}"
+      role="tabpanel"
+      aria-labelledby="dispatch-tab-regions-{{ section.id }}"
+      data-dispatch-panel="regions"
+      hidden
+    >
+      {% render 'santa-rita-dispatch-panel',
+        dispatch_section: section,
+        zone: 'regions',
+        title: section.settings.regions_title,
+        text: section.settings.regions_text,
+        cutoff: section.settings.regions_cutoff,
+        contact_url: section.settings.regions_contact_url,
+        show_alert: section.settings.regions_show_alert
+      %}
+    </section>
+  </div>
+</santa-rita-dispatch-tabs>
+
+<script>
+  if (!customElements.get('santa-rita-dispatch-tabs')) {
+    customElements.define(
+      'santa-rita-dispatch-tabs',
+      class SantaRitaDispatchTabs extends HTMLElement {
+        connectedCallback() {
+          this.tabs = Array.from(this.querySelectorAll('[data-dispatch-tab]'));
+          this.panels = Array.from(this.querySelectorAll('[data-dispatch-panel]'));
+
+          this.tabs.forEach((tab) => {
+            tab.addEventListener('click', () => this.activateTab(tab.dataset.dispatchTab));
+          });
+
+          this.panels.forEach((panel) => this.preparePanel(panel));
+          this.activateTab(this.tabs[0]?.dataset.dispatchTab || 'metropolitana');
+        }
+
+        preparePanel(panel) {
+          const input = panel.querySelector('[data-dispatch-search]');
+          const button = panel.querySelector('[data-dispatch-search-button]');
+
+          input?.addEventListener('input', () => this.renderPanel(panel));
+          input?.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              this.renderPanel(panel);
+            }
+          });
+          button?.addEventListener('click', () => this.renderPanel(panel));
+
+          this.renderPanel(panel);
+        }
+
+        activateTab(zone) {
+          this.tabs.forEach((tab) => {
+            const isActive = tab.dataset.dispatchTab === zone;
+            tab.classList.toggle('is-active', isActive);
+            tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          });
+
+          this.panels.forEach((panel) => {
+            const isActive = panel.dataset.dispatchPanel === zone;
+            panel.classList.toggle('is-active', isActive);
+            panel.hidden = !isActive;
+          });
+        }
+
+        renderPanel(panel) {
+          const input = panel.querySelector('[data-dispatch-search]');
+          const empty = panel.querySelector('[data-dispatch-empty]');
+          const items = Array.from(panel.querySelectorAll('[data-dispatch-item]'));
+          const query = this.normalize(input?.value || '');
+          let visibleItems = [];
+
+          if (query) {
+            visibleItems = items.filter((item) => this.normalize(item.dataset.search || '').includes(query));
+          } else {
+            const selectedSuggestions = items.filter((item) => item.dataset.suggestion === 'true');
+            const remainingItems = items.filter((item) => item.dataset.suggestion !== 'true');
+            visibleItems = selectedSuggestions.concat(remainingItems).slice(0, 3);
+          }
+
+          items.forEach((item) => {
+            item.hidden = !visibleItems.includes(item);
+          });
+
+          if (empty) {
+            empty.hidden = visibleItems.length > 0;
+          }
+        }
+
+        normalize(value) {
+          return value
+            .toString()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .trim();
+        }
+      }
+    );
+  }
+</script>
+
+<style>
+  .santa-rita-dispatch-tabs {
+    display: block;
+    background: #fffbf6;
+    color: #21000f;
+  }
+
+  .santa-rita-dispatch-tabs__tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-block: 1px solid rgba(110, 90, 97, 0.2);
+    background: #ffffff;
+  }
+
+  .santa-rita-dispatch-tabs__tab {
+    position: relative;
+    min-height: 56px;
+    border: 0;
+    background: transparent;
+    color: #21000f;
+    cursor: pointer;
+    font: inherit;
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  .santa-rita-dispatch-tabs__tab::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    background: transparent;
+  }
+
+  .santa-rita-dispatch-tabs__tab.is-active {
+    color: #8c1a3e;
+    font-weight: 700;
+  }
+
+  .santa-rita-dispatch-tabs__tab.is-active::after {
+    background: #8c1a3e;
+  }
+
+  .santa-rita-dispatch-tabs__body {
+    width: min(100% - 48px, 640px);
+    margin-inline: auto;
+    padding-block: 68px 84px;
+  }
+
+  .santa-rita-dispatch-tabs__panel[hidden] {
+    display: none;
+  }
+
+  .santa-rita-dispatch-tabs__card,
+  .santa-rita-dispatch-tabs__contact {
+    border: 1px solid rgba(110, 90, 97, 0.24);
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 2px 4px rgba(33, 0, 15, 0.04);
+  }
+
+  .santa-rita-dispatch-tabs__card {
+    padding: 58px 70px 54px;
+  }
+
+  .santa-rita-dispatch-tabs__title {
+    margin: 0 0 24px;
+    font-family: var(--font-heading--family);
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.06;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-dispatch-tabs__mobile-kicker {
+    display: none;
+  }
+
+  .santa-rita-dispatch-tabs__intro {
+    max-width: 420px;
+    margin: 0 0 24px;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .santa-rita-dispatch-tabs__intro strong {
+    font-weight: 700;
+  }
+
+  .santa-rita-dispatch-tabs__search {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 130px;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .santa-rita-dispatch-tabs__search-field {
+    position: relative;
+  }
+
+  .santa-rita-dispatch-tabs__search-field svg {
+    position: absolute;
+    top: 50%;
+    left: 18px;
+    width: 15px;
+    height: 15px;
+    color: #8c1a3e;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .santa-rita-dispatch-tabs__search input {
+    width: 100%;
+    min-height: 47px;
+    border: 1px solid rgba(110, 90, 97, 0.32);
+    border-radius: 4px;
+    background: #ffffff;
+    color: #21000f;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0 16px 0 44px;
+  }
+
+  .santa-rita-dispatch-tabs__search input::placeholder {
+    color: rgba(110, 90, 97, 0.86);
+    opacity: 1;
+  }
+
+  .santa-rita-dispatch-tabs__search button,
+  .santa-rita-dispatch-tabs__contact-button {
+    display: inline-flex;
+    min-height: 47px;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 4px;
+    background: #8c1a3e;
+    color: #ffffff;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  .santa-rita-dispatch-tabs__search button {
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+  }
+
+  .santa-rita-dispatch-tabs__results-label {
+    margin: 0 0 18px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .santa-rita-dispatch-tabs__results {
+    display: grid;
+  }
+
+  .santa-rita-dispatch-tabs__item {
+    border-bottom: 1px solid rgba(110, 90, 97, 0.2);
+    padding-block: 0 22px;
+  }
+
+  .santa-rita-dispatch-tabs__item + .santa-rita-dispatch-tabs__item {
+    padding-top: 22px;
+  }
+
+  .santa-rita-dispatch-tabs__item[hidden] {
+    display: none;
+  }
+
+  .santa-rita-dispatch-tabs__item h3 {
+    margin: 0 0 10px;
+    color: #8c1a3e;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .santa-rita-dispatch-tabs__item p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  .santa-rita-dispatch-tabs__empty {
+    margin: 0;
+    border-bottom: 1px solid rgba(110, 90, 97, 0.2);
+    padding-bottom: 22px;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .santa-rita-dispatch-tabs__alert {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
+    margin-top: 28px;
+    border-radius: 8px;
+    background: #f8f1e6;
+    padding: 24px 22px;
+  }
+
+  .santa-rita-dispatch-tabs__alert-icon {
+    display: inline-grid;
+    width: 18px;
+    height: 18px;
+    place-items: center;
+    border: 1px solid #8c1a3e;
+    border-radius: 50%;
+    color: #8c1a3e;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .santa-rita-dispatch-tabs__alert h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .santa-rita-dispatch-tabs__alert-text {
+    font-size: 13px;
+    line-height: 1.3;
+  }
+
+  .santa-rita-dispatch-tabs__alert-text p {
+    margin: 0;
+  }
+
+  .santa-rita-dispatch-tabs__alert-text strong {
+    font-weight: 700;
+  }
+
+  .santa-rita-dispatch-tabs__contact {
+    display: flex;
+    min-height: 270px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 24px;
+    padding: 38px 32px;
+    text-align: center;
+  }
+
+  .santa-rita-dispatch-tabs__contact-icon {
+    display: grid;
+    width: 58px;
+    height: 58px;
+    place-items: center;
+    margin-bottom: 18px;
+    border-radius: 50%;
+    background: #fde8de;
+    color: #8c1a3e;
+  }
+
+  .santa-rita-dispatch-tabs__contact-icon svg {
+    width: 25px;
+    height: 25px;
+  }
+
+  .santa-rita-dispatch-tabs__contact h2 {
+    margin: 0 0 18px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .santa-rita-dispatch-tabs__contact p {
+    max-width: 330px;
+    margin: 0 0 24px;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .santa-rita-dispatch-tabs__contact-button {
+    min-width: 220px;
+    padding-inline: 22px;
+    font-size: 13px;
+  }
+
+  .santa-rita-dispatch-tabs__contact-button[aria-disabled='true'] {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-dispatch-tabs__tabs {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .santa-rita-dispatch-tabs__tab {
+      min-height: 51px;
+      font-size: 12px;
+    }
+
+    .santa-rita-dispatch-tabs__body {
+      width: 100%;
+      padding: 28px 13px 32px;
+    }
+
+    .santa-rita-dispatch-tabs__card,
+    .santa-rita-dispatch-tabs__contact {
+      box-shadow: none;
+    }
+
+    .santa-rita-dispatch-tabs__card {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 0;
+    }
+
+    .santa-rita-dispatch-tabs__title {
+      margin-bottom: 28px;
+      font-size: 31px;
+      line-height: 1.05;
+    }
+
+    .santa-rita-dispatch-tabs__mobile-kicker {
+      display: block;
+      margin: 0 0 14px;
+      font-family: var(--font-heading--family);
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    .santa-rita-dispatch-tabs__intro {
+      max-width: none;
+      margin-bottom: 20px;
+      font-size: 14px;
+      line-height: 1.16;
+    }
+
+    .santa-rita-dispatch-tabs__search {
+      grid-template-columns: minmax(0, 1fr) 73px;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .santa-rita-dispatch-tabs__search input {
+      min-height: 48px;
+      font-size: 13px;
+      padding-left: 39px;
+    }
+
+    .santa-rita-dispatch-tabs__search-field svg {
+      left: 14px;
+    }
+
+    .santa-rita-dispatch-tabs__search button {
+      min-height: 48px;
+      font-size: 12px;
+    }
+
+    .santa-rita-dispatch-tabs__results-label {
+      margin-bottom: 20px;
+      color: #6e5a61;
+      font-size: 11px;
+    }
+
+    .santa-rita-dispatch-tabs__item {
+      padding-bottom: 22px;
+    }
+
+    .santa-rita-dispatch-tabs__item + .santa-rita-dispatch-tabs__item {
+      padding-top: 20px;
+    }
+
+    .santa-rita-dispatch-tabs__item h3 {
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .santa-rita-dispatch-tabs__item p {
+      font-size: 12px;
+    }
+
+    .santa-rita-dispatch-tabs__alert {
+      gap: 9px;
+      margin-top: 22px;
+      padding: 17px 14px;
+    }
+
+    .santa-rita-dispatch-tabs__alert h3 {
+      font-size: 15px;
+    }
+
+    .santa-rita-dispatch-tabs__alert-text {
+      font-size: 11px;
+      line-height: 1.18;
+    }
+
+    .santa-rita-dispatch-tabs__contact {
+      min-height: 0;
+      margin-top: 26px;
+      border-color: rgba(110, 90, 97, 0.72);
+      border-radius: 4px;
+      padding: 19px 13px 15px;
+    }
+
+    .santa-rita-dispatch-tabs__contact-icon {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 17px;
+    }
+
+    .santa-rita-dispatch-tabs__contact h2 {
+      margin-bottom: 15px;
+      font-size: 13px;
+    }
+
+    .santa-rita-dispatch-tabs__contact p {
+      max-width: 240px;
+      margin-bottom: 15px;
+      font-size: 12px;
+      line-height: 1.18;
+    }
+
+    .santa-rita-dispatch-tabs__contact-button {
+      width: 100%;
+      min-height: 38px;
+      min-width: 0;
+      font-size: 12px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Tabs de despacho",
+  "settings": [
+    {
+      "type": "text",
+      "id": "metropolitan_tab_label",
+      "label": "Etiqueta tab Region Metropolitana",
+      "default": "Region Metropolitana"
+    },
+    {
+      "type": "text",
+      "id": "regions_tab_label",
+      "label": "Etiqueta tab Otras Regiones",
+      "default": "Otras Regiones"
+    },
+    {
+      "type": "header",
+      "content": "Region Metropolitana"
+    },
+    {
+      "type": "text",
+      "id": "metropolitan_title",
+      "label": "Titulo",
+      "default": "Region Metropolitana"
+    },
+    {
+      "type": "textarea",
+      "id": "metropolitan_text",
+      "label": "Texto",
+      "default": "Busca tu comuna y conoce los dias de entrega y el costo estimado de despacho para compras realizadas antes de las"
+    },
+    {
+      "type": "text",
+      "id": "metropolitan_cutoff",
+      "label": "Hora limite",
+      "default": "15:00 hrs."
+    },
+    {
+      "type": "url",
+      "id": "metropolitan_contact_url",
+      "label": "URL formulario Region Metropolitana"
+    },
+    {
+      "type": "checkbox",
+      "id": "metropolitan_show_alert",
+      "label": "Mostrar aclaracion",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Otras Regiones"
+    },
+    {
+      "type": "text",
+      "id": "regions_title",
+      "label": "Titulo",
+      "default": "Otras Regiones"
+    },
+    {
+      "type": "textarea",
+      "id": "regions_text",
+      "label": "Texto",
+      "default": "Busca tu comuna y conoce los dias de entrega y el costo estimado de despacho para compras realizadas antes de las"
+    },
+    {
+      "type": "text",
+      "id": "regions_cutoff",
+      "label": "Hora limite",
+      "default": "09:00 hrs."
+    },
+    {
+      "type": "url",
+      "id": "regions_contact_url",
+      "label": "URL formulario Otras Regiones"
+    },
+    {
+      "type": "checkbox",
+      "id": "regions_show_alert",
+      "label": "Mostrar aclaracion",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Buscador"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Placeholder",
+      "default": "Busca tu comuna"
+    },
+    {
+      "type": "text",
+      "id": "search_button_label",
+      "label": "Texto boton",
+      "default": "Buscar"
+    },
+    {
+      "type": "text",
+      "id": "suggestions_label",
+      "label": "Titulo sugerencias",
+      "default": "Sugerencias"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "Texto sin resultados",
+      "default": "No encontramos resultados para tu busqueda."
+    },
+    {
+      "type": "header",
+      "content": "Aclaracion"
+    },
+    {
+      "type": "text",
+      "id": "alert_title",
+      "label": "Titulo",
+      "default": "Aclaracion"
+    },
+    {
+      "type": "richtext",
+      "id": "alert_text",
+      "label": "Texto",
+      "default": "<p>Las comunas de <strong>Melipilla, Talagante, El Monte e Isla de Maipo</strong> son despachadas por un operador externo.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Formulario"
+    },
+    {
+      "type": "text",
+      "id": "contact_title",
+      "label": "Titulo",
+      "default": "¿No recibiste tu pedido?"
+    },
+    {
+      "type": "textarea",
+      "id": "contact_text",
+      "label": "Texto",
+      "default": "Si tu pedido no llego en el plazo indicado, contactanos y lo verificamos de inmediato."
+    },
+    {
+      "type": "text",
+      "id": "contact_button_label",
+      "label": "Texto boton",
+      "default": "Formulario de contacto"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_external_links",
+      "label": "Abrir formularios en nueva pestaña",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "dispatch_item",
+      "name": "Item despacho",
+      "settings": [
+        {
+          "type": "select",
+          "id": "zone",
+          "label": "Zona",
+          "options": [
+            {
+              "value": "metropolitana",
+              "label": "Region Metropolitana"
+            },
+            {
+              "value": "regions",
+              "label": "Otras Regiones"
+            }
+          ],
+          "default": "metropolitana"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Comuna o region",
+          "default": "Santiago"
+        },
+        {
+          "type": "text",
+          "id": "days",
+          "label": "Dias de despacho",
+          "default": "Lunes a Sabado"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Precio",
+          "default": "$2.500"
+        },
+        {
+          "type": "text",
+          "id": "search_terms",
+          "label": "Terminos extra de busqueda"
+        },
+        {
+          "type": "checkbox",
+          "id": "is_suggestion",
+          "label": "Mostrar como sugerencia",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tabs de despacho",
+      "blocks": [
+        {
+          "type": "dispatch_item",
+          "settings": {
+            "zone": "metropolitana",
+            "name": "Santiago",
+            "days": "Lunes a Sabado",
+            "price": "$2.500",
+            "is_suggestion": true
+          }
+        },
+        {
+          "type": "dispatch_item",
+          "settings": {
+            "zone": "metropolitana",
+            "name": "La Florida",
+            "days": "Martes a Sabado",
+            "price": "$2.500",
+            "is_suggestion": true
+          }
+        },
+        {
+          "type": "dispatch_item",
+          "settings": {
+            "zone": "metropolitana",
+            "name": "Recoleta",
+            "days": "Lunes, Jueves y Sabado",
+            "price": "$2.500",
+            "is_suggestion": true
+          }
+        },
+        {
+          "type": "dispatch_item",
+          "settings": {
+            "zone": "regions",
+            "name": "Antofagasta",
+            "days": "Lunes a Viernes",
+            "price": "$24.900",
+            "is_suggestion": true
+          }
+        },
+        {
+          "type": "dispatch_item",
+          "settings": {
+            "zone": "regions",
+            "name": "Coquimbo",
+            "days": "Lunes a Viernes",
+            "price": "$5.990",
+            "is_suggestion": true
+          }
+        },
+        {
+          "type": "dispatch_item",
+          "settings": {
+            "zone": "regions",
+            "name": "San Pedro de Atacama",
+            "days": "Martes y Jueves",
+            "price": "$8.990",
+            "is_suggestion": true
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

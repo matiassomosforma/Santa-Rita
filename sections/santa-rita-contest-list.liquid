@@ -1,0 +1,468 @@
+{% liquid
+  assign now_timestamp = 'now' | date: '%s'
+%}
+
+<santa-rita-contest-list
+  class="santa-rita-contest-list"
+  data-sort-mode="{{ section.settings.sort_mode }}"
+  {{ section.shopify_attributes }}
+>
+  <div class="santa-rita-contest-list__inner">
+    {% if section.settings.heading != blank %}
+      <h2 class="santa-rita-contest-list__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="santa-rita-contest-list__items" data-contest-list>
+      {% for block in section.blocks %}
+        {% liquid
+          assign end_date_timestamp = block.settings.end_date | date: '%s'
+          assign is_active = true
+
+          if block.settings.end_date == blank or end_date_timestamp < now_timestamp
+            assign is_active = false
+          endif
+        %}
+
+        <article
+          class="santa-rita-contest-list__item{% unless is_active %} is-finished{% endunless %}"
+          data-contest-item
+          data-contest-index="{{ forloop.index0 }}"
+          data-contest-end="{{ block.settings.end_date | escape }}"
+          {{ block.shopify_attributes }}
+        >
+          <span class="santa-rita-contest-list__badge">
+            {% if is_active %}
+              Vigente
+            {% else %}
+              Finalizado
+            {% endif %}
+          </span>
+
+          <div class="santa-rita-contest-list__main">
+            {% if block.settings.title != blank %}
+              <h3>{{ block.settings.title }}</h3>
+            {% endif %}
+
+            {% if block.settings.description != blank %}
+              <div class="santa-rita-contest-list__description">
+                {{ block.settings.description }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="santa-rita-contest-list__meta">
+            <div class="santa-rita-contest-list__meta-item">
+              <span class="santa-rita-contest-list__meta-icon" aria-hidden="true">@</span>
+              <div>
+                {% if block.settings.accounts_title != blank %}
+                  <h4>{{ block.settings.accounts_title }}</h4>
+                {% endif %}
+
+                {% if block.settings.accounts_text != blank %}
+                  <div class="santa-rita-contest-list__meta-text">
+                    {{ block.settings.accounts_text }}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="santa-rita-contest-list__meta-item">
+              <span class="santa-rita-contest-list__calendar" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" focusable="false">
+                  <path d="M5.5 2.5v3M14.5 2.5v3M3.5 7.5h13M4.5 4h11a1 1 0 0 1 1 1v10.5a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M6.5 10h.01M10 10h.01M13.5 10h.01M6.5 13h.01M10 13h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <div>
+                {% if block.settings.date_title != blank %}
+                  <h4>{{ block.settings.date_title }}</h4>
+                {% endif %}
+
+                {% if block.settings.end_date_label != blank %}
+                  <p class="santa-rita-contest-list__date">{{ block.settings.end_date_label }}</p>
+                {% endif %}
+
+                {% if block.settings.date_note != blank %}
+                  <p>{{ block.settings.date_note }}</p>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</santa-rita-contest-list>
+
+<script>
+  if (!customElements.get('santa-rita-contest-list')) {
+    customElements.define(
+      'santa-rita-contest-list',
+      class SantaRitaContestList extends HTMLElement {
+        connectedCallback() {
+          this.list = this.querySelector('[data-contest-list]');
+          this.items = Array.from(this.querySelectorAll('[data-contest-item]'));
+          this.sortMode = this.dataset.sortMode || 'added';
+          this.today = new Date();
+          this.today.setHours(0, 0, 0, 0);
+
+          this.items.forEach((item) => this.updateStatus(item));
+          this.sortItems();
+        }
+
+        updateStatus(item) {
+          const date = this.getDate(item);
+          const isActive = date && date >= this.today;
+          const badge = item.querySelector('.santa-rita-contest-list__badge');
+
+          item.dataset.contestActive = isActive ? 'true' : 'false';
+          item.classList.toggle('is-finished', !isActive);
+
+          if (badge) {
+            badge.textContent = isActive ? 'Vigente' : 'Finalizado';
+          }
+        }
+
+        sortItems() {
+          if (!this.list) return;
+
+          const sortedItems = this.items.slice().sort((a, b) => {
+            const activeA = a.dataset.contestActive === 'true' ? 0 : 1;
+            const activeB = b.dataset.contestActive === 'true' ? 0 : 1;
+
+            if (activeA !== activeB) return activeA - activeB;
+
+            if (this.sortMode === 'date') {
+              const dateA = this.getDate(a)?.getTime() || Number.MAX_SAFE_INTEGER;
+              const dateB = this.getDate(b)?.getTime() || Number.MAX_SAFE_INTEGER;
+              return dateA - dateB;
+            }
+
+            return Number(a.dataset.contestIndex || 0) - Number(b.dataset.contestIndex || 0);
+          });
+
+          sortedItems.forEach((item) => this.list.appendChild(item));
+        }
+
+        getDate(item) {
+          const value = item.dataset.contestEnd;
+
+          if (!value) return null;
+
+          const date = new Date(`${value}T00:00:00`);
+          return Number.isNaN(date.getTime()) ? null : date;
+        }
+      }
+    );
+  }
+</script>
+
+<style>
+  .santa-rita-contest-list {
+    display: block;
+    background: #fffbf6;
+    color: #21000f;
+  }
+
+  .santa-rita-contest-list__inner {
+    width: min(100% - 48px, 1220px);
+    margin-inline: auto;
+    padding-block: 46px;
+  }
+
+  .santa-rita-contest-list__heading {
+    margin: 0 0 28px;
+    font-family: var(--font-heading--family);
+    font-size: clamp(28px, 3vw, 42px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-contest-list__items {
+    display: grid;
+    gap: 18px;
+  }
+
+  .santa-rita-contest-list__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 470px);
+    gap: 42px;
+    align-items: center;
+    border: 1px solid rgba(110, 90, 97, 0.18);
+    border-radius: 6px;
+    background: #fffdf9;
+    padding: 28px 34px;
+  }
+
+  .santa-rita-contest-list__item.is-finished {
+    opacity: 0.72;
+  }
+
+  .santa-rita-contest-list__badge {
+    position: absolute;
+    top: 22px;
+    right: 22px;
+    display: inline-flex;
+    min-height: 22px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #8c1a3e;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    padding-inline: 11px;
+    text-transform: uppercase;
+  }
+
+  .santa-rita-contest-list__item.is-finished .santa-rita-contest-list__badge {
+    background: #6e5a61;
+  }
+
+  .santa-rita-contest-list__main {
+    padding-right: 42px;
+  }
+
+  .santa-rita-contest-list__main h3 {
+    margin: 0 0 20px;
+    font-family: var(--font-heading--family);
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-contest-list__description {
+    max-width: 440px;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .santa-rita-contest-list__description p,
+  .santa-rita-contest-list__meta-text p {
+    margin: 0;
+  }
+
+  .santa-rita-contest-list__description p + p,
+  .santa-rita-contest-list__meta-text p + p {
+    margin-top: 8px;
+  }
+
+  .santa-rita-contest-list__meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+    padding-top: 16px;
+  }
+
+  .santa-rita-contest-list__meta-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+  }
+
+  .santa-rita-contest-list__meta-icon,
+  .santa-rita-contest-list__calendar {
+    display: inline-grid;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    color: #8c1a3e;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1;
+  }
+
+  .santa-rita-contest-list__calendar svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .santa-rita-contest-list__meta h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .santa-rita-contest-list__meta p,
+  .santa-rita-contest-list__meta-text {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  .santa-rita-contest-list__date {
+    margin-bottom: 8px !important;
+    font-weight: 700;
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-contest-list__inner {
+      width: calc(100% - 20px);
+      padding-block: 28px;
+    }
+
+    .santa-rita-contest-list__item {
+      display: block;
+      border-color: rgba(110, 90, 97, 0.2);
+      border-radius: 8px;
+      padding: 20px 22px 18px;
+    }
+
+    .santa-rita-contest-list__badge {
+      position: static;
+      margin-bottom: 30px;
+      min-height: 24px;
+      font-size: 11px;
+      padding-inline: 12px;
+    }
+
+    .santa-rita-contest-list__main {
+      padding-right: 0;
+    }
+
+    .santa-rita-contest-list__main h3 {
+      margin-bottom: 14px;
+      font-size: 21px;
+      line-height: 1.06;
+    }
+
+    .santa-rita-contest-list__description {
+      max-width: none;
+      font-size: 14px;
+      line-height: 1.22;
+    }
+
+    .santa-rita-contest-list__meta {
+      grid-template-columns: 1fr;
+      gap: 22px;
+      padding-top: 30px;
+    }
+
+    .santa-rita-contest-list__meta-item {
+      gap: 12px;
+    }
+
+    .santa-rita-contest-list__meta h4 {
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .santa-rita-contest-list__meta p,
+    .santa-rita-contest-list__meta-text {
+      font-size: 13px;
+      line-height: 1.3;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Bases de concurso",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titulo de la seccion"
+    },
+    {
+      "type": "select",
+      "id": "sort_mode",
+      "label": "Orden",
+      "options": [
+        {
+          "value": "added",
+          "label": "Orden manual"
+        },
+        {
+          "value": "date",
+          "label": "Fecha de finalizacion"
+        }
+      ],
+      "default": "date",
+      "info": "Los vigentes se muestran primero y los finalizados quedan abajo."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "contest",
+      "name": "Concurso",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titulo",
+          "default": "Base Sorteo Amaranta Redes Sociales"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Descripcion",
+          "default": "<p>Participa en nuestro ultimo sorteo exclusivo para nuestra comunidad digital. Revisa los detalles y asegurate de cumplir con todos los requisitos para entrar en el concurso.</p>"
+        },
+        {
+          "type": "text",
+          "id": "accounts_title",
+          "label": "Titulo cuentas",
+          "default": "Cuentas Oficiales"
+        },
+        {
+          "type": "richtext",
+          "id": "accounts_text",
+          "label": "Texto cuentas",
+          "default": "<p>@santaritaonline_cl</p><p>Instagram & TikTok</p>"
+        },
+        {
+          "type": "text",
+          "id": "date_title",
+          "label": "Titulo fecha",
+          "default": "Fecha Finalizacion"
+        },
+        {
+          "type": "text",
+          "id": "end_date",
+          "label": "Fecha de finalizacion para estado y orden",
+          "info": "Usa formato AAAA-MM-DD. Ejemplo: 2026-12-31."
+        },
+        {
+          "type": "text",
+          "id": "end_date_label",
+          "label": "Fecha visible",
+          "default": "13 de Octubre de 2023"
+        },
+        {
+          "type": "text",
+          "id": "date_note",
+          "label": "Nota fecha",
+          "default": "Anuncio de ganadores via Stories"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bases de concurso",
+      "blocks": [
+        {
+          "type": "contest",
+          "settings": {
+            "title": "Base Sorteo Amaranta Redes Sociales",
+            "description": "<p>Participa en nuestro ultimo sorteo exclusivo para nuestra comunidad digital. Revisa los detalles y asegurate de cumplir con todos los requisitos para entrar en el concurso.</p>",
+            "accounts_title": "Cuentas Oficiales",
+            "accounts_text": "<p>@santaritaonline_cl</p><p>Instagram & TikTok</p>",
+            "date_title": "Fecha Finalizacion",
+            "end_date": "2026-12-31",
+            "end_date_label": "31 de Diciembre de 2026",
+            "date_note": "Anuncio de ganadores via Stories"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

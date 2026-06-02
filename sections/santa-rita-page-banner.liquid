@@ -4,38 +4,46 @@
   assign banner_title = section.settings.heading | default: page.title
   assign banner_subtitle = section.settings.subheading
   assign breadcrumb_label = page.title | default: banner_title
+  assign banner_style = section.settings.banner_style | default: 'background'
 %}
 
 <section
-  class="santa-rita-page-banner"
+  class="santa-rita-page-banner santa-rita-page-banner--{{ banner_style }}"
   aria-labelledby="santa-rita-page-banner-title-{{ section.id }}"
   {{ section.shopify_attributes }}
 >
-  {% if banner_image != blank %}
-    <picture class="santa-rita-page-banner__picture">
-      {% if mobile_image != blank %}
-        <source
-          media="(max-width: 749px)"
-          srcset="
-            {{ mobile_image | image_url: width: 375 }} 375w,
-            {{ mobile_image | image_url: width: 550 }} 550w,
-            {{ mobile_image | image_url: width: 750 }} 750w
-          "
-          sizes="100vw"
-        >
-      {% endif %}
-      {{
-        banner_image
-        | image_url: width: 2200
-        | image_tag:
-          widths: '375, 550, 750, 990, 1440, 1800, 2200',
-          sizes: '100vw',
-          loading: 'eager',
-          class: 'santa-rita-page-banner__image'
-      }}
-    </picture>
-  {% elsif request.design_mode %}
-    {{ 'image' | placeholder_svg_tag: 'santa-rita-page-banner__image santa-rita-page-banner__image--placeholder' }}
+  {% capture banner_media %}
+    {% if banner_image != blank %}
+      <picture class="santa-rita-page-banner__picture">
+        {% if mobile_image != blank %}
+          <source
+            media="(max-width: 749px)"
+            srcset="
+              {{ mobile_image | image_url: width: 375 }} 375w,
+              {{ mobile_image | image_url: width: 550 }} 550w,
+              {{ mobile_image | image_url: width: 750 }} 750w
+            "
+            sizes="100vw"
+          >
+        {% endif %}
+        {{
+          banner_image
+          | image_url: width: 2200
+          | image_tag:
+            widths: '375, 550, 750, 990, 1440, 1800, 2200',
+            sizes: '100vw',
+            loading: 'eager',
+            class: 'santa-rita-page-banner__image'
+        }}
+      </picture>
+    {% elsif request.design_mode %}
+      {{ 'image' | placeholder_svg_tag: 'santa-rita-page-banner__image santa-rita-page-banner__image--placeholder' }}
+    {% endif %}
+  {% endcapture %}
+  {% assign banner_media = banner_media | strip %}
+
+  {% if banner_style == 'background' %}
+    {{ banner_media }}
   {% endif %}
 
   <div class="santa-rita-page-banner__overlay"></div>
@@ -49,13 +57,21 @@
       </nav>
     {% endif %}
 
-    <div class="santa-rita-page-banner__content">
-      {% if banner_title != blank %}
-        <h1 id="santa-rita-page-banner-title-{{ section.id }}">{{ banner_title }}</h1>
-      {% endif %}
+    <div class="santa-rita-page-banner__grid">
+      <div class="santa-rita-page-banner__content">
+        {% if banner_title != blank %}
+          <h1 id="santa-rita-page-banner-title-{{ section.id }}">{{ banner_title }}</h1>
+        {% endif %}
 
-      {% if banner_subtitle != blank %}
-        <p>{{ banner_subtitle }}</p>
+        {% if banner_subtitle != blank %}
+          <p>{{ banner_subtitle }}</p>
+        {% endif %}
+      </div>
+
+      {% if banner_style == 'split' and banner_media != blank %}
+        <div class="santa-rita-page-banner__media">
+          {{ banner_media }}
+        </div>
       {% endif %}
     </div>
   </div>
@@ -128,6 +144,11 @@
     margin-block: auto 0;
   }
 
+  .santa-rita-page-banner__grid {
+    display: block;
+    margin-block: auto 0;
+  }
+
   .santa-rita-page-banner__content h1 {
     margin: 0 0 18px;
     font-family: var(--font-heading--family);
@@ -142,6 +163,76 @@
     margin: 0;
     font-size: 24px;
     line-height: normal;
+  }
+
+  .santa-rita-page-banner--split {
+    min-height: 350px;
+    overflow: visible;
+    border-bottom: 1px solid rgba(110, 90, 97, 0.18);
+    background: #fffbf6;
+    color: #21000f;
+  }
+
+  .santa-rita-page-banner--split .santa-rita-page-banner__overlay {
+    display: none;
+  }
+
+  .santa-rita-page-banner--split .santa-rita-page-banner__inner {
+    display: grid;
+    min-height: 350px;
+    padding-block: 28px;
+  }
+
+  .santa-rita-page-banner--split .santa-rita-page-banner__breadcrumbs {
+    color: #21000f;
+  }
+
+  .santa-rita-page-banner--split .santa-rita-page-banner__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(420px, 620px);
+    gap: 72px;
+    align-items: center;
+    margin-block: 0;
+  }
+
+  .santa-rita-page-banner--split .santa-rita-page-banner__content {
+    width: 100%;
+    margin: 0;
+  }
+
+  .santa-rita-page-banner--split .santa-rita-page-banner__content h1 {
+    margin-bottom: 22px;
+    font-size: clamp(38px, 4.1vw, 58px);
+    line-height: 1.05;
+  }
+
+  .santa-rita-page-banner--split .santa-rita-page-banner__content p {
+    max-width: 520px;
+    font-size: 24px;
+    line-height: 1.15;
+  }
+
+  .santa-rita-page-banner--split .santa-rita-page-banner__media {
+    width: 100%;
+  }
+
+  .santa-rita-page-banner--split .santa-rita-page-banner__picture,
+  .santa-rita-page-banner--split .santa-rita-page-banner__image,
+  .santa-rita-page-banner--split .santa-rita-page-banner__image--placeholder {
+    position: static;
+    inset: auto;
+  }
+
+  .santa-rita-page-banner--split .santa-rita-page-banner__picture {
+    aspect-ratio: 2.28 / 1;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .santa-rita-page-banner--split .santa-rita-page-banner__image,
+  .santa-rita-page-banner--split .santa-rita-page-banner__image--placeholder {
+    height: 100%;
+    object-fit: cover;
   }
 
   @media screen and (max-width: 749px) {
@@ -184,6 +275,51 @@
       font-size: clamp(12px, 4vw, 16px);
       line-height: normal;
     }
+
+    .santa-rita-page-banner--split {
+      min-height: 0;
+      border-bottom: 0;
+      background: #fffbf6;
+      color: #21000f;
+    }
+
+    .santa-rita-page-banner--split .santa-rita-page-banner__inner {
+      display: block;
+      width: calc(100% - 28px);
+      min-height: 0;
+      padding-block: 26px 32px;
+    }
+
+    .santa-rita-page-banner--split .santa-rita-page-banner__breadcrumbs {
+      display: flex;
+      margin-bottom: 30px;
+      color: #21000f;
+      font-size: 12px;
+    }
+
+    .santa-rita-page-banner--split .santa-rita-page-banner__grid {
+      display: block;
+    }
+
+    .santa-rita-page-banner--split .santa-rita-page-banner__content {
+      width: 100%;
+    }
+
+    .santa-rita-page-banner--split .santa-rita-page-banner__content h1 {
+      margin-bottom: 18px;
+      font-size: clamp(38px, 12vw, 48px);
+      line-height: 1;
+    }
+
+    .santa-rita-page-banner--split .santa-rita-page-banner__content p {
+      max-width: 330px;
+      font-size: 21px;
+      line-height: 1.18;
+    }
+
+    .santa-rita-page-banner--split .santa-rita-page-banner__media {
+      display: none;
+    }
   }
 </style>
 
@@ -191,6 +327,22 @@
 {
   "name": "Banner de pagina",
   "settings": [
+    {
+      "type": "select",
+      "id": "banner_style",
+      "label": "Tipo de banner",
+      "options": [
+        {
+          "value": "background",
+          "label": "Imagen de fondo"
+        },
+        {
+          "value": "split",
+          "label": "Texto e imagen"
+        }
+      ],
+      "default": "background"
+    },
     {
       "type": "image_picker",
       "id": "desktop_image",
