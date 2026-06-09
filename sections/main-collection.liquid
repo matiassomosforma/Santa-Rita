@@ -309,12 +309,32 @@
     assign show_collection_banner = true
   endif
 
-  assign collection_banner_image = collection.image | default: section.settings.collection_banner_image
-  assign collection_banner_mobile_image = section.settings.collection_banner_mobile_image | default: collection_banner_image
-  assign collection_banner_title = collection.title | default: section.settings.collection_banner_fallback_title
-  assign collection_banner_subtitle = collection.description | strip_html | default: section.settings.collection_banner_fallback_subtitle
-  assign collection_breadcrumb_label = section.settings.collection_breadcrumb_label | default: 'Productos'
-  assign collection_nav_links = section.settings.collection_links | default: collection.metafields.custom.child_collections.value
+  assign is_all_collection = false
+
+  if collection.handle == 'all' or request.path contains '/collections/all'
+    assign is_all_collection = true
+  endif
+
+  assign collection_banner_title = collection.metafields.custom.banner_title.value | default: collection.title
+  assign collection_banner_subtitle = collection.metafields.custom.banner_subtitle.value | default: collection.description | strip_html
+  assign collection_banner_image = collection.metafields.custom.banner_image.value | default: collection.image
+  assign collection_banner_mobile_image = collection.metafields.custom.banner_mobile_image.value | default: collection_banner_image
+  assign collection_breadcrumb_label = collection.metafields.custom.breadcrumb_label.value | default: collection.title
+  assign child_collection_links = collection.metafields.custom.child_collections.value
+
+  if is_all_collection
+    assign collection_banner_title = section.settings.collection_banner_fallback_title | default: 'Productos'
+    assign collection_banner_subtitle = section.settings.collection_banner_fallback_subtitle
+    assign collection_banner_image = section.settings.collection_banner_image
+    assign collection_banner_mobile_image = section.settings.collection_banner_mobile_image | default: collection_banner_image
+    assign collection_breadcrumb_label = section.settings.collection_breadcrumb_label | default: 'Productos'
+  endif
+
+  if child_collection_links != blank
+    assign collection_nav_links = child_collection_links
+  else
+    assign collection_nav_links = section.settings.collection_links
+  endif
 %}
 
 {% comment %} We always render this full-width, as the child blocks have width: page/full settings {% endcomment %}
@@ -1297,24 +1317,24 @@
     {
       "type": "image_picker",
       "id": "collection_banner_image",
-      "label": "Imagen fallback desktop"
+      "label": "Imagen /collections/all desktop"
     },
     {
       "type": "image_picker",
       "id": "collection_banner_mobile_image",
-      "label": "Imagen fallback mobile"
+      "label": "Imagen /collections/all mobile"
     },
     {
       "type": "text",
       "id": "collection_banner_fallback_title",
-      "label": "Titulo fallback",
-      "info": "Se usa en /collections/all o si la coleccion no tiene titulo."
+      "label": "Titulo /collections/all",
+      "info": "Las otras colecciones usan el titulo de la coleccion o el metafield custom.banner_title."
     },
     {
       "type": "textarea",
       "id": "collection_banner_fallback_subtitle",
-      "label": "Subtitulo fallback",
-      "info": "Se usa en /collections/all o si la coleccion no tiene descripcion."
+      "label": "Subtitulo /collections/all",
+      "info": "Las otras colecciones usan la descripcion de la coleccion o el metafield custom.banner_subtitle."
     },
     {
       "type": "checkbox",
@@ -1325,7 +1345,7 @@
     {
       "type": "text",
       "id": "collection_breadcrumb_label",
-      "label": "Texto breadcrumb fallback",
+      "label": "Breadcrumb /collections/all",
       "default": "Productos"
     },
     {
