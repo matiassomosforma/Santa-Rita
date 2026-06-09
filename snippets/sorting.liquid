@@ -21,11 +21,38 @@
 >
   {% liquid
     assign default_sort_by = results.default_sort_by
+    assign effective_sort_by = sort_by | default: default_sort_by | default: 'manual'
+    assign status = blank
+    assign status_label = blank
+
     for option in results.sort_options
-      if option.value == sort_by
+      if option.value == effective_sort_by
         assign status = option.name
       endif
     endfor
+
+    case effective_sort_by
+      when 'manual'
+        assign status_label = 'Destacados'
+      when 'relevance'
+        assign status_label = 'Relevancia'
+      when 'best-selling'
+        assign status_label = 'Mas vendidos'
+      when 'title-ascending'
+        assign status_label = 'Alfabeticamente, A-Z'
+      when 'title-descending'
+        assign status_label = 'Alfabeticamente, Z-A'
+      when 'price-ascending'
+        assign status_label = 'Precio, menor a mayor'
+      when 'price-descending'
+        assign status_label = 'Precio, mayor a menor'
+      when 'created-ascending'
+        assign status_label = 'Fecha, antiguo a nuevo'
+      when 'created-descending'
+        assign status_label = 'Fecha, nuevo a antiguo'
+    endcase
+
+    assign status = status_label | default: status
   %}
 
   <div class="sorting-filter__container {% if should_use_select_on_mobile %} desktop:hidden {% else %} hidden {% endif %}">
@@ -33,7 +60,7 @@
       for="sort-select-{{ section_id }}"
       class="facets__label"
     >
-      {{- 'actions.sort' | t -}}
+      Ordenar por:
     </label>
     <div class="sorting-filter__select-wrapper">
       <select
@@ -45,13 +72,38 @@
         {% endif %}
       >
         {% for option in results.sort_options %}
+          {% liquid
+            assign option_label = option.name
+
+            case option.value
+              when 'manual'
+                assign option_label = 'Destacados'
+              when 'relevance'
+                assign option_label = 'Relevancia'
+              when 'best-selling'
+                assign option_label = 'Mas vendidos'
+              when 'title-ascending'
+                assign option_label = 'Alfabeticamente, A-Z'
+              when 'title-descending'
+                assign option_label = 'Alfabeticamente, Z-A'
+              when 'price-ascending'
+                assign option_label = 'Precio, menor a mayor'
+              when 'price-descending'
+                assign option_label = 'Precio, mayor a menor'
+              when 'created-ascending'
+                assign option_label = 'Fecha, antiguo a nuevo'
+              when 'created-descending'
+                assign option_label = 'Fecha, nuevo a antiguo'
+            endcase
+          %}
           <option
             value="{{ option.value }}"
-            {% if option.value == sort_by %}
+            data-option-name="{{ option_label }}"
+            {% if option.value == effective_sort_by %}
               selected
             {% endif %}
           >
-            {{ option.name }}
+            {{ option_label }}
           </option>
         {% endfor %}
       </select>
@@ -93,13 +145,13 @@
           class="facets__label"
           id="sort-label-{{ section_id }}"
         >
-          {{- 'actions.sort' | t -}}
+          Ordenar por: <span data-sort-current>{{ status }}</span>
         </span>
-        <span
-          class="facets__status h6 desktop:hidden"
+        <facet-status-component
+          class="facets__status h6 santa-rita-sort-status"
         >
           {{- status -}}
-        </span>
+        </facet-status-component>
         <span class="svg-wrapper icon-caret icon-animated">
           {{- 'icon-caret.svg' | inline_asset_content -}}
         </span>
@@ -113,14 +165,38 @@
       >
         <div class="sorting-filter__options-inner">
           {% for option in results.sort_options %}
+            {% liquid
+              assign option_label = option.name
+
+              case option.value
+                when 'manual'
+                  assign option_label = 'Destacados'
+                when 'relevance'
+                  assign option_label = 'Relevancia'
+                when 'best-selling'
+                  assign option_label = 'Mas vendidos'
+                when 'title-ascending'
+                  assign option_label = 'Alfabeticamente, A-Z'
+                when 'title-descending'
+                  assign option_label = 'Alfabeticamente, Z-A'
+                when 'price-ascending'
+                  assign option_label = 'Precio, menor a mayor'
+                when 'price-descending'
+                  assign option_label = 'Precio, mayor a menor'
+                when 'created-ascending'
+                  assign option_label = 'Fecha, antiguo a nuevo'
+                when 'created-descending'
+                  assign option_label = 'Fecha, nuevo a antiguo'
+              endcase
+            %}
             <label
               for="sort-option-{{ option.value }}-{{ section_id }}"
             >
               <div
                 class="sorting-filter__option"
                 role="option"
-                aria-selected="{% if option.value == sort_by %}true{% else %}false{% endif %}"
-                tabindex="{% if option.value == sort_by %}0{% else %}-1{% endif %}"
+                aria-selected="{% if option.value == effective_sort_by %}true{% else %}false{% endif %}"
+                tabindex="{% if option.value == effective_sort_by %}0{% else %}-1{% endif %}"
               >
                 <input
                   type="radio"
@@ -131,8 +207,8 @@
                   {% endif %}
                   value="{{ option.value }}"
                   class="sorting-filter__input"
-                  data-option-name="{{ option.name }}"
-                  {% if option.value == sort_by %}
+                  data-option-name="{{ option_label }}"
+                  {% if option.value == effective_sort_by %}
                     checked
                   {% endif %}
                   aria-hidden="true"
@@ -140,7 +216,7 @@
                 <span class="svg-wrapper icon-checkmark sorting-filter__checkmark">
                   {{- 'icon-checkmark.svg' | inline_asset_content -}}
                 </span>
-                <span class="sorting-filter__label">{{ option.name }}</span>
+                <span class="sorting-filter__label">{{ option_label }}</span>
               </div>
             </label>
           {% endfor %}

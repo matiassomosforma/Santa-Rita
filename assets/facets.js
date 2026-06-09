@@ -10,6 +10,31 @@ import { convertMoneyToMinorUnits, formatMoney } from '@theme/money-formatting';
 const SEARCH_QUERY = 'q';
 
 /**
+ * Normalizes Chilean peso values for Shopify filter URLs.
+ * CLP display uses dots for thousands and commas for decimals, but the filter
+ * URL needs the raw integer amount.
+ * @param {string | null} value
+ * @returns {string}
+ */
+function normalizeCLPPriceParam(value) {
+  const normalized = String(value || '').replace(/[^\d.,]/g, '');
+  const hasDot = normalized.includes('.');
+  const hasComma = normalized.includes(',');
+  let wholeValue = normalized;
+
+  if (hasDot && hasComma) {
+    wholeValue = normalized.replace(/\./g, '').split(',')[0] || '';
+  } else if (hasDot) {
+    wholeValue = normalized.replace(/\./g, '');
+  } else if (hasComma) {
+    const [beforeComma = '', afterComma = ''] = normalized.split(',');
+    wholeValue = afterComma.length === 3 ? `${beforeComma}${afterComma}` : beforeComma;
+  }
+
+  return wholeValue || '';
+}
+
+/**
  * Handles the main facets form functionality
  *
  * @typedef {Object} FacetsFormRefs
@@ -28,9 +53,19 @@ class FacetsFormComponent extends Component {
    */
   createURLParameters(formData = new FormData(this.refs.facetsForm)) {
     let newParameters = new URLSearchParams(/** @type any */ (formData));
+    const priceFacet = this.refs.facetsForm.querySelector('price-facet-component');
+    const shouldNormalizeCLPPrices = priceFacet instanceof HTMLElement && priceFacet.dataset.currency === 'CLP';
 
     if (newParameters.get('filter.v.price.gte') === '') newParameters.delete('filter.v.price.gte');
     if (newParameters.get('filter.v.price.lte') === '') newParameters.delete('filter.v.price.lte');
+
+    if (shouldNormalizeCLPPrices) {
+      const minPrice = normalizeCLPPriceParam(newParameters.get('filter.v.price.gte'));
+      const maxPrice = normalizeCLPPriceParam(newParameters.get('filter.v.price.lte'));
+
+      minPrice ? newParameters.set('filter.v.price.gte', minPrice) : newParameters.delete('filter.v.price.gte');
+      maxPrice ? newParameters.set('filter.v.price.lte', maxPrice) : newParameters.delete('filter.v.price.lte');
+    }
 
     newParameters.delete('page');
 
@@ -83,7 +118,7 @@ class FacetsFormComponent extends Component {
    * Updates the section
    */
   #updateSection() {
-    const viewTransition = !this.closest('dialog');
+    const viewTransition = !this.closest('dialog') && !this.closest('[data-santa-rita-collection]');
 
     if (viewTransition) {
       startViewTransition(() => sectionRenderer.renderSection(this.sectionId), ['product-grid']);
@@ -679,7 +714,7 @@ class SortingFilterComponent extends Component {
    * @param {Event} event - The change event
    */
   updateFacetStatus(event) {
-    if (!(event.target instanceof HTMLSelectElement)) return;
+    if (!(event.target instanceof HTMLSelectElement) && !(event.target instanceof HTMLInputElement)) return;
 
     const details = this.querySelector('details');
     if (!details) return;
@@ -687,8 +722,17 @@ class SortingFilterComponent extends Component {
     const facetStatus = details.querySelector('facet-status-component');
     if (!(facetStatus instanceof FacetStatusComponent)) return;
 
-    facetStatus.textContent =
-      event.target.value !== details.dataset.defaultSortBy ? event.target.dataset.optionName ?? '' : '';
+    const selectedOptionName =
+      event.target instanceof HTMLSelectElement
+        ? event.target.selectedOptions[0]?.dataset.optionName
+        : event.target.dataset.optionName;
+
+    facetStatus.textContent = selectedOptionName ?? '';
+
+    const visibleStatus = this.querySelector('[data-sort-current]');
+    if (visibleStatus instanceof HTMLElement) {
+      visibleStatus.textContent = selectedOptionName ?? '';
+    }
   }
 }
 

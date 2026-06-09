@@ -117,11 +117,13 @@ export function startViewTransition(callback, types) {
 
     if (types) types.forEach((type) => transition.types.add(type));
 
-    transition.finished.then(() => {
-      viewTransition.current = undefined;
-      cleanupFunctions.forEach((cleanupFunction) => cleanupFunction());
-      resolve();
-    });
+    transition.finished
+      .catch(() => {})
+      .then(() => {
+        viewTransition.current = undefined;
+        cleanupFunctions.forEach((cleanupFunction) => cleanupFunction());
+        resolve();
+      });
   });
 }
 

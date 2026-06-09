@@ -70,6 +70,7 @@
       ],
       "name": "Collection heading",
       "settings": {
+        "hide_on_all_collection": true,
         "content_direction": "column",
         "vertical_on_mobile": true,
         "horizontal_alignment": "flex-start",
@@ -105,7 +106,7 @@
           "static": true,
           "settings": {
             "enable_filtering": true,
-            "filter_style": "horizontal",
+            "filter_style": "vertical",
             "filter_width": "centered",
             "text_label_case": "default",
             "show_swatch_label": false,
@@ -218,6 +219,19 @@
         "full_width_on_mobile": true,
         "columns_gap_horizontal": 16,
         "columns_gap_vertical": 24,
+        "show_collection_banner": true,
+        "show_collection_breadcrumbs": true,
+        "collection_breadcrumb_label": "Productos",
+        "all_products_label": "Todos los productos",
+        "collection_links": [
+          "vinos",
+          "destilados",
+          "gourmet"
+        ],
+        "pack_label": "x12 un.",
+        "unit_price_label": "$2.970",
+        "liter_price_label": "$3.960",
+        "rating_count": "134",
         "padding-inline-start": 0,
         "padding-inline-end": 0,
         "color_scheme": "scheme-1",
