@@ -357,6 +357,30 @@
     assign collection_nav_links = section.settings.collection_links
   endif
 
+  assign drawer_category_links = child_collection_links
+  if drawer_category_links == blank
+    for root_category in section.settings.collection_links
+      assign root_child_links = root_category.metafields.custom.child_collections.value
+
+      if root_child_links != blank
+        for root_child in root_child_links
+          if root_child.handle == collection.handle
+            assign drawer_category_links = root_child_links
+            break
+          endif
+        endfor
+      endif
+
+      if drawer_category_links != blank
+        break
+      endif
+    endfor
+  endif
+
+  if drawer_category_links == blank
+    assign drawer_category_links = section.settings.collection_links
+  endif
+
   assign sort_by = collection.sort_by | default: collection.default_sort_by
 %}
 
@@ -488,7 +512,9 @@
       type: 'filters',
       id: 'filters',
       results: collection,
-      results_size: collection.products_count
+      results_size: collection.products_count,
+      collection_category_links: drawer_category_links,
+      current_collection: collection
     %}
 
     {% assign products_per_page = 24 %}
@@ -1259,6 +1285,43 @@
     #filters-drawer .facets__inputs-wrapper:not(:has(.facets__inputs-list)),
     #filters-drawer .facets__inputs-wrapper .facets__inputs-list {
       gap: 8px;
+    }
+
+    #filters-drawer .santa-rita-drawer-taxonomy .facets__inputs {
+      padding-bottom: 14px;
+    }
+
+    #filters-drawer .santa-rita-drawer-taxonomy__list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+    }
+
+    #filters-drawer .santa-rita-drawer-taxonomy__link {
+      display: inline-flex;
+      width: fit-content;
+      max-width: 100%;
+      align-items: center;
+      gap: 7px;
+      color: #21000f;
+      font-size: 12px;
+      line-height: 1.1;
+      text-decoration: none;
+    }
+
+    #filters-drawer .santa-rita-drawer-taxonomy__marker {
+      width: 12px;
+      height: 12px;
+      flex: 0 0 12px;
+      border: 1px solid #9b173f;
+      border-radius: 999px;
+      background: transparent;
+    }
+
+    #filters-drawer .santa-rita-drawer-taxonomy__link.is-active .santa-rita-drawer-taxonomy__marker {
+      background: radial-gradient(circle, #9b173f 0 38%, transparent 43%);
     }
 
     #filters-drawer .checkbox {

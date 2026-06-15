@@ -5,6 +5,8 @@
   @param {object} results - The search results object
   @param {number} results_size - The number of products in the search results
   @param {object} [filters] - The filters object
+  @param {object} [collection_category_links] - Collection links used as the single-select category filter
+  @param {object} [current_collection] - Current collection being viewed
 {%- enddoc -%}
 
 <script
@@ -431,8 +433,6 @@
               <div class="facets__filters-wrapper">
                 {% assign total_active_values = 0 %}
                 {% assign is_active = false %}
-                {% assign drawer_list_filter_index = 0 %}
-
                 {%- for filter in filters -%}
                   {% case filter.type %}
                     {% when 'price_range' %}
@@ -444,20 +444,75 @@
 
                         render 'price-filter', filter: filter, filter_style: 'vertical', should_render_clear: false
                       -%}
+                  {% endcase %}
+                {%- endfor -%}
+
+                {% if collection_category_links != blank %}
+                  <accordion-custom
+                    class="facets__item santa-rita-drawer-taxonomy"
+                    open
+                    open-by-default-on-mobile
+                    open-by-default-on-desktop
+                  >
+                    <details
+                      class="facets__panel"
+                      open
+                    >
+                      <summary class="facets__summary">
+                        <span class="facets__label">Categoría</span>
+                      </summary>
+
+                      <div class="facets__inputs facets__panel-content details-content">
+                        <ul class="santa-rita-drawer-taxonomy__list list-unstyled">
+                          {% for category_collection in collection_category_links %}
+                            {% assign is_active_category = false %}
+                            {% if current_collection != blank and current_collection.handle == category_collection.handle %}
+                              {% assign is_active_category = true %}
+                            {% endif %}
+
+                            <li>
+                              <a
+                                href="{{ category_collection.url }}"
+                                class="santa-rita-drawer-taxonomy__link{% if is_active_category %} is-active{% endif %}"
+                                {% if is_active_category %}
+                                  aria-current="page"
+                                {% endif %}
+                              >
+                                <span class="santa-rita-drawer-taxonomy__marker" aria-hidden="true"></span>
+                                <span>{{ category_collection.title }}</span>
+                              </a>
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      </div>
+                    </details>
+                  </accordion-custom>
+                {% endif %}
+
+                {%- for filter in filters -%}
+                  {% case filter.type %}
+                    {% when 'price_range' %}
+                      {% continue %}
                     {% else %}
                       {% liquid
-                        if filter.active_values.size > 0
-                          assign is_active = true
+                        assign normalized_filter_label = filter.label | downcase
+                        assign should_skip_collection_category_filter = false
+                        if collection_category_links != blank
+                          if normalized_filter_label == 'category' or normalized_filter_label == 'categoría' or normalized_filter_label == 'categoria' or normalized_filter_label == 'product category' or normalized_filter_label == 'categoría de producto' or normalized_filter_label == 'categoria de producto'
+                            assign should_skip_collection_category_filter = true
+                          endif
                         endif
 
-                        assign active_value_count = filter.active_values | size
-                        assign total_active_values = total_active_values | plus: active_value_count
-                        assign drawer_list_filter_index = drawer_list_filter_index | plus: 1
-                        assign open_in_drawer = false
-                        if drawer_list_filter_index == 1
-                          assign open_in_drawer = true
-                        endif
-                        render 'list-filter', filter: filter, filter_style: 'vertical', active_value_count: active_value_count, should_render_clear: false, in_drawer: true, open_in_drawer: open_in_drawer, sectionId: section.id
+                        unless should_skip_collection_category_filter
+                          if filter.active_values.size > 0
+                            assign is_active = true
+                          endif
+
+                          assign active_value_count = filter.active_values | size
+                          assign total_active_values = total_active_values | plus: active_value_count
+                          assign open_in_drawer = false
+                          render 'list-filter', filter: filter, filter_style: 'vertical', active_value_count: active_value_count, should_render_clear: false, in_drawer: true, open_in_drawer: open_in_drawer, sectionId: section.id
+                        endunless
                       %}
                   {% endcase %}
                 {%- endfor -%}

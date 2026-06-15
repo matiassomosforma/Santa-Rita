@@ -41,10 +41,6 @@
       assign display_filter_label = 'Marcas'
     elsif normalized_filter_label contains 'availability' or normalized_filter_label contains 'disponibilidad'
       assign display_filter_label = 'Disponibilidad'
-    elsif normalized_filter_label contains 'type' or normalized_filter_label contains 'tipo'
-      assign display_filter_label = 'Categoría'
-    elsif normalized_filter_label contains 'tag' or normalized_filter_label contains 'etiqueta'
-      assign display_filter_label = 'Categoría'
     endif
   endif
 %}
