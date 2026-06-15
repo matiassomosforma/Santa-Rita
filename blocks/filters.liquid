@@ -389,7 +389,7 @@
               id="filters-drawer-heading"
               class="facets-drawer__title h3"
             >
-              {{ 'blocks.filter' | t }}
+              Filtros
 
               {% if total_active_values > 0 %}
                 <span
@@ -431,6 +431,7 @@
               <div class="facets__filters-wrapper">
                 {% assign total_active_values = 0 %}
                 {% assign is_active = false %}
+                {% assign drawer_list_filter_index = 0 %}
 
                 {%- for filter in filters -%}
                   {% case filter.type %}
@@ -451,7 +452,12 @@
 
                         assign active_value_count = filter.active_values | size
                         assign total_active_values = total_active_values | plus: active_value_count
-                        render 'list-filter', filter: filter, filter_style: 'vertical', active_value_count: active_value_count, should_render_clear: false, in_drawer: true, sectionId: section.id
+                        assign drawer_list_filter_index = drawer_list_filter_index | plus: 1
+                        assign open_in_drawer = false
+                        if drawer_list_filter_index == 1
+                          assign open_in_drawer = true
+                        endif
+                        render 'list-filter', filter: filter, filter_style: 'vertical', active_value_count: active_value_count, should_render_clear: false, in_drawer: true, open_in_drawer: open_in_drawer, sectionId: section.id
                       %}
                   {% endcase %}
                 {%- endfor -%}

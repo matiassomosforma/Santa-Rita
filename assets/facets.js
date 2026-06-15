@@ -525,6 +525,39 @@ if (!customElements.get('facet-remove-component')) {
 class SortingFilterComponent extends Component {
   requiredRefs = ['details', 'summary', 'listbox'];
 
+  connectedCallback() {
+    super.connectedCallback();
+    document.addEventListener('click', this.#handleDocumentClick);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    document.removeEventListener('click', this.#handleDocumentClick);
+  }
+
+  /**
+   * Handles closing the Santa Rita mobile sort sheet from its close button or backdrop.
+   * @param {MouseEvent} event
+   */
+  #handleDocumentClick = (event) => {
+    if (this.dataset.sortPosition !== 'santa-rita-mobile') return;
+    if (!(event.target instanceof Element)) return;
+
+    const { details, summary, listbox } = this.refs;
+    if (!(details instanceof HTMLDetailsElement) || !details.open) return;
+    if (!(summary instanceof Element) || !(listbox instanceof Element)) return;
+
+    if (event.target.closest('[data-santa-rita-sort-close]')) {
+      event.preventDefault();
+      this.#closeDropdown();
+      return;
+    }
+
+    if (!listbox.contains(event.target) && !summary.contains(event.target)) {
+      this.#closeDropdown();
+    }
+  };
+
   /**
    * Handles keyboard navigation in the sorting dropdown
    * @param {KeyboardEvent} event - The keyboard event
@@ -655,6 +688,13 @@ class SortingFilterComponent extends Component {
       }
     }
   }
+
+  /**
+   * Closes the dropdown from template controls.
+   */
+  closeDropdown = () => {
+    this.#closeDropdown();
+  };
 
   /**
    * Updates filter and sorting

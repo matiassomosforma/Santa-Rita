@@ -152,7 +152,8 @@ function formatCents(moneyValue, thousandsSeparator, decimalSeparator, precision
  */
 export function formatMoney(moneyValue, format, currency) {
   // Calculate divisor based on currency's native precision
-  const currencyPrecision = CURRENCY_DECIMALS[currency.toUpperCase()] ?? DEFAULT_CURRENCY_DECIMALS;
+  const normalizedCurrency = String(currency || '').toUpperCase();
+  const currencyPrecision = CURRENCY_DECIMALS[normalizedCurrency] ?? DEFAULT_CURRENCY_DECIMALS;
   const divisor = Math.pow(10, currencyPrecision);
 
   return format.replace(/{{\s*(\w+)\s*}}/g, (_, placeholder) => {
@@ -162,6 +163,12 @@ export function formatMoney(moneyValue, format, currency) {
     let thousandsSeparator = ',';
     let decimalSeparator = '.';
     let precision = currencyPrecision;
+
+    if (normalizedCurrency === 'CLP') {
+      thousandsSeparator = '.';
+      decimalSeparator = ',';
+      precision = 0;
+    }
 
     switch (placeholder) {
       case 'amount':

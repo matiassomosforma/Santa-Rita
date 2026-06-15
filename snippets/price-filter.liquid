@@ -9,6 +9,38 @@
   {% render 'price-filter', filter: filter, filter_style: 'vertical' %}
 {%- enddoc -%}
 
+{% liquid
+  assign is_clp = false
+  if localization.country.currency.iso_code == 'CLP'
+    assign is_clp = true
+  endif
+
+  assign min_input_max_value = filter.max_value.value | default: filter.range_max
+  assign max_input_min_value = filter.min_value.value | default: 0
+
+  assign range_max_without_currency = filter.range_max | money_without_currency
+  assign min_input_max_without_currency = min_input_max_value | money_without_currency
+  assign max_input_min_without_currency = max_input_min_value | money_without_currency
+  assign min_value_without_currency = filter.min_value.value | money_without_currency
+  assign max_value_without_currency = filter.max_value.value | money_without_currency
+  assign range_max_money = filter.range_max | money
+  assign min_value_money = filter.min_value.value | money
+  assign max_value_money = filter.max_value.value | money
+  assign zero_money = 0 | money
+
+  if is_clp
+    assign range_max_without_currency = range_max_without_currency | replace: ',', '.'
+    assign min_input_max_without_currency = min_input_max_without_currency | replace: ',', '.'
+    assign max_input_min_without_currency = max_input_min_without_currency | replace: ',', '.'
+    assign min_value_without_currency = min_value_without_currency | replace: ',', '.'
+    assign max_value_without_currency = max_value_without_currency | replace: ',', '.'
+    assign range_max_money = range_max_money | replace: ',', '.'
+    assign min_value_money = min_value_money | replace: ',', '.'
+    assign max_value_money = max_value_money | replace: ',', '.'
+    assign zero_money = zero_money | replace: ',', '.'
+  endif
+%}
+
 <accordion-custom
   class="facets__item"
   {% if filter_style == 'horizontal' %}
@@ -43,20 +75,20 @@
           class="hide-when-empty"
           ref="facetStatus"
           data-currency="{{ localization.country.currency.iso_code }}"
-          data-range-max="{{ filter.range_max | money_without_currency }}"
+          data-range-max="{{ range_max_without_currency }}"
         >
           {%- if filter.min_value.value != null or filter.max_value.value != null %}
             {%- if filter.min_value.value != null and filter.max_value.value != null %}
-              {{- filter.min_value.value | money | strip_html -}}
+              {{- min_value_money | strip_html -}}
               –
-              {{- filter.max_value.value | money | strip_html -}}
+              {{- max_value_money | strip_html -}}
             {%- elsif filter.min_value.value != null -%}
-              {{ filter.min_value.value | money | strip_html }}–{{ filter.range_max | money | strip_html }}
+              {{ min_value_money | strip_html }}–{{ range_max_money | strip_html }}
 
             {%- elsif filter.max_value.value != null -%}
-              {{- 0 | money | strip_html -}}
+              {{- zero_money | strip_html -}}
               –
-              {{- filter.max_value.value | money | strip_html -}}
+              {{- max_value_money | strip_html -}}
             {%- endif -%}
           {%- endif -%}
         </span>
@@ -71,9 +103,6 @@
       {% endunless %}
       class="facets__panel-content details-content{% if filter_style == 'horizontal' %} color-{{ settings.popover_color_scheme }}{% endif %}"
     >
-      {% assign min_input_max_value = filter.max_value.value | default: filter.range_max %}
-      {% assign max_input_min_value = filter.min_value.value | default: 0 %}
-
       <price-facet-component
         class="
           price-facet
@@ -125,13 +154,13 @@
                 name="{{ filter.min_value.param_name }}"
                 id="{{ filter.label | escape }}-GTE"
                 {%- if filter.min_value.value -%}
-                  value="{{ filter.min_value.value | money_without_currency }}"
+                  value="{{ min_value_without_currency }}"
                 {%- endif -%}
                 type="text"
                 inputmode="decimal"
                 placeholder="0"
                 data-min="0"
-                data-max="{{ min_input_max_value | money_without_currency }}"
+                data-max="{{ min_input_max_without_currency }}"
                 ref="minInput"
                 autocomplete="off"
               >
@@ -152,13 +181,13 @@
                 name="{{ filter.max_value.param_name }}"
                 id="{{ filter.label | escape }}-LTE"
                 {%- if filter.max_value.value -%}
-                  value="{{ filter.max_value.value | money_without_currency }}"
+                  value="{{ max_value_without_currency }}"
                 {%- endif -%}
                 type="text"
                 inputmode="decimal"
-                placeholder="{{ filter.range_max | money_without_currency }}"
-                data-min="{{ max_input_min_value | money_without_currency }}"
-                data-max="{{ filter.range_max | money_without_currency }}"
+                placeholder="{{ range_max_without_currency }}"
+                data-min="{{ max_input_min_without_currency }}"
+                data-max="{{ range_max_without_currency }}"
                 ref="maxInput"
                 autocomplete="off"
               >
@@ -180,8 +209,7 @@
             {%- endif %}
           "
         >
-          {%- assign formatted_highest_price = filter.range_max | money -%}
-          {{ 'content.price_filter_html' | t: price: formatted_highest_price }}
+          {{ 'content.price_filter_html' | t: price: range_max_money }}
         </div>
 
         {% if filter.min_value.value != null or filter.max_value.value != null %}

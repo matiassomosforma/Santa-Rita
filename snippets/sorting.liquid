@@ -8,6 +8,7 @@
   @param {string} [sort_position] - { 'desktop' | 'mobile' } Used in a data-testID selector for automated testing
   @param {boolean} should_use_select_on_mobile - Whether to use a select element for the sorting component on mobile
   @param {string} section_id - The section ID
+  @param {string} [form_section_id] - The section ID used by the facets form
 {%- enddoc -%}
 
 <sorting-filter-component
@@ -16,6 +17,9 @@
   on:keydown="/handleKeyDown"
   {% if sort_position != blank %}
     data-testid="sorting-filter-component-{{ sort_position }}"
+  {% endif %}
+  {% if sort_position != blank %}
+    data-sort-position="{{ sort_position }}"
   {% endif %}
   data-should-use-select-on-mobile="{{ should_use_select_on_mobile }}"
 >
@@ -37,22 +41,43 @@
       when 'relevance'
         assign status_label = 'Relevancia'
       when 'best-selling'
-        assign status_label = 'Mas vendidos'
+        assign status_label = 'Más vendidos'
       when 'title-ascending'
-        assign status_label = 'Alfabeticamente, A-Z'
+        assign status_label = 'Alfabéticamente, A-Z'
       when 'title-descending'
-        assign status_label = 'Alfabeticamente, Z-A'
+        assign status_label = 'Alfabéticamente, Z-A'
       when 'price-ascending'
-        assign status_label = 'Precio, menor a mayor'
+        assign status_label = 'Precio de menor a mayor'
       when 'price-descending'
-        assign status_label = 'Precio, mayor a menor'
+        assign status_label = 'Precio de mayor a menor'
       when 'created-ascending'
         assign status_label = 'Fecha, antiguo a nuevo'
       when 'created-descending'
-        assign status_label = 'Fecha, nuevo a antiguo'
+        assign status_label = 'Más nuevos'
     endcase
 
     assign status = status_label | default: status
+    case status
+      when 'Featured'
+        assign status = 'Destacados'
+      when 'Most relevant', 'Relevance'
+        assign status = 'Relevancia'
+      when 'Best selling', 'Best-selling'
+        assign status = 'Más vendidos'
+      when 'Alphabetically, A-Z'
+        assign status = 'Alfabéticamente, A-Z'
+      when 'Alphabetically, Z-A'
+        assign status = 'Alfabéticamente, Z-A'
+      when 'Price, low to high'
+        assign status = 'Precio de menor a mayor'
+      when 'Price, high to low'
+        assign status = 'Precio de mayor a menor'
+      when 'Date, old to new'
+        assign status = 'Fecha, antiguo a nuevo'
+      when 'Date, new to old'
+        assign status = 'Más nuevos'
+    endcase
+    assign form_section_id = form_section_id | default: section_id
   %}
 
   <div class="sorting-filter__container {% if should_use_select_on_mobile %} desktop:hidden {% else %} hidden {% endif %}">
@@ -73,6 +98,18 @@
       >
         {% for option in results.sort_options %}
           {% liquid
+            if sort_position == 'santa-rita-mobile'
+              assign should_render_option = false
+              case option.value
+                when 'manual', 'best-selling', 'price-ascending', 'price-descending', 'created-descending'
+                  assign should_render_option = true
+              endcase
+
+              unless should_render_option
+                continue
+              endunless
+            endif
+
             assign option_label = option.name
 
             case option.value
@@ -81,19 +118,40 @@
               when 'relevance'
                 assign option_label = 'Relevancia'
               when 'best-selling'
-                assign option_label = 'Mas vendidos'
+                assign option_label = 'Más vendidos'
               when 'title-ascending'
-                assign option_label = 'Alfabeticamente, A-Z'
+                assign option_label = 'Alfabéticamente, A-Z'
               when 'title-descending'
-                assign option_label = 'Alfabeticamente, Z-A'
+                assign option_label = 'Alfabéticamente, Z-A'
               when 'price-ascending'
-                assign option_label = 'Precio, menor a mayor'
+                assign option_label = 'Precio de menor a mayor'
               when 'price-descending'
-                assign option_label = 'Precio, mayor a menor'
+                assign option_label = 'Precio de mayor a menor'
               when 'created-ascending'
                 assign option_label = 'Fecha, antiguo a nuevo'
               when 'created-descending'
-                assign option_label = 'Fecha, nuevo a antiguo'
+                assign option_label = 'Más nuevos'
+            endcase
+
+            case option_label
+              when 'Featured'
+                assign option_label = 'Destacados'
+              when 'Most relevant', 'Relevance'
+                assign option_label = 'Relevancia'
+              when 'Best selling', 'Best-selling'
+                assign option_label = 'Más vendidos'
+              when 'Alphabetically, A-Z'
+                assign option_label = 'Alfabéticamente, A-Z'
+              when 'Alphabetically, Z-A'
+                assign option_label = 'Alfabéticamente, Z-A'
+              when 'Price, low to high'
+                assign option_label = 'Precio de menor a mayor'
+              when 'Price, high to low'
+                assign option_label = 'Precio de mayor a menor'
+              when 'Date, old to new'
+                assign option_label = 'Fecha, antiguo a nuevo'
+              when 'Date, new to old'
+                assign option_label = 'Más nuevos'
             endcase
           %}
           <option
@@ -145,7 +203,11 @@
           class="facets__label"
           id="sort-label-{{ section_id }}"
         >
-          Ordenar por: <span data-sort-current>{{ status }}</span>
+          {% if sort_position == 'santa-rita-mobile' %}
+            Ordenar por
+          {% else %}
+            Ordenar por: <span data-sort-current>{{ status }}</span>
+          {% endif %}
         </span>
         <facet-status-component
           class="facets__status h6 santa-rita-sort-status"
@@ -158,14 +220,41 @@
       </summary>
       <floating-panel-component
         id="sorting-options-{{ section_id }}"
-        class="sorting-filter__options color-{{ settings.popover_color_scheme }}"
+        class="sorting-filter__options color-{{ settings.popover_color_scheme }}{% if sort_position == 'santa-rita-mobile' %} santa-rita-sort-sheet{% endif %}"
         role="listbox"
         aria-labelledby="sort-label-{{ section_id }}"
         ref="listbox"
       >
+        {% if sort_position == 'santa-rita-mobile' %}
+          <div class="santa-rita-sort-sheet__header">
+            <h2>Ordenar por</h2>
+            <button
+              type="button"
+              class="santa-rita-sort-sheet__close"
+              data-santa-rita-sort-close
+              aria-label="Cerrar ordenar"
+              on:click="/closeDropdown"
+            >
+              ×
+            </button>
+          </div>
+        {% endif %}
+
         <div class="sorting-filter__options-inner">
           {% for option in results.sort_options %}
             {% liquid
+              if sort_position == 'santa-rita-mobile'
+                assign should_render_option = false
+                case option.value
+                  when 'manual', 'best-selling', 'price-ascending', 'price-descending', 'created-descending'
+                    assign should_render_option = true
+                endcase
+
+                unless should_render_option
+                  continue
+                endunless
+              endif
+
               assign option_label = option.name
 
               case option.value
@@ -174,19 +263,40 @@
                 when 'relevance'
                   assign option_label = 'Relevancia'
                 when 'best-selling'
-                  assign option_label = 'Mas vendidos'
+                  assign option_label = 'Más vendidos'
                 when 'title-ascending'
-                  assign option_label = 'Alfabeticamente, A-Z'
+                  assign option_label = 'Alfabéticamente, A-Z'
                 when 'title-descending'
-                  assign option_label = 'Alfabeticamente, Z-A'
+                  assign option_label = 'Alfabéticamente, Z-A'
                 when 'price-ascending'
-                  assign option_label = 'Precio, menor a mayor'
+                  assign option_label = 'Precio de menor a mayor'
                 when 'price-descending'
-                  assign option_label = 'Precio, mayor a menor'
+                  assign option_label = 'Precio de mayor a menor'
                 when 'created-ascending'
                   assign option_label = 'Fecha, antiguo a nuevo'
                 when 'created-descending'
-                  assign option_label = 'Fecha, nuevo a antiguo'
+                  assign option_label = 'Más nuevos'
+              endcase
+
+              case option_label
+                when 'Featured'
+                  assign option_label = 'Destacados'
+                when 'Most relevant', 'Relevance'
+                  assign option_label = 'Relevancia'
+                when 'Best selling', 'Best-selling'
+                  assign option_label = 'Más vendidos'
+                when 'Alphabetically, A-Z'
+                  assign option_label = 'Alfabéticamente, A-Z'
+                when 'Alphabetically, Z-A'
+                  assign option_label = 'Alfabéticamente, Z-A'
+                when 'Price, low to high'
+                  assign option_label = 'Precio de menor a mayor'
+                when 'Price, high to low'
+                  assign option_label = 'Precio de mayor a menor'
+                when 'Date, old to new'
+                  assign option_label = 'Fecha, antiguo a nuevo'
+                when 'Date, new to old'
+                  assign option_label = 'Más nuevos'
               endcase
             %}
             <label
@@ -203,7 +313,7 @@
                   name="sort_by"
                   id="sort-option-{{ option.value }}-{{ section_id }}"
                   {% if suffix != blank %}
-                    form="FacetFiltersForm--{{ section_id }}-{{ suffix }}"
+                    form="FacetFiltersForm--{{ form_section_id }}-{{ suffix }}"
                   {% endif %}
                   value="{{ option.value }}"
                   class="sorting-filter__input"
