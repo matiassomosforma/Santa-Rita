@@ -487,22 +487,25 @@
 
         <div class="santa-rita-collection-nav__links">
           <a
-            href="{{ collection.url }}"
-            class="santa-rita-collection-nav__link is-active"
-            aria-current="page"
+            href="{{ routes.all_products_collection_url }}"
+            class="santa-rita-collection-nav__link{% if is_all_collection %} is-active{% endif %}"
+            {% if is_all_collection %}
+              aria-current="page"
+            {% endif %}
           >
             {{ section.settings.all_products_label }}
           </a>
 
           {% for nav_collection in collection_nav_links %}
-            {% unless nav_collection.handle == collection.handle %}
-              <a
-                href="{{ nav_collection.url }}"
-                class="santa-rita-collection-nav__link"
-              >
-                {{ nav_collection.title }}
-              </a>
-            {% endunless %}
+            <a
+              href="{{ nav_collection.url }}"
+              class="santa-rita-collection-nav__link{% if nav_collection.handle == collection.handle %} is-active{% endif %}"
+              {% if nav_collection.handle == collection.handle %}
+                aria-current="page"
+              {% endif %}
+            >
+              {{ nav_collection.title }}
+            </a>
           {% endfor %}
         </div>
       </nav>
@@ -1027,6 +1030,47 @@
       backdrop-filter: none;
     }
 
+    .santa-rita-filters-drawer-loading #filters-drawer .facets--drawer {
+      pointer-events: none;
+    }
+
+    .santa-rita-filters-drawer-loading #filters-drawer .facets--drawer::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 4;
+      width: 22px;
+      height: 22px;
+      margin: -30px 0 0 -11px;
+      border: 2px solid rgba(155, 23, 63, 0.2);
+      border-top-color: #9b173f;
+      border-radius: 999px;
+      animation: santa-rita-filter-loading-spin 0.72s linear infinite;
+    }
+
+    .santa-rita-filters-drawer-loading #filters-drawer .facets--drawer::after {
+      content: 'Actualizando filtros...';
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 34px;
+      background: rgba(255, 250, 244, 0.82);
+      color: #21000f;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    @keyframes santa-rita-filter-loading-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     #filters-drawer .dialog-drawer--right[open] {
       --start-x: 100%;
       --end-x: 0;
@@ -1069,31 +1113,56 @@
     }
 
     #filters-drawer .facets-remove {
-      gap: 6px;
+      gap: 8px;
       padding: 0 var(--drawer-padding);
-      margin: 0 0 10px;
+      margin: 0 0 14px;
     }
 
     #filters-drawer .facets-remove:has(facet-remove-component) {
       display: flex;
     }
 
-    #filters-drawer .facets-remove__pill {
-      min-height: 24px;
-      padding: 5px 8px;
-      border: 1px solid rgba(155, 23, 63, 0.28);
-      border-radius: 4px;
-      background: #f7eedc;
+    #filters-drawer .facets-remove__title {
+      width: 100%;
+      margin: 0 0 6px;
       color: #21000f;
-      font-size: 11px;
+      font-family: var(--font-body--family);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    #filters-drawer .facets-remove__pill {
+      min-height: 28px;
+      padding: 7px 8px 7px 10px;
+      border: 1px solid #d7d7d7;
+      border-radius: 8px;
+      background: transparent;
+      color: #21000f;
+      font-size: 13px;
       line-height: 1;
       text-decoration: none;
     }
 
     #filters-drawer .facets-remove__pill .svg-wrapper {
-      width: 10px;
-      height: 10px;
-      color: #6d4f58;
+      width: 12px;
+      height: 12px;
+      color: #5d4a50;
+    }
+
+    #filters-drawer .facets-remove facet-remove-component:has(.facets__clear-all-link) {
+      width: 100%;
+    }
+
+    #filters-drawer .facets__clear-all-link {
+      display: inline-block;
+      padding: 0;
+      color: #21000f;
+      font-size: 13px;
+      line-height: 1.1;
+      text-decoration: underline;
+      text-decoration-color: currentColor;
+      text-underline-offset: 2px;
     }
 
     #filters-drawer .facets__filters-wrapper {
@@ -1119,9 +1188,10 @@
     #filters-drawer .facets__label {
       color: #21000f;
       font-family: var(--font-body--family);
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 500;
       line-height: 1.2;
+      margin-block:15px 15px;
     }
 
     #filters-drawer [data-testid='price-filter'] .facets__label {
@@ -1130,7 +1200,7 @@
 
     #filters-drawer [data-testid='price-filter'] .facets__label::after {
       content: 'Rango de precios';
-      font-size: 14px;
+      font-size: 16px;
     }
 
     #filters-drawer .facets__summary .icon-caret {
@@ -1140,8 +1210,8 @@
     #filters-drawer .facets__summary::after {
       content: '+';
       margin-left: auto;
-      color: #21000f;
-      font-size: 14px;
+      color: #000000;
+      font-size: 18px;
       line-height: 1;
     }
 
@@ -1189,7 +1259,7 @@
       inset: 0;
       z-index: 1;
       width: 100%;
-      height: 18px;
+      height: 14px;
       margin: 0;
       appearance: none;
       background: transparent;
@@ -1228,7 +1298,7 @@
     #filters-drawer .price-facet__inputs-wrapper {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 12px minmax(0, 1fr);
-      gap: 12px;
+      gap: 14px;
       align-items: center;
       padding: 0;
     }
@@ -1238,23 +1308,27 @@
     }
 
     #filters-drawer .price-facet__input {
-      min-height: 26px;
-      max-height: 26px;
-      padding: 0 8px 0 18px;
-      border: 1px solid #d7d7d7;
-      border-radius: 3px;
-      background: #ffffff;
-      color: #21000f;
-      text-align: left;
-      font-size: 11px;
-      line-height: 1;
+      min-height: 35px;
+        max-height: 35px;
+        padding: 0 8px 0 18px;
+        border: 1px solid #d7d7d7;
+        border-radius: 8px;
+        background: transparent;
+        color: #21000f;
+        text-align: left;
+        font-size: 14px;
+        line-height: 1;
+        box-shadow: none;
     }
 
     #filters-drawer .price-facet__label {
-      padding: 7px 6px;
-      color: #21000f;
-      font-size: 11px;
-      line-height: 1;
+        padding: 7px 6px;
+        color: #21000f;
+        font-size: 14px;
+        line-height: 1;
+        height: 35px;
+        display: flex;
+        align-items: center;
     }
 
     #filters-drawer .price-facet__separator {
@@ -1306,15 +1380,15 @@
       align-items: center;
       gap: 7px;
       color: #21000f;
-      font-size: 12px;
+      font-size: 14px;
       line-height: 1.1;
       text-decoration: none;
     }
 
     #filters-drawer .santa-rita-drawer-taxonomy__marker {
-      width: 12px;
-      height: 12px;
-      flex: 0 0 12px;
+      width: 16px;
+      height: 16px;
+      flex: 0 0 16px;
       border: 1px solid #9b173f;
       border-radius: 999px;
       background: transparent;
@@ -1333,17 +1407,18 @@
       align-items: center;
       gap: 6px;
       color: #21000f;
-      font-size: 12px;
+      font-size: 14px;
       line-height: 1.1;
     }
 
     #filters-drawer .checkbox__label .icon-checkmark {
-      width: 12px;
-      height: 12px;
-      flex: 0 0 12px;
+      width: 16px;
+      height: 16px;
+      flex: 0 0 16px;
       border: 1px solid #9b173f;
       border-radius: 3px;
       color: transparent;
+      background: transparent;
       --icon-stroke-width: 3px;
     }
 
@@ -1381,8 +1456,27 @@
 
     #filters-drawer .facets__see-results::after {
       content: 'Aplicar filtros';
-      font-size: 11px;
+      font-size: 12px;
     }
+
+    .facets__bubble {
+    padding: 0;
+    display: inline-flex;
+    font-family: var(--font-paragraph--family);
+    font-weight: var(--font-paragraph--weight);
+    aspect-ratio: 1 / 1;
+    background: #9b173f;
+    color: white !important;
+    width: 12px !important;
+    height: 12px;
+    min-width: auto;
+    font-size: 9px;
+    margin-left: 5px;
+}
+
+#filters-drawer-heading .facets__bubble{
+  margin-left: 0;
+}
   }
 
   @media screen and (min-width: 990px) {

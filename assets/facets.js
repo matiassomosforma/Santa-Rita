@@ -3,11 +3,17 @@ import { Component } from '@theme/component';
 import { FilterUpdateEvent, ThemeEvents } from '@theme/events';
 import { debounce, startViewTransition } from '@theme/utilities';
 import { convertMoneyToMinorUnits, formatMoney } from '@theme/money-formatting';
+import { morph, MORPH_OPTIONS } from '@theme/morph';
 /**
  * Search query parameter.
  * @type {string}
  */
 const SEARCH_QUERY = 'q';
+const FILTERS_DRAWER_ID = 'filters-drawer';
+const FILTERS_DRAWER_LOADING_CLASS = 'santa-rita-filters-drawer-loading';
+// Set this to true if the drawer should apply filters immediately on checkbox,
+// price, or category changes again.
+const APPLY_DRAWER_FILTERS_AUTOMATICALLY = false;
 
 /**
  * Normalizes Chilean peso values for Shopify filter URLs.
@@ -32,6 +38,20 @@ function normalizeCLPPriceParam(value) {
   }
 
   return wholeValue || '';
+}
+
+function setFiltersDrawerLoading(isLoading) {
+  document.documentElement.classList.toggle(FILTERS_DRAWER_LOADING_CLASS, isLoading);
+  document.getElementById(FILTERS_DRAWER_ID)?.classList.toggle('is-loading', isLoading);
+}
+
+function morphElement(existingElement, newElement) {
+  if (!existingElement || !newElement) return;
+
+  morph(existingElement, newElement, {
+    ...MORPH_OPTIONS,
+    childrenOnly: false,
+  });
 }
 
 /**
@@ -114,16 +134,72 @@ class FacetsFormComponent extends Component {
     this.#updateSection();
   };
 
+  applyPendingDrawerFilters = () => {
+    const drawer = this.closest(`#${FILTERS_DRAWER_ID}`);
+    const pendingCategoryUrl = drawer instanceof HTMLElement ? drawer.dataset.pendingCategoryUrl : '';
+
+    if (pendingCategoryUrl) {
+      history.pushState('', '', pendingCategoryUrl);
+    }
+
+    this.updateFilters();
+  };
+
   /**
    * Updates the section
    */
-  #updateSection() {
+  async #updateSection() {
     const viewTransition = !this.closest('dialog') && !this.closest('[data-santa-rita-collection]');
+    const shouldUpdateDrawerInPlace = Boolean(this.closest(`#${FILTERS_DRAWER_ID}`));
 
-    if (viewTransition) {
-      startViewTransition(() => sectionRenderer.renderSection(this.sectionId), ['product-grid']);
-    } else {
-      sectionRenderer.renderSection(this.sectionId);
+    if (shouldUpdateDrawerInPlace) setFiltersDrawerLoading(true);
+
+    try {
+      if (shouldUpdateDrawerInPlace) {
+        await this.#updateDrawerSectionInPlace();
+      } else if (viewTransition) {
+        await startViewTransition(() => sectionRenderer.renderSection(this.sectionId), ['product-grid']);
+      } else {
+        await sectionRenderer.renderSection(this.sectionId);
+      }
+    } finally {
+      if (shouldUpdateDrawerInPlace) setFiltersDrawerLoading(false);
+    }
+  }
+
+  async #updateDrawerSectionInPlace() {
+    const sectionHTML = await sectionRenderer.getSectionHTML(this.sectionId, false);
+    const fragment = new DOMParser().parseFromString(sectionHTML, 'text/html');
+    const currentSection = this.closest('.shopify-section') ?? document.getElementById(`shopify-section-${this.sectionId}`);
+    const nextSection = currentSection?.id ? fragment.getElementById(currentSection.id) : null;
+
+    if (!currentSection || !nextSection) {
+      await sectionRenderer.renderSection(this.sectionId);
+      return;
+    }
+
+    const selectors = [
+      '.santa-rita-collection-banner',
+      '.santa-rita-collection-nav',
+      '#ResultsList',
+      `#${FILTERS_DRAWER_ID} .facets__title-wrapper`,
+      `#${FILTERS_DRAWER_ID} .facets-drawer__filters`,
+      `#${FILTERS_DRAWER_ID} .facets__drawer-actions`,
+    ];
+
+    for (const selector of selectors) {
+      morphElement(currentSection.querySelector(selector), nextSection.querySelector(selector));
+    }
+
+    const currentLoadMore = currentSection.querySelector('.santa-rita-collection-load-more');
+    const nextLoadMore = nextSection.querySelector('.santa-rita-collection-load-more');
+
+    if (currentLoadMore && nextLoadMore) {
+      morphElement(currentLoadMore, nextLoadMore);
+    } else if (currentLoadMore && !nextLoadMore) {
+      currentLoadMore.remove();
+    } else if (!currentLoadMore && nextLoadMore) {
+      currentSection.querySelector('#ResultsList')?.insertAdjacentElement('afterend', nextLoadMore);
     }
   }
 
@@ -140,6 +216,63 @@ class FacetsFormComponent extends Component {
 
 if (!customElements.get('facets-form-component')) {
   customElements.define('facets-form-component', FacetsFormComponent);
+}
+
+if (!window.santaRitaCollectionCategoryFilterReady) {
+  window.santaRitaCollectionCategoryFilterReady = true;
+
+  document.addEventListener('click', (event) => {
+    const isModifiedClick =
+      event instanceof MouseEvent && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey);
+
+    if (event.defaultPrevented || isModifiedClick) {
+      return;
+    }
+
+    const target = event.target instanceof Element ? event.target : null;
+    const link = target?.closest(`#${FILTERS_DRAWER_ID} .santa-rita-drawer-taxonomy__link`);
+
+    if (!(link instanceof HTMLAnchorElement)) return;
+
+    const drawer = link.closest(`#${FILTERS_DRAWER_ID}`);
+    const facetsForm = drawer?.querySelector('facets-form-component');
+
+    if (!(facetsForm instanceof FacetsFormComponent)) return;
+
+    event.preventDefault();
+
+    if (APPLY_DRAWER_FILTERS_AUTOMATICALLY) {
+      facetsForm.updateFiltersByURL(link.href);
+      return;
+    }
+
+    if (drawer instanceof HTMLElement) {
+      drawer.dataset.pendingCategoryUrl = link.href;
+    }
+
+    drawer?.querySelectorAll('.santa-rita-drawer-taxonomy__link').forEach((categoryLink) => {
+      categoryLink.classList.toggle('is-active', categoryLink === link);
+      if (categoryLink === link) {
+        categoryLink.setAttribute('aria-current', 'page');
+      } else {
+        categoryLink.removeAttribute('aria-current');
+      }
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    const button = target?.closest('[data-santa-rita-apply-drawer-filters]');
+
+    if (!(button instanceof HTMLButtonElement)) return;
+
+    const facetsForm = button.closest(`#${FILTERS_DRAWER_ID}`)?.querySelector('facets-form-component');
+
+    if (!(facetsForm instanceof FacetsFormComponent)) return;
+
+    event.preventDefault();
+    facetsForm.applyPendingDrawerFilters();
+  });
 }
 
 /**
@@ -166,8 +299,11 @@ class FacetInputsComponent extends Component {
 
     if (!(facetsForm instanceof FacetsFormComponent)) return;
 
-    facetsForm.updateFilters();
     this.#updateSelectedFacetSummary();
+
+    if (APPLY_DRAWER_FILTERS_AUTOMATICALLY || !this.closest(`#${FILTERS_DRAWER_ID}`)) {
+      facetsForm.updateFilters();
+    }
   }
 
   /**
@@ -301,9 +437,12 @@ class PriceFacetComponent extends Component {
     const facetsForm = this.closest('facets-form-component');
     if (!(facetsForm instanceof FacetsFormComponent)) return;
 
-    facetsForm.updateFilters();
     this.#setMinAndMaxValues();
     this.#updateSummary();
+
+    if (APPLY_DRAWER_FILTERS_AUTOMATICALLY || !this.closest(`#${FILTERS_DRAWER_ID}`)) {
+      facetsForm.updateFilters();
+    }
   }
 
   /**

@@ -427,7 +427,7 @@
                 filters: filters,
                 results_url: results_url,
                 show_filter_label: block_settings.show_filter_label,
-                should_show_clear_all: false
+                should_show_clear_all: true
               %}
 
               <div class="facets__filters-wrapper">
@@ -555,7 +555,7 @@
           <button
             class="button facets__see-results"
             type="button"
-            on:click="dialog-component/closeDialog"
+            data-santa-rita-apply-drawer-filters
           >
             {{- 'actions.see_items' | t: count: products_count -}}
           </button>
