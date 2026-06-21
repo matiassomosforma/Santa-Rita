@@ -1,6 +1,11 @@
 {% liquid
   assign tours_collection = section.settings.collection
+  assign tour_products = section.settings.products
   assign products_limit = section.settings.products_limit | default: 6
+
+  if tour_products == blank and tours_collection != blank
+    assign tour_products = tours_collection.products
+  endif
 %}
 
 <section
@@ -20,8 +25,8 @@
     </div>
 
     <div class="santa-rita-tour-list__grid">
-      {% if tours_collection != blank and tours_collection.products_count > 0 %}
-        {% for product in tours_collection.products limit: products_limit %}
+      {% if tour_products != blank %}
+        {% for product in tour_products limit: products_limit %}
           {% liquid
             assign variant = product.selected_or_first_available_variant
             assign card_image = product.featured_image
@@ -656,6 +661,12 @@
       "type": "collection",
       "id": "collection",
       "label": "Coleccion de tours"
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Productos tour",
+      "info": "Opcional. Si seleccionas productos aqui, se usaran antes que la coleccion."
     },
     {
       "type": "range",
