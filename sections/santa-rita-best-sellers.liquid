@@ -23,17 +23,39 @@
       <div class="santa-rita-best-sellers__track" data-slider-track>
         {% if best_seller_products != blank %}
           {% for product in best_seller_products limit: product_limit %}
-            {% render 'santa-rita-best-seller-card',
-              product: product,
-              section_settings: section.settings
+            {% liquid
+              assign product_type_downcase = product.type | downcase
+              assign is_tour_product = false
+
+              if product_type_downcase contains 'tour' or product.tags contains 'tour' or product.tags contains 'Tour'
+                assign is_tour_product = true
+              endif
             %}
+
+            {% unless is_tour_product %}
+              {% render 'santa-rita-best-seller-card',
+                product: product,
+                section_settings: section.settings
+              %}
+            {% endunless %}
           {% endfor %}
         {% elsif section.settings.collection != blank %}
           {% for product in section.settings.collection.products limit: product_limit %}
-            {% render 'santa-rita-best-seller-card',
-              product: product,
-              section_settings: section.settings
+            {% liquid
+              assign product_type_downcase = product.type | downcase
+              assign is_tour_product = false
+
+              if product_type_downcase contains 'tour' or product.tags contains 'tour' or product.tags contains 'Tour'
+                assign is_tour_product = true
+              endif
             %}
+
+            {% unless is_tour_product %}
+              {% render 'santa-rita-best-seller-card',
+                product: product,
+                section_settings: section.settings
+              %}
+            {% endunless %}
           {% endfor %}
         {% else %}
           <div class="santa-rita-best-sellers__empty">

@@ -533,18 +533,29 @@
     {% paginate collection.products by products_per_page %}
       {% capture children %}
         {% for product in collection.products %}
-          <li
-            id="{{ section.id }}-{{ product.id }}"
-            class="product-grid__item product-grid__item--{{ forloop.index0 }}"
-            data-page="{{ paginate.current_page }}"
-            data-product-id="{{ product.id }}"
-            ref="cards[]"
-          >
-            {% render 'santa-rita-best-seller-card',
-              product: product,
-              section_settings: section.settings
-            %}
-          </li>
+          {% liquid
+            assign product_type_downcase = product.type | downcase
+            assign is_tour_product = false
+
+            if product_type_downcase contains 'tour' or product.tags contains 'tour' or product.tags contains 'Tour'
+              assign is_tour_product = true
+            endif
+          %}
+
+          {% unless is_tour_product %}
+            <li
+              id="{{ section.id }}-{{ product.id }}"
+              class="product-grid__item product-grid__item--{{ forloop.index0 }}"
+              data-page="{{ paginate.current_page }}"
+              data-product-id="{{ product.id }}"
+              ref="cards[]"
+            >
+              {% render 'santa-rita-best-seller-card',
+                product: product,
+                section_settings: section.settings
+              %}
+            </li>
+          {% endunless %}
         {% endfor %}
       {% endcapture %}
 

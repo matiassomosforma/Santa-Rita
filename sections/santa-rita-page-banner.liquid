@@ -5,11 +5,26 @@
   assign banner_subtitle = section.settings.subheading
   assign breadcrumb_label = page.title | default: banner_title
   assign banner_style = section.settings.banner_style | default: 'background'
+  assign text_alignment = section.settings.text_alignment | default: 'left'
+  assign min_height = section.settings.min_height | default: 430
+  assign mobile_min_height = section.settings.mobile_min_height | default: 450
+  assign padding_top = section.settings.padding_top | default: 28
+  assign padding_bottom = section.settings.padding_bottom | default: 74
+  assign mobile_padding_top = section.settings.mobile_padding_top | default: 14
+  assign mobile_padding_bottom = section.settings.mobile_padding_bottom | default: 18
 %}
 
 <section
-  class="santa-rita-page-banner santa-rita-page-banner--{{ banner_style }}"
+  class="santa-rita-page-banner santa-rita-page-banner--{{ banner_style }} santa-rita-page-banner--align-{{ text_alignment }}"
   aria-labelledby="santa-rita-page-banner-title-{{ section.id }}"
+  style="
+    --santa-rita-page-banner-height: {{ min_height }}px;
+    --santa-rita-page-banner-mobile-height: {{ mobile_min_height }}px;
+    --santa-rita-page-banner-padding-top: {{ padding_top }}px;
+    --santa-rita-page-banner-padding-bottom: {{ padding_bottom }}px;
+    --santa-rita-page-banner-mobile-padding-top: {{ mobile_padding_top }}px;
+    --santa-rita-page-banner-mobile-padding-bottom: {{ mobile_padding_bottom }}px;
+  "
   {{ section.shopify_attributes }}
 >
   {% capture banner_media %}
@@ -81,7 +96,7 @@
   .santa-rita-page-banner {
     position: relative;
     display: grid;
-    min-height: clamp(320px, 31vw, 430px);
+    min-height: var(--santa-rita-page-banner-height, 430px);
     overflow: hidden;
     place-items: stretch;
     background: #09090b;
@@ -122,7 +137,7 @@
     min-height: inherit;
     flex-direction: column;
     margin-inline: auto;
-    padding-block: 28px 74px;
+    padding-block: var(--santa-rita-page-banner-padding-top, 28px) var(--santa-rita-page-banner-padding-bottom, 74px);
   }
 
   .santa-rita-page-banner__breadcrumbs {
@@ -165,8 +180,26 @@
     line-height: normal;
   }
 
+  .santa-rita-page-banner--align-center .santa-rita-page-banner__content {
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .santa-rita-page-banner--align-center .santa-rita-page-banner__content p {
+    margin-inline: auto;
+  }
+
+  .santa-rita-page-banner--align-right .santa-rita-page-banner__content {
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .santa-rita-page-banner--align-right .santa-rita-page-banner__content p {
+    margin-left: auto;
+  }
+
   .santa-rita-page-banner--split {
-    min-height: 350px;
+    min-height: var(--santa-rita-page-banner-height, 350px);
     overflow: visible;
     border-bottom: 1px solid rgba(110, 90, 97, 0.18);
     background: #fffbf6;
@@ -179,8 +212,7 @@
 
   .santa-rita-page-banner--split .santa-rita-page-banner__inner {
     display: grid;
-    min-height: 350px;
-    padding-block: 28px;
+    min-height: var(--santa-rita-page-banner-height, 350px);
   }
 
   .santa-rita-page-banner--split .santa-rita-page-banner__breadcrumbs {
@@ -237,7 +269,7 @@
 
   @media screen and (max-width: 749px) {
     .santa-rita-page-banner {
-      min-height: 450px;
+      min-height: var(--santa-rita-page-banner-mobile-height, 450px);
       place-items: end start;
     }
 
@@ -252,7 +284,7 @@
     .santa-rita-page-banner__inner {
       width: calc(100% - 24px);
       min-height: inherit;
-      padding-block: 14px 18px;
+      padding-block: var(--santa-rita-page-banner-mobile-padding-top, 14px) var(--santa-rita-page-banner-mobile-padding-bottom, 18px);
     }
 
     .santa-rita-page-banner__breadcrumbs {
@@ -277,7 +309,7 @@
     }
 
     .santa-rita-page-banner--split {
-      min-height: 0;
+      min-height: var(--santa-rita-page-banner-mobile-height, 0);
       border-bottom: 0;
       background: #fffbf6;
       color: #21000f;
@@ -286,8 +318,7 @@
     .santa-rita-page-banner--split .santa-rita-page-banner__inner {
       display: block;
       width: calc(100% - 28px);
-      min-height: 0;
-      padding-block: 26px 32px;
+      min-height: inherit;
     }
 
     .santa-rita-page-banner--split .santa-rita-page-banner__breadcrumbs {
@@ -363,6 +394,86 @@
       "type": "textarea",
       "id": "subheading",
       "label": "Subtitulo"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Alineacion del texto",
+      "options": [
+        {
+          "value": "left",
+          "label": "Izquierda"
+        },
+        {
+          "value": "center",
+          "label": "Centro"
+        },
+        {
+          "value": "right",
+          "label": "Derecha"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "label": "Altura minima desktop",
+      "min": 240,
+      "max": 760,
+      "step": 20,
+      "unit": "px",
+      "default": 430
+    },
+    {
+      "type": "range",
+      "id": "mobile_min_height",
+      "label": "Altura minima mobile",
+      "min": 240,
+      "max": 720,
+      "step": 20,
+      "unit": "px",
+      "default": 450
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding superior desktop",
+      "min": 0,
+      "max": 180,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding inferior desktop",
+      "min": 0,
+      "max": 220,
+      "step": 4,
+      "unit": "px",
+      "default": 74
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "label": "Padding superior mobile",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "label": "Padding inferior mobile",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 18
     },
     {
       "type": "checkbox",

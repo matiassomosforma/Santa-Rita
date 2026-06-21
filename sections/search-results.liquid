@@ -38,15 +38,26 @@
 
       {% capture children %}
         {% for product in products %}
-          <li
-            id="{{ section.id }}-{{ product.id }}"
-            class="product-grid__item product-grid__item--{{ forloop.index0 }}"
-            data-page="{{ paginate.current_page }}"
-            data-product-id="{{ product.id }}"
-            ref="cards[]"
-          >
-            {% content_for 'block', type: '_product-card', id: 'product-card', closest.product: product %}
-          </li>
+          {% liquid
+            assign product_type_downcase = product.type | downcase
+            assign is_tour_product = false
+
+            if product_type_downcase contains 'tour' or product.tags contains 'tour' or product.tags contains 'Tour'
+              assign is_tour_product = true
+            endif
+          %}
+
+          {% unless is_tour_product %}
+            <li
+              id="{{ section.id }}-{{ product.id }}"
+              class="product-grid__item product-grid__item--{{ forloop.index0 }}"
+              data-page="{{ paginate.current_page }}"
+              data-product-id="{{ product.id }}"
+              ref="cards[]"
+            >
+              {% content_for 'block', type: '_product-card', id: 'product-card', closest.product: product %}
+            </li>
+          {% endunless %}
         {% endfor %}
       {% endcapture %}
 

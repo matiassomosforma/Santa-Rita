@@ -1,4 +1,11 @@
 {% liquid
+  assign product_type_downcase = product.type | downcase
+  assign is_tour_product = false
+
+  if product_type_downcase contains 'tour' or product.tags contains 'tour' or product.tags contains 'Tour'
+    assign is_tour_product = true
+  endif
+
   assign variant = product.selected_or_first_available_variant
   assign pack_label = product.metafields.custom.pack_label | default: section_settings.pack_label
   assign unit_price_label = product.metafields.custom.unit_price_label | default: section_settings.unit_price_label
@@ -27,7 +34,8 @@
   endif
 %}
 
-<article class="santa-rita-product-card">
+{% unless is_tour_product %}
+  <article class="santa-rita-product-card">
   <div class="santa-rita-product-card__badges">
     {% if discount_percent > 0 %}
       <span class="santa-rita-product-card__badge santa-rita-product-card__badge--discount">-{{ discount_percent }}%</span>
@@ -120,4 +128,5 @@
       {% endif %}
     </button>
   {% endform %}
-</article>
+  </article>
+{% endunless %}

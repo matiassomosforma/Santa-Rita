@@ -14,29 +14,21 @@
       "name": "Banner de pagina",
       "settings": {
         "banner_style": "background",
+        "desktop_image": "shopify://shop_images/BannerTourismoDES_1_1.png",
         "heading": "Nuestros Tours",
         "subheading": "Una invitacion a descubrir el alma de nuestra bodega a solo 45 minutos de Santiago.",
+        "text_alignment": "center",
+        "min_height": 480,
+        "mobile_min_height": 460,
+        "padding_top": 40,
+        "padding_bottom": 108,
+        "mobile_padding_top": 24,
+        "mobile_padding_bottom": 44,
         "show_breadcrumbs": true
       }
     },
     "santa_rita_tour_list": {
       "type": "santa-rita-tour-list",
-      "name": "Tours",
-      "settings": {
-        "products_limit": 6,
-        "heading": "Elige tu experiencia",
-        "subheading": "Desde recorridos clasicos hasta vivencias unicas en el corazon de la vina.",
-        "card_button_label": "Ver mas",
-        "price_note": "por persona",
-        "notice": "Reserva con anticipacion. Todos los tours requieren reserva minima con 24 horas de anticipacion.",
-        "arrival_heading": "Como llegar a Vina Santa Rita?",
-        "arrival_text": "Elige tu medio de transporte preferido y te mostramos el camino hasta la vina.",
-        "map_heading": "Vina Santa Rita",
-        "map_text": "Camino Padre Hurtado 0695, Alto Jahuel",
-        "map_link_label": "Ir a Google Maps",
-        "faq_heading": "Preguntas frecuentes",
-        "faq_text": "Todo lo que necesitas saber sobre Tour Vina Santa Rita."
-      },
       "blocks": {
         "transport_car": {
           "type": "transport",
@@ -100,7 +92,25 @@
         "faq_languages",
         "faq_pets",
         "faq_food"
-      ]
+      ],
+      "name": "Tours",
+      "settings": {
+        "collection": "",
+        "products_limit": 6,
+        "heading": "Elige tu experiencia",
+        "subheading": "Desde recorridos clasicos hasta vivencias unicas en el corazon de la vina.",
+        "card_button_label": "Ver más",
+        "price_note": "por persona",
+        "notice": "Reserva con anticipacion. Todos los tours requieren reserva minima con 24 horas de anticipacion.",
+        "arrival_heading": "Como llegar a Vina Santa Rita?",
+        "arrival_text": "Elige tu medio de transporte preferido y te mostramos el camino hasta la vina.",
+        "map_heading": "Vina Santa Rita",
+        "map_text": "Camino Padre Hurtado 0695, Alto Jahuel",
+        "map_link": "",
+        "map_link_label": "Ir a Google Maps",
+        "faq_heading": "Preguntas frecuentes",
+        "faq_text": "Todo lo que necesitas saber sobre Tour Vina Santa Rita."
+      }
     }
   },
   "order": [

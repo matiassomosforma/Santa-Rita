@@ -27,9 +27,17 @@
             assign card_image = product.featured_image
             assign badge = product.metafields.custom.tour_badge.value | default: product.metafields.custom.tour_badge
             assign duration = product.metafields.custom.tour_duration.value | default: product.metafields.custom.tour_duration
-            assign capacity = product.metafields.custom.tour_capacity.value | default: product.metafields.custom.tour_capacity
-            assign short_description = product.metafields.custom.tour_short_description.value | default: product.metafields.custom.tour_short_description
-            assign short_description = short_description | default: product.description | strip_html
+            assign short_description_metafield = product.metafields.custom.tour_short_description
+
+            capture short_description
+              if short_description_metafield != blank
+                echo short_description_metafield | metafield_tag
+              else
+                echo product.description
+              endif
+            endcapture
+
+            assign short_description = short_description | strip_html | strip
           %}
 
           <article class="santa-rita-tour-list__card">
@@ -59,22 +67,15 @@
               </h3>
 
               {% if short_description != blank %}
-                <p>{{ short_description | strip_html | truncatewords: 23 }}</p>
+                <p>{{ short_description | truncatewords: 23 }}</p>
               {% endif %}
-
-              <div class="santa-rita-tour-list__meta">
-                {% if duration != blank %}
-                  <span>{{ duration }}</span>
-                {% endif %}
-                {% if capacity != blank %}
-                  <span>{{ capacity }}</span>
-                {% endif %}
-              </div>
 
               <div class="santa-rita-tour-list__footer">
                 <div>
                   <strong>{{ variant.price | money }}</strong>
-                  {% if section.settings.price_note != blank %}
+                  {% if duration != blank %}
+                    <small>{{ duration }}</small>
+                  {% elsif section.settings.price_note != blank %}
                     <small>{{ section.settings.price_note }}</small>
                   {% endif %}
                 </div>
@@ -99,14 +100,10 @@
             <div class="santa-rita-tour-list__body">
               <h3>Tour Santa Rita</h3>
               <p>Selecciona una coleccion de productos para mostrar tours administrables desde Shopify.</p>
-              <div class="santa-rita-tour-list__meta">
-                <span>1 h 30 min</span>
-                <span>Por persona</span>
-              </div>
               <div class="santa-rita-tour-list__footer">
                 <div>
                   <strong>$50.000</strong>
-                  <small>{{ section.settings.price_note }}</small>
+                  <small>1 h 30 min</small>
                 </div>
                 <span class="santa-rita-tour-list__button">{{ section.settings.card_button_label }}</span>
               </div>
@@ -124,7 +121,7 @@
   {% assign transport_blocks = section.blocks | where: 'type', 'transport' %}
   {% assign faq_blocks = section.blocks | where: 'type', 'faq' %}
 
-  {% if transport_blocks.size > 0 or section.settings.map_image != blank or section.settings.map_heading != blank %}
+  {% if transport_blocks.size > 0 or section.settings.map_image != blank or section.settings.map_embed_code != blank or section.settings.map_heading != blank %}
     <div class="santa-rita-tour-list__arrival">
       <div class="santa-rita-tour-list__arrival-inner">
         <div class="santa-rita-tour-list__section-heading">
@@ -150,19 +147,25 @@
           </div>
         {% endif %}
 
-        {% if section.settings.map_image != blank or section.settings.map_heading != blank %}
+        {% if section.settings.map_image != blank or section.settings.map_embed_code != blank or section.settings.map_heading != blank %}
           <div class="santa-rita-tour-list__map">
-            {% if section.settings.map_image != blank %}
-              {{
-                section.settings.map_image
-                | image_url: width: 1200
-                | image_tag:
-                  widths: '360, 640, 960, 1200',
-                  sizes: '(min-width: 990px) 56vw, 100vw',
-                  loading: 'lazy',
-                  class: 'santa-rita-tour-list__map-image'
-              }}
-            {% endif %}
+            <div class="santa-rita-tour-list__map-media">
+              {% if section.settings.map_embed_code != blank %}
+                {{ section.settings.map_embed_code }}
+              {% elsif section.settings.map_image != blank %}
+                {{
+                  section.settings.map_image
+                  | image_url: width: 1200
+                  | image_tag:
+                    widths: '360, 640, 960, 1200',
+                    sizes: '(min-width: 990px) 56vw, 100vw',
+                    loading: 'lazy',
+                    class: 'santa-rita-tour-list__map-image'
+                }}
+              {% elsif request.design_mode %}
+                {{ 'image' | placeholder_svg_tag: 'santa-rita-tour-list__map-image santa-rita-tour-list__map-image--placeholder' }}
+              {% endif %}
+            </div>
 
             <div class="santa-rita-tour-list__map-info">
               {% if section.settings.map_heading != blank %}
@@ -254,8 +257,9 @@
 
   .santa-rita-tour-list__grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 253px));
+    gap: 24px 28px;
+    justify-content: start;
   }
 
   .santa-rita-tour-list__card {
@@ -269,7 +273,7 @@
   .santa-rita-tour-list__media {
     position: relative;
     display: block;
-    aspect-ratio: 1.62 / 1;
+    aspect-ratio: 1.5 / 1;
     overflow: hidden;
     color: inherit;
     text-decoration: none;
@@ -294,30 +298,30 @@
 
   .santa-rita-tour-list__badge {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 11px;
+    right: 11px;
     display: inline-flex;
-    min-height: 22px;
+    min-height: 24px;
     align-items: center;
     border-radius: 999px;
-    background: #8c1a3e;
+    background: #250012;
     color: #ffffff;
     font-size: 10px;
     font-weight: 700;
     line-height: 1;
-    padding-inline: 10px;
+    padding-inline: 12px;
   }
 
   .santa-rita-tour-list__body {
     display: grid;
-    gap: 12px;
-    padding: 22px;
+    gap: 10px;
+    padding: 20px 20px 18px;
   }
 
   .santa-rita-tour-list__body h3 {
     margin: 0;
     font-family: var(--font-heading--family);
-    font-size: 19px;
+    font-size: 18px;
     line-height: 1.18;
     letter-spacing: 0;
   }
@@ -328,11 +332,11 @@
   }
 
   .santa-rita-tour-list__body p {
-    min-height: 58px;
+    min-height: 66px;
     margin: 0;
-    color: #4f3c43;
-    font-size: 13px;
-    line-height: 1.38;
+    color: #2f2026;
+    font-size: 12px;
+    line-height: 1.32;
   }
 
   .santa-rita-tour-list__meta {
@@ -343,14 +347,23 @@
 
   .santa-rita-tour-list__meta span {
     display: inline-flex;
-    min-height: 24px;
+    min-height: 20px;
     align-items: center;
-    border-radius: 999px;
-    background: #fff3ec;
-    color: #8c1a3e;
-    font-size: 11px;
+    border-radius: 0;
+    background: transparent;
+    color: #6e5a61;
+    font-size: 10px;
     line-height: 1;
-    padding-inline: 10px;
+    padding-inline: 0;
+  }
+
+  .santa-rita-tour-list__meta span::before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
   }
 
   .santa-rita-tour-list__footer {
@@ -367,7 +380,7 @@
   }
 
   .santa-rita-tour-list__footer strong {
-    font-size: 17px;
+    font-size: 16px;
     line-height: 1.1;
   }
 
@@ -377,15 +390,26 @@
     font-size: 11px;
   }
 
+  .santa-rita-tour-list__footer small::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    vertical-align: -3px;
+  }
+
   .santa-rita-tour-list__button {
     display: inline-flex;
-    min-height: 32px;
+    min-height: 28px;
     align-items: center;
     justify-content: center;
     border-radius: 4px;
     background: #8c1a3e;
     color: #ffffff;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     line-height: 1;
     padding-inline: 14px;
@@ -460,11 +484,30 @@
     box-shadow: 0 4px 18px rgba(140, 26, 62, 0.08);
   }
 
+  .santa-rita-tour-list__map-media {
+    min-height: 180px;
+    background: #eadfd5;
+  }
+
+  .santa-rita-tour-list__map-media iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    border: 0;
+  }
+
   .santa-rita-tour-list__map-image {
     width: 100%;
     height: 100%;
     min-height: 180px;
     object-fit: cover;
+  }
+
+  .santa-rita-tour-list__map-image--placeholder {
+    display: block;
+    background: #eadfd5;
+    fill: rgba(140, 26, 62, 0.22);
   }
 
   .santa-rita-tour-list__map-info {
@@ -557,7 +600,10 @@
   }
 
   @media screen and (max-width: 989px) {
-    .santa-rita-tour-list__grid,
+    .santa-rita-tour-list__grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 253px));
+    }
+
     .santa-rita-tour-list__transport-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -582,6 +628,10 @@
     .santa-rita-tour-list__transport-grid {
       grid-template-columns: 1fr;
       gap: 14px;
+    }
+
+    .santa-rita-tour-list__card {
+      max-width: 360px;
     }
 
     .santa-rita-tour-list__body p {
@@ -632,7 +682,7 @@
       "type": "text",
       "id": "card_button_label",
       "label": "Texto boton tour",
-      "default": "Ver mas"
+      "default": "Ver más"
     },
     {
       "type": "text",
@@ -666,6 +716,12 @@
       "type": "image_picker",
       "id": "map_image",
       "label": "Imagen mapa"
+    },
+    {
+      "type": "html",
+      "id": "map_embed_code",
+      "label": "Codigo embed mapa",
+      "info": "Pega aqui el iframe de Google Maps. Si se completa, se usara antes que la imagen."
     },
     {
       "type": "text",
