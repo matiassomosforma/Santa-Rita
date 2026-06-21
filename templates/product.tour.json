@@ -1,0 +1,98 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "santa_rita_tour_detail": {
+      "type": "santa-rita-tour-detail",
+      "name": "Detalle tour",
+      "settings": {
+        "price_note": "CLP / por persona",
+        "default_duration": "1h 30'",
+        "default_schedule": "1 - 12 personas",
+        "default_languages": "3 idiomas",
+        "default_capacity": "4 vinos",
+        "route_heading": "Recorrido por el alma de Santa Rita",
+        "experience_heading": "La experiencia",
+        "includes_heading": "Que incluye el Tour?",
+        "reserve_heading": "Haz tu reserva",
+        "date_label": "Fecha",
+        "date_placeholder": "Selecciona una fecha",
+        "people_label": "Personas",
+        "max_people": 12,
+        "time_label": "Horario",
+        "time_options": "09:45, 11:30, 13:00, 15:30",
+        "language_label": "Idioma",
+        "language_options": "Espanol, Ingles, Portugues",
+        "reserve_note": "La reserva queda sujeta a confirmacion de disponibilidad.",
+        "total_label": "Total",
+        "reserve_button_label": "Reservar Tour"
+      },
+      "blocks": {
+        "route_park": {
+          "type": "route_stop",
+          "settings": {
+            "title": "Parque Centenario"
+          }
+        },
+        "route_chapel": {
+          "type": "route_stop",
+          "settings": {
+            "title": "Capilla Neogotica"
+          }
+        },
+        "route_baths": {
+          "type": "route_stop",
+          "settings": {
+            "title": "Banos Romanos"
+          }
+        },
+        "route_cellar": {
+          "type": "route_stop",
+          "settings": {
+            "title": "Bodega de los 120 Patriotas"
+          }
+        },
+        "include_wines": {
+          "type": "inclusion",
+          "settings": {
+            "icon": "V",
+            "text": "4 vinos Ultra Premium"
+          }
+        },
+        "include_cup": {
+          "type": "inclusion",
+          "settings": {
+            "icon": "C",
+            "text": "Copa tallada de regalo"
+          }
+        },
+        "include_museum": {
+          "type": "inclusion",
+          "settings": {
+            "icon": "M",
+            "text": "Museo Andino gratuito"
+          }
+        }
+      },
+      "block_order": [
+        "route_park",
+        "route_chapel",
+        "route_baths",
+        "route_cellar",
+        "include_wines",
+        "include_cup",
+        "include_museum"
+      ]
+    }
+  },
+  "order": [
+    "santa_rita_tour_detail"
+  ]
+}

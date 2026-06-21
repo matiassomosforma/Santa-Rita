@@ -1,0 +1,1126 @@
+{% liquid
+  assign current_product = product
+  assign variant = current_product.selected_or_first_available_variant
+  assign hero_image = current_product.featured_image
+  assign duration = current_product.metafields.custom.tour_duration.value | default: current_product.metafields.custom.tour_duration | default: section.settings.default_duration
+  assign schedule = current_product.metafields.custom.tour_schedule.value | default: current_product.metafields.custom.tour_schedule | default: section.settings.default_schedule
+  assign languages = current_product.metafields.custom.tour_languages.value | default: current_product.metafields.custom.tour_languages | default: section.settings.default_languages
+  assign capacity = current_product.metafields.custom.tour_capacity.value | default: current_product.metafields.custom.tour_capacity | default: section.settings.default_capacity
+  assign route_blocks = section.blocks | where: 'type', 'route_stop'
+  assign inclusion_blocks = section.blocks | where: 'type', 'inclusion'
+  assign metric_blocks = section.blocks | where: 'type', 'metric'
+  assign product_form_id = 'SantaRitaTourForm-' | append: section.id
+  assign time_options = section.settings.time_options | split: ','
+  assign language_options = section.settings.language_options | split: ','
+%}
+
+{{ 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css' | stylesheet_tag }}
+{{ 'https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_red.css' | stylesheet_tag }}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js" defer></script>
+
+<santa-rita-tour-detail
+  class="santa-rita-tour-detail"
+  data-section-id="{{ section.id }}"
+  data-price-cents="{{ variant.price }}"
+  data-disabled-weekdays="{{ section.settings.disabled_weekdays | escape }}"
+  data-blocked-dates="{{ section.settings.blocked_dates | escape }}"
+  data-enabled-dates="{{ section.settings.enabled_dates | escape }}"
+  {{ section.shopify_attributes }}
+>
+  <section class="santa-rita-tour-detail__hero" aria-labelledby="santa-rita-tour-title-{{ section.id }}">
+    {% if hero_image != blank %}
+      {{
+        hero_image
+        | image_url: width: 2200
+        | image_tag:
+          widths: '480, 720, 990, 1440, 1800, 2200',
+          sizes: '100vw',
+          loading: 'eager',
+          class: 'santa-rita-tour-detail__hero-image'
+      }}
+    {% elsif request.design_mode %}
+      {{ 'image' | placeholder_svg_tag: 'santa-rita-tour-detail__hero-image santa-rita-tour-detail__hero-image--placeholder' }}
+    {% endif %}
+
+    <div class="santa-rita-tour-detail__hero-overlay"></div>
+
+    <div class="santa-rita-tour-detail__hero-inner">
+      <nav class="santa-rita-tour-detail__breadcrumbs" aria-label="Breadcrumb">
+        <a href="{{ routes.root_url }}">Inicio</a>
+        <span aria-hidden="true">&gt;</span>
+        {% if section.settings.tours_page != blank %}
+          <a href="{{ section.settings.tours_page.url }}">Tours</a>
+        {% else %}
+          <span>Tours</span>
+        {% endif %}
+        <span aria-hidden="true">&gt;</span>
+        <span>{{ current_product.title }}</span>
+      </nav>
+
+      <div class="santa-rita-tour-detail__hero-content">
+        <h1 id="santa-rita-tour-title-{{ section.id }}">{{ current_product.title }}</h1>
+
+        {% if section.settings.hero_subheading != blank %}
+          <p>{{ section.settings.hero_subheading }}</p>
+        {% elsif current_product.description != blank %}
+          <p>{{ current_product.description | strip_html | truncatewords: 22 }}</p>
+        {% endif %}
+
+        <strong>{{ variant.price | money }}</strong>
+        {% if section.settings.price_note != blank %}
+          <span>{{ section.settings.price_note }}</span>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <div class="santa-rita-tour-detail__content">
+    <div class="santa-rita-tour-detail__metrics">
+      {% if metric_blocks.size > 0 %}
+        {% for block in metric_blocks %}
+          <div class="santa-rita-tour-detail__metric" {{ block.shopify_attributes }}>
+            <span>{{ block.settings.icon }}</span>
+            <strong>{{ block.settings.value }}</strong>
+            <small>{{ block.settings.label }}</small>
+          </div>
+        {% endfor %}
+      {% else %}
+        {% if duration != blank %}
+          <div class="santa-rita-tour-detail__metric">
+            <span>⏱</span>
+            <strong>{{ duration }}</strong>
+            <small>duracion</small>
+          </div>
+        {% endif %}
+        {% if schedule != blank %}
+          <div class="santa-rita-tour-detail__metric">
+            <span>🕒</span>
+            <strong>{{ schedule }}</strong>
+            <small>horarios</small>
+          </div>
+        {% endif %}
+        {% if languages != blank %}
+          <div class="santa-rita-tour-detail__metric">
+            <span>🌐</span>
+            <strong>{{ languages }}</strong>
+            <small>idiomas</small>
+          </div>
+        {% endif %}
+        {% if capacity != blank %}
+          <div class="santa-rita-tour-detail__metric">
+            <span>👥</span>
+            <strong>{{ capacity }}</strong>
+            <small>cupos</small>
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+
+    <div class="santa-rita-tour-detail__layout">
+      <div class="santa-rita-tour-detail__main">
+        {% if route_blocks.size > 0 %}
+          <section class="santa-rita-tour-detail__route">
+            {% if section.settings.route_heading != blank %}
+              <h2>{{ section.settings.route_heading }}</h2>
+            {% endif %}
+
+            <div class="santa-rita-tour-detail__route-items">
+              {% for block in route_blocks %}
+                <article class="santa-rita-tour-detail__route-item" {{ block.shopify_attributes }}>
+                  <span>{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+                  <h3>{{ block.settings.title }}</h3>
+                  {% if block.settings.text != blank %}
+                    <div>{{ block.settings.text }}</div>
+                  {% endif %}
+                </article>
+              {% endfor %}
+            </div>
+          </section>
+        {% endif %}
+
+        <section class="santa-rita-tour-detail__experience">
+          {% if section.settings.experience_heading != blank %}
+            <h2>{{ section.settings.experience_heading }}</h2>
+          {% endif %}
+
+          {% if section.settings.experience_text != blank %}
+            <div>{{ section.settings.experience_text }}</div>
+          {% elsif current_product.description != blank %}
+            <div>{{ current_product.description }}</div>
+          {% endif %}
+        </section>
+
+        {% if inclusion_blocks.size > 0 %}
+          <section class="santa-rita-tour-detail__includes">
+            {% if section.settings.includes_heading != blank %}
+              <h2>{{ section.settings.includes_heading }}</h2>
+            {% endif %}
+
+            <div class="santa-rita-tour-detail__includes-grid">
+              {% for block in inclusion_blocks %}
+                <div class="santa-rita-tour-detail__include" {{ block.shopify_attributes }}>
+                  <span aria-hidden="true">{{ block.settings.icon }}</span>
+                  <p>{{ block.settings.text }}</p>
+                </div>
+              {% endfor %}
+            </div>
+          </section>
+        {% endif %}
+      </div>
+
+      <aside class="santa-rita-tour-detail__reserve" aria-labelledby="santa-rita-tour-reserve-title-{{ section.id }}">
+        <h2 id="santa-rita-tour-reserve-title-{{ section.id }}">{{ section.settings.reserve_heading }}</h2>
+
+        <product-form-component
+          data-section-id="{{ section.id }}"
+          data-product-id="{{ current_product.id }}"
+          data-product-url="{{ current_product.url }}"
+          data-quantity-default="1"
+          data-quantity-error-max="{{ 'products.product.quantity_error_max' | t }}"
+          on:submit="/handleSubmit"
+        >
+          <div
+            class="visually-hidden"
+            aria-live="assertive"
+            role="status"
+            aria-atomic="true"
+            ref="liveRegion"
+          ></div>
+
+          {% form 'product', current_product, id: product_form_id, class: 'santa-rita-tour-detail__form', data-type: 'add-to-cart-form' %}
+            <input type="hidden" name="id" ref="variantId" value="{{ variant.id }}">
+
+            <div class="santa-rita-tour-detail__field">
+              <label for="TourDate-{{ section.id }}">{{ section.settings.date_label }}</label>
+              <input
+                id="TourDate-{{ section.id }}"
+                type="text"
+                name="properties[Fecha]"
+                placeholder="{{ section.settings.date_placeholder }}"
+                required
+                data-tour-calendar
+              >
+            </div>
+
+            <div class="santa-rita-tour-detail__fields">
+              <div class="santa-rita-tour-detail__field">
+                <label for="TourPeople-{{ section.id }}">{{ section.settings.people_label }}</label>
+                <input
+                  id="TourPeople-{{ section.id }}"
+                  type="number"
+                  name="quantity"
+                  value="1"
+                  min="1"
+                  max="{{ section.settings.max_people }}"
+                  required
+                  data-tour-people
+                >
+                <input type="hidden" name="properties[Personas]" value="1" data-tour-people-property>
+              </div>
+
+              <div class="santa-rita-tour-detail__field">
+                <label for="TourTime-{{ section.id }}">{{ section.settings.time_label }}</label>
+                <select id="TourTime-{{ section.id }}" name="properties[Horario]" required>
+                  {% for option in time_options %}
+                    {% assign option_value = option | strip %}
+                    {% if option_value != blank %}
+                      <option value="{{ option_value | escape }}">{{ option_value }}</option>
+                    {% endif %}
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="santa-rita-tour-detail__field">
+              <label for="TourLanguage-{{ section.id }}">{{ section.settings.language_label }}</label>
+              <select id="TourLanguage-{{ section.id }}" name="properties[Idioma]" required>
+                {% for option in language_options %}
+                  {% assign option_value = option | strip %}
+                  {% if option_value != blank %}
+                    <option value="{{ option_value | escape }}">{{ option_value }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+
+            {% if section.settings.reserve_note != blank %}
+              <p class="santa-rita-tour-detail__reserve-note">{{ section.settings.reserve_note }}</p>
+            {% endif %}
+
+            <div class="santa-rita-tour-detail__total">
+              <span>{{ section.settings.total_label }}</span>
+              <strong data-tour-total>{{ variant.price | money }}</strong>
+            </div>
+
+            <add-to-cart-component
+              ref="addToCartButtonContainer"
+              data-add-to-cart-animation="{{ settings.add_to_cart_animation }}"
+            >
+              <button
+                type="submit"
+                name="add"
+                ref="addToCartButton"
+                on:click="/handleClick"
+                class="santa-rita-tour-detail__submit"
+                {% unless variant.available %}
+                  disabled
+                {% endunless %}
+              >
+                {% if variant.available %}
+                  {{ section.settings.reserve_button_label }}
+                {% else %}
+                  {{ 'products.product.sold_out' | t }}
+                {% endif %}
+              </button>
+            </add-to-cart-component>
+          {% endform %}
+        </product-form-component>
+      </aside>
+    </div>
+  </div>
+</santa-rita-tour-detail>
+
+<script>
+  if (!customElements.get('santa-rita-tour-detail')) {
+    customElements.define(
+      'santa-rita-tour-detail',
+      class SantaRitaTourDetail extends HTMLElement {
+        connectedCallback() {
+          this.calendarInput = this.querySelector('[data-tour-calendar]');
+          this.peopleInput = this.querySelector('[data-tour-people]');
+          this.peoplePropertyInput = this.querySelector('[data-tour-people-property]');
+          this.totalElement = this.querySelector('[data-tour-total]');
+          this.priceCents = Number(this.dataset.priceCents || 0);
+
+          this.peopleInput?.addEventListener('input', () => {
+            this.syncPeopleProperty();
+            this.updateTotal();
+          });
+
+          this.syncPeopleProperty();
+          this.updateTotal();
+          this.initCalendarWhenReady();
+        }
+
+        initCalendarWhenReady() {
+          let attempts = 0;
+
+          const run = () => {
+            attempts += 1;
+
+            if (window.flatpickr && this.calendarInput) {
+              this.initCalendar();
+              return;
+            }
+
+            if (attempts < 80) {
+              window.setTimeout(run, 100);
+            }
+          };
+
+          run();
+        }
+
+        initCalendar() {
+          if (this.calendarInput.dataset.flatpickrReady === 'true') return;
+
+          const disabledWeekdays = this.parseList(this.dataset.disabledWeekdays).map((day) => Number(day));
+          const blockedDates = this.parseList(this.dataset.blockedDates);
+          const enabledDates = this.parseList(this.dataset.enabledDates);
+          const disable = blockedDates.slice();
+
+          if (disabledWeekdays.length > 0) {
+            disable.push((date) => disabledWeekdays.includes(date.getDay()));
+          }
+
+          const options = {
+            minDate: 'today',
+            dateFormat: 'Y-m-d',
+            altInput: true,
+            altFormat: 'd-m-Y',
+            inline: true,
+            locale: window.flatpickr.l10ns?.es || {
+              firstDayOfWeek: 1
+            },
+            disable
+          };
+
+          if (enabledDates.length > 0) {
+            options.enable = enabledDates;
+          }
+
+          window.flatpickr(this.calendarInput, options);
+          this.calendarInput.dataset.flatpickrReady = 'true';
+        }
+
+        parseList(value) {
+          return String(value || '')
+            .split(',')
+            .map((item) => item.trim())
+            .filter(Boolean);
+        }
+
+        syncPeopleProperty() {
+          if (!this.peopleInput || !this.peoplePropertyInput) return;
+
+          this.peoplePropertyInput.value = this.peopleInput.value || '1';
+        }
+
+        updateTotal() {
+          if (!this.totalElement || !this.peopleInput) return;
+
+          const quantity = Math.max(1, Number(this.peopleInput.value || 1));
+          const total = this.priceCents * quantity / 100;
+
+          this.totalElement.textContent = new Intl.NumberFormat('es-CL', {
+            style: 'currency',
+            currency: 'CLP',
+            maximumFractionDigits: 0
+          }).format(total);
+        }
+      }
+    );
+  }
+</script>
+
+<style>
+  .santa-rita-tour-detail {
+    display: block;
+    background: #fffbf6;
+    color: #21000f;
+  }
+
+  .santa-rita-tour-detail__hero {
+    position: relative;
+    display: grid;
+    min-height: clamp(310px, 31vw, 430px);
+    overflow: hidden;
+    background: #21000f;
+    color: #ffffff;
+  }
+
+  .santa-rita-tour-detail__hero-image,
+  .santa-rita-tour-detail__hero-image--placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .santa-rita-tour-detail__hero-image--placeholder {
+    background: #2c0518;
+    fill: rgba(255, 255, 255, 0.2);
+  }
+
+  .santa-rita-tour-detail__hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(33, 0, 15, 0.42), rgba(33, 0, 15, 0.72));
+  }
+
+  .santa-rita-tour-detail__hero-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: min(100% - 48px, 1140px);
+    min-height: inherit;
+    flex-direction: column;
+    margin-inline: auto;
+    padding-block: 24px 56px;
+  }
+
+  .santa-rita-tour-detail__breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    align-items: center;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .santa-rita-tour-detail__breadcrumbs a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .santa-rita-tour-detail__hero-content {
+    width: min(100%, 720px);
+    margin: auto auto 0;
+    text-align: center;
+  }
+
+  .santa-rita-tour-detail__hero-content h1 {
+    margin: 0 0 12px;
+    font-family: var(--font-heading--family);
+    font-size: clamp(36px, 4.1vw, 58px);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-tour-detail__hero-content p {
+    width: min(100%, 560px);
+    margin: 0 auto 14px;
+    font-size: 16px;
+    line-height: 1.42;
+  }
+
+  .santa-rita-tour-detail__hero-content strong,
+  .santa-rita-tour-detail__hero-content span {
+    display: inline-block;
+    font-size: 16px;
+  }
+
+  .santa-rita-tour-detail__content {
+    width: min(100% - 48px, 1140px);
+    margin-inline: auto;
+    padding-block: 34px 74px;
+  }
+
+  .santa-rita-tour-detail__metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 34px;
+  }
+
+  .santa-rita-tour-detail__metric {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    border-radius: 6px;
+    background: #fff8f1;
+    padding: 18px 12px;
+    text-align: center;
+  }
+
+  .santa-rita-tour-detail__metric span {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border-radius: 50%;
+    background: #fff0f3;
+    color: #8c1a3e;
+    font-size: 14px;
+  }
+
+  .santa-rita-tour-detail__metric strong {
+    font-size: 15px;
+    line-height: 1.15;
+  }
+
+  .santa-rita-tour-detail__metric small {
+    color: #6e5a61;
+    font-size: 11px;
+    line-height: 1.15;
+  }
+
+  .santa-rita-tour-detail__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 350px);
+    gap: 34px;
+    align-items: start;
+  }
+
+  .santa-rita-tour-detail__main {
+    display: grid;
+    gap: 34px;
+  }
+
+  .santa-rita-tour-detail__route {
+    border-radius: 8px;
+    background: #250012;
+    color: #ffffff;
+    padding: 34px 36px;
+  }
+
+  .santa-rita-tour-detail h2 {
+    margin: 0 0 22px;
+    font-family: var(--font-heading--family);
+    font-size: clamp(24px, 2.4vw, 32px);
+    line-height: 1.1;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-tour-detail__route-items {
+    display: grid;
+    gap: 0;
+  }
+
+  .santa-rita-tour-detail__route-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 14px;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    padding-block: 18px;
+  }
+
+  .santa-rita-tour-detail__route-item:first-child {
+    border-top: 0;
+  }
+
+  .santa-rita-tour-detail__route-item span {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .santa-rita-tour-detail__route-item h3 {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: 16px;
+    line-height: 1.25;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-tour-detail__route-item div {
+    grid-column: 2;
+    margin-top: 6px;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .santa-rita-tour-detail__route-item div p,
+  .santa-rita-tour-detail__experience div p {
+    margin: 0;
+  }
+
+  .santa-rita-tour-detail__route-item div p + p,
+  .santa-rita-tour-detail__experience div p + p {
+    margin-top: 12px;
+  }
+
+  .santa-rita-tour-detail__experience {
+    width: min(100%, 720px);
+    padding-inline: 36px;
+  }
+
+  .santa-rita-tour-detail__experience h2 {
+    margin-bottom: 18px;
+  }
+
+  .santa-rita-tour-detail__experience div {
+    color: #2f2026;
+    font-size: 15px;
+    line-height: 1.62;
+  }
+
+  .santa-rita-tour-detail__includes {
+    width: min(100%, 720px);
+    border-radius: 8px;
+    background: #fff8f1;
+    padding: 32px 36px;
+  }
+
+  .santa-rita-tour-detail__includes-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .santa-rita-tour-detail__include {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .santa-rita-tour-detail__include span {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 50%;
+    background: #fff0e7;
+    color: #8c1a3e;
+    font-size: 18px;
+  }
+
+  .santa-rita-tour-detail__include p {
+    margin: 0;
+    color: #4f3c43;
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  .santa-rita-tour-detail__reserve {
+    position: sticky;
+    top: calc(var(--header-height, 0px) + 20px);
+    border-radius: 8px;
+    background: #8c1a3e;
+    color: #ffffff;
+    padding: 22px;
+    box-shadow: 0 10px 26px rgba(140, 26, 62, 0.16);
+  }
+
+  .santa-rita-tour-detail__reserve h2 {
+    margin-bottom: 18px;
+    font-size: 20px;
+  }
+
+  .santa-rita-tour-detail__form {
+    display: grid;
+    gap: 13px;
+  }
+
+  .santa-rita-tour-detail__fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .santa-rita-tour-detail__field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .santa-rita-tour-detail__field label {
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .santa-rita-tour-detail__field input,
+  .santa-rita-tour-detail__field select {
+    width: 100%;
+    min-height: 40px;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 4px;
+    background: #ffffff;
+    color: #21000f;
+    font: inherit;
+    font-size: 13px;
+    padding: 0 11px;
+  }
+
+  .santa-rita-tour-detail__reserve .flatpickr-calendar {
+    width: 100%;
+    margin-top: 2px;
+    border: 0;
+    border-radius: 6px;
+    box-shadow: none;
+  }
+
+  .santa-rita-tour-detail__reserve .flatpickr-rContainer,
+  .santa-rita-tour-detail__reserve .flatpickr-days,
+  .santa-rita-tour-detail__reserve .dayContainer {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  .santa-rita-tour-detail__reserve .flatpickr-day {
+    max-width: none;
+    color: #21000f;
+  }
+
+  .santa-rita-tour-detail__reserve .flatpickr-day.selected,
+  .santa-rita-tour-detail__reserve .flatpickr-day.startRange,
+  .santa-rita-tour-detail__reserve .flatpickr-day.endRange {
+    border-color: #8c1a3e;
+    background: #8c1a3e;
+  }
+
+  .santa-rita-tour-detail__reserve-note {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .santa-rita-tour-detail__total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 12px;
+    font-size: 13px;
+  }
+
+  .santa-rita-tour-detail__total strong {
+    font-size: 15px;
+  }
+
+  .santa-rita-tour-detail__submit {
+    display: inline-flex;
+    width: 100%;
+    min-height: 42px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #8c1a3e;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .santa-rita-tour-detail__submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.62;
+  }
+
+  @media screen and (max-width: 989px) {
+    .santa-rita-tour-detail__layout {
+      grid-template-columns: 1fr;
+    }
+
+    .santa-rita-tour-detail__reserve {
+      position: static;
+      max-width: 460px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-tour-detail__hero-inner,
+    .santa-rita-tour-detail__content {
+      width: calc(100% - 24px);
+    }
+
+    .santa-rita-tour-detail__hero {
+      min-height: 380px;
+    }
+
+    .santa-rita-tour-detail__breadcrumbs {
+      display: none;
+    }
+
+    .santa-rita-tour-detail__hero-inner {
+      padding-block: 22px 34px;
+    }
+
+    .santa-rita-tour-detail__hero-content {
+      text-align: left;
+    }
+
+    .santa-rita-tour-detail__hero-content p {
+      margin-inline: 0;
+    }
+
+    .santa-rita-tour-detail__content {
+      padding-block: 24px 50px;
+    }
+
+    .santa-rita-tour-detail__metrics {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .santa-rita-tour-detail__route,
+    .santa-rita-tour-detail__experience,
+    .santa-rita-tour-detail__includes,
+    .santa-rita-tour-detail__reserve {
+      padding: 24px;
+    }
+
+    .santa-rita-tour-detail__includes-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .santa-rita-tour-detail__fields {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Detalle tour",
+  "settings": [
+    {
+      "type": "page",
+      "id": "tours_page",
+      "label": "Pagina listado de tours"
+    },
+    {
+      "type": "textarea",
+      "id": "hero_subheading",
+      "label": "Bajada hero",
+      "info": "Si queda vacia se usara la descripcion del producto."
+    },
+    {
+      "type": "text",
+      "id": "price_note",
+      "label": "Nota precio",
+      "default": "CLP / por persona"
+    },
+    {
+      "type": "header",
+      "content": "Datos por defecto"
+    },
+    {
+      "type": "text",
+      "id": "default_duration",
+      "label": "Duracion por defecto",
+      "default": "1h 30'"
+    },
+    {
+      "type": "text",
+      "id": "default_schedule",
+      "label": "Horario por defecto",
+      "default": "1 - 12 personas"
+    },
+    {
+      "type": "text",
+      "id": "default_languages",
+      "label": "Idiomas por defecto",
+      "default": "3 idiomas"
+    },
+    {
+      "type": "text",
+      "id": "default_capacity",
+      "label": "Cupos por defecto",
+      "default": "4 vinos"
+    },
+    {
+      "type": "header",
+      "content": "Contenido"
+    },
+    {
+      "type": "text",
+      "id": "route_heading",
+      "label": "Titulo recorrido",
+      "default": "Recorrido por el alma de Santa Rita"
+    },
+    {
+      "type": "text",
+      "id": "experience_heading",
+      "label": "Titulo experiencia",
+      "default": "La experiencia"
+    },
+    {
+      "type": "richtext",
+      "id": "experience_text",
+      "label": "Texto experiencia"
+    },
+    {
+      "type": "text",
+      "id": "includes_heading",
+      "label": "Titulo incluye",
+      "default": "Que incluye el Tour?"
+    },
+    {
+      "type": "header",
+      "content": "Reserva"
+    },
+    {
+      "type": "text",
+      "id": "reserve_heading",
+      "label": "Titulo reserva",
+      "default": "Haz tu reserva"
+    },
+    {
+      "type": "text",
+      "id": "date_label",
+      "label": "Etiqueta fecha",
+      "default": "Fecha"
+    },
+    {
+      "type": "text",
+      "id": "date_placeholder",
+      "label": "Placeholder fecha",
+      "default": "Selecciona una fecha"
+    },
+    {
+      "type": "text",
+      "id": "people_label",
+      "label": "Etiqueta personas",
+      "default": "Personas"
+    },
+    {
+      "type": "range",
+      "id": "max_people",
+      "label": "Maximo personas",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "text",
+      "id": "time_label",
+      "label": "Etiqueta horario",
+      "default": "Horario"
+    },
+    {
+      "type": "text",
+      "id": "time_options",
+      "label": "Horarios disponibles",
+      "default": "09:45, 11:30, 13:00, 15:30",
+      "info": "Separados por coma."
+    },
+    {
+      "type": "text",
+      "id": "language_label",
+      "label": "Etiqueta idioma",
+      "default": "Idioma"
+    },
+    {
+      "type": "text",
+      "id": "language_options",
+      "label": "Idiomas disponibles",
+      "default": "Espanol, Ingles, Portugues",
+      "info": "Separados por coma."
+    },
+    {
+      "type": "text",
+      "id": "disabled_weekdays",
+      "label": "Dias de semana bloqueados",
+      "info": "Usa numeros separados por coma. 0 domingo, 1 lunes, 6 sabado. Ejemplo: 1 para bloquear lunes."
+    },
+    {
+      "type": "textarea",
+      "id": "blocked_dates",
+      "label": "Fechas bloqueadas",
+      "info": "Formato AAAA-MM-DD, separadas por coma."
+    },
+    {
+      "type": "textarea",
+      "id": "enabled_dates",
+      "label": "Solo permitir estas fechas",
+      "info": "Opcional. Formato AAAA-MM-DD, separadas por coma."
+    },
+    {
+      "type": "textarea",
+      "id": "reserve_note",
+      "label": "Nota reserva",
+      "default": "La reserva queda sujeta a confirmacion de disponibilidad."
+    },
+    {
+      "type": "text",
+      "id": "total_label",
+      "label": "Etiqueta total",
+      "default": "Total"
+    },
+    {
+      "type": "text",
+      "id": "reserve_button_label",
+      "label": "Texto boton reserva",
+      "default": "Reservar Tour"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "metric",
+      "name": "Dato superior",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icono",
+          "default": "⏱"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "Valor",
+          "default": "1h 30'"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Etiqueta",
+          "default": "duracion"
+        }
+      ]
+    },
+    {
+      "type": "route_stop",
+      "name": "Parada recorrido",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titulo",
+          "default": "Parque Centenario"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Descripcion"
+        }
+      ]
+    },
+    {
+      "type": "inclusion",
+      "name": "Incluye",
+      "settings": [
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icono",
+          "default": "🍷"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Texto",
+          "default": "4 vinos Ultra Premium"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Detalle tour",
+      "blocks": [
+        {
+          "type": "route_stop",
+          "settings": {
+            "title": "Parque Centenario"
+          }
+        },
+        {
+          "type": "route_stop",
+          "settings": {
+            "title": "Capilla Neogotica"
+          }
+        },
+        {
+          "type": "route_stop",
+          "settings": {
+            "title": "Banos Romanos"
+          }
+        },
+        {
+          "type": "route_stop",
+          "settings": {
+            "title": "Bodega de los 120 Patriotas"
+          }
+        },
+        {
+          "type": "inclusion"
+        },
+        {
+          "type": "inclusion",
+          "settings": {
+            "icon": "🥂",
+            "text": "Copa tallada de regalo"
+          }
+        },
+        {
+          "type": "inclusion",
+          "settings": {
+            "icon": "🚌",
+            "text": "Museo Andino gratuito"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
