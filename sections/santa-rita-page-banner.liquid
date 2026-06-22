@@ -278,7 +278,7 @@
 
   @media screen and (max-width: 749px) {
     .santa-rita-page-banner {
-      min-height: 450px;
+      min-height: clamp(172px, 55vw, 230px);
       place-items: end start;
     }
 
@@ -301,23 +301,23 @@
     }
 
     .santa-rita-page-banner__content {
-      width: min(100%, 90%);
+      width: min(100%, 270px);
       margin-top: auto;
       margin-inline: var(--banner-mobile-content-margin-inline);
       text-align: var(--banner-mobile-text-align);
     }
 
     .santa-rita-page-banner__content h1 {
-      margin-bottom: 8px;
-      font-size: clamp(18px, 8vw, 30px);
+      margin-bottom: 7px;
+      font-size: clamp(18px, 6.2vw, 24px);
       line-height: normal;
     }
 
     .santa-rita-page-banner__content p {
-      max-width:  min(100%, 90%);
+      max-width: min(100%, 230px);
       margin-inline: var(--banner-mobile-text-margin-inline);
-      font-size: clamp(12px, 4vw, 16px);
-      line-height: normal;
+      font-size: clamp(9px, 3.1vw, 12px);
+      line-height: 1.25;
     }
 
     .santa-rita-page-banner--split {

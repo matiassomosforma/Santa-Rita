@@ -35,6 +35,7 @@
                 assign badge = product.metafields.custom.tour_badge.value | default: product.metafields.custom.tour_badge
                 assign duration = product.metafields.custom.tour_duration.value | default: product.metafields.custom.tour_duration
                 assign short_description_metafield = product.metafields.custom.tour_short_description
+                assign tour_url = product.url | append: '?view=tour'
 
                 capture short_description
                   if short_description_metafield != blank
@@ -48,7 +49,7 @@
               %}
 
               <article class="santa-rita-tour-list__card">
-                <a class="santa-rita-tour-list__media" href="{{ product.url }}" aria-label="Ver {{ product.title | escape }}">
+                <a class="santa-rita-tour-list__media" href="{{ tour_url }}" aria-label="Ver {{ product.title | escape }}">
                   {% if card_image != blank %}
                     {{
                       card_image
@@ -70,7 +71,7 @@
 
                 <div class="santa-rita-tour-list__body">
                   <h3>
-                    <a href="{{ product.url }}">{{ product.title }}</a>
+                    <a href="{{ tour_url }}">{{ product.title }}</a>
                   </h3>
 
                   {% if short_description != blank %}
@@ -92,7 +93,7 @@
                       {% endif %}
                     </div>
 
-                    <a class="santa-rita-tour-list__button" href="{{ product.url }}">
+                    <a class="santa-rita-tour-list__button" href="{{ tour_url }}">
                       {{ section.settings.card_button_label }}
                     </a>
                   </div>
@@ -927,44 +928,266 @@
     }
 
     .santa-rita-tour-list__inner {
-      padding-block: 34px 28px;
+      padding-block: 24px 22px;
+    }
+
+    .santa-rita-tour-list__header,
+    .santa-rita-tour-list__section-heading {
+      margin-bottom: 16px;
+    }
+
+    .santa-rita-tour-list h2 {
+      margin-bottom: 6px;
+      font-size: 24px;
+      line-height: 1.05;
+    }
+
+    .santa-rita-tour-list__header p,
+    .santa-rita-tour-list__section-heading p {
+      max-width: 290px;
+      font-size: 12px;
+      line-height: 1.25;
+    }
+
+    .santa-rita-tour-list__viewport {
+      margin-inline: -4px;
+      padding: 4px 4px 10px;
     }
 
     .santa-rita-tour-list__grid {
       grid-auto-columns: 100%;
-      column-gap: 14px;
+      column-gap: 12px;
     }
 
-    .santa-rita-tour-list__transport-grid {
-      grid-template-columns: 1fr;
-      gap: 14px;
+    .santa-rita-tour-list__media {
+      aspect-ratio: 1.72 / 1;
+    }
+
+    .santa-rita-tour-list__badge {
+      top: 8px;
+      right: 8px;
+      min-height: 18px;
+      font-size: 9px;
+      padding-inline: 8px;
     }
 
     .santa-rita-tour-list__card {
       max-width: none;
+      border-radius: 5px;
     }
 
-    .santa-rita-tour-list__controls {
-      justify-content: space-between;
-      gap: 18px;
-      margin-top: 24px;
+    .santa-rita-tour-list__body {
+      gap: 7px;
+      padding: 12px 12px 11px;
     }
 
-    .santa-rita-tour-list__arrow {
-      width: 42px;
-      height: 42px;
+    .santa-rita-tour-list__body h3 {
+      font-size: 17px;
+      line-height: 1.12;
     }
 
     .santa-rita-tour-list__body p {
       min-height: 0;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .santa-rita-tour-list__footer {
+      gap: 10px;
+      margin-top: 3px;
+    }
+
+    .santa-rita-tour-list__footer strong {
+      font-size: 16px;
+    }
+
+    .santa-rita-tour-list__footer small {
+      margin-top: 2px;
+      font-size: 10px;
+      gap: 3px;
+    }
+
+    .santa-rita-tour-list__footer small svg {
+      width: 11px;
+      height: 11px;
+      flex-basis: 11px;
+    }
+
+    .santa-rita-tour-list__button {
+      min-height: 30px;
+      border-radius: 4px;
+      font-size: 10px;
+      padding: 8px 12px;
+    }
+
+    .santa-rita-tour-list__controls {
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .santa-rita-tour-list__dots {
+      order: 2;
+      margin-left: auto;
+      gap: 4px;
+    }
+
+    .santa-rita-tour-list__dot {
+      width: 6px;
+      height: 6px;
+    }
+
+    .santa-rita-tour-list__arrows {
+      order: 1;
+      gap: 8px;
+    }
+
+    .santa-rita-tour-list__arrow {
+      width: 22px;
+      height: 22px;
+    }
+
+    .santa-rita-tour-list__arrow svg {
+      width: 14px;
+      height: 10px;
+    }
+
+    .santa-rita-tour-list__notice {
+      margin-top: 12px;
+      align-items: flex-start;
+      gap: 6px;
+      border-radius: 4px;
+      font-size: 9px;
+      line-height: 1.25;
+      padding: 8px 9px;
+    }
+
+    .santa-rita-tour-list__notice svg {
+      flex-basis: 14px;
+      width: 14px;
+      height: 14px;
     }
 
     .santa-rita-tour-list__arrival-inner {
-      padding-block: 42px;
+      padding-block: 28px 30px;
+    }
+
+    .santa-rita-tour-list__transport-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .santa-rita-tour-list__transport-grid .santa-rita-tour-list__transport:nth-child(3) {
+      order: 4;
+    }
+
+    .santa-rita-tour-list__transport-grid .santa-rita-tour-list__transport:nth-child(4) {
+      order: 3;
+    }
+
+    .santa-rita-tour-list__transport {
+      position: relative;
+      min-height: 128px;
+      padding: 14px 12px;
+      border-radius: 6px;
+    }
+
+    .santa-rita-tour-list__transport::after {
+      content: '>';
+      position: absolute;
+      right: 12px;
+      bottom: 13px;
+      color: #21000f;
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .santa-rita-tour-list__transport-icon {
+      width: 34px;
+      height: 34px;
+    }
+
+    .santa-rita-tour-list__transport-icon-image {
+      width: 18px;
+      height: 18px;
+    }
+
+    .santa-rita-tour-list__transport h3 {
+      max-width: 92px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      line-height: 1.08;
+    }
+
+    .santa-rita-tour-list__transport--has-icon h3 {
+      margin-top: 11px;
+    }
+
+    .santa-rita-tour-list__transport p {
+      min-height: 18px;
+      gap: 3px;
+      font-size: 9px;
+      padding: 3px 6px;
+    }
+
+    .santa-rita-tour-list__transport p svg {
+      width: 10px;
+      height: 10px;
+      flex-basis: 10px;
+    }
+
+    .santa-rita-tour-list__map {
+      grid-template-columns: 1fr;
+      border-radius: 6px;
+    }
+
+    .santa-rita-tour-list__map-media {
+      min-height: 156px;
+    }
+
+    .santa-rita-tour-list__map-media iframe {
+      min-height: 156px;
+    }
+
+    .santa-rita-tour-list__map-image {
+      min-height: 156px;
     }
 
     .santa-rita-tour-list__map-info {
-      padding: 22px;
+      display: block;
+      padding: 14px 14px 16px;
+    }
+
+    .santa-rita-tour-list__map-info-header {
+      flex-basis: auto;
+    }
+
+    .santa-rita-tour-list__map-info h3 {
+      margin-bottom: 5px;
+      font-size: 15px;
+      line-height: 1.15;
+    }
+
+    .santa-rita-tour-list__map-info p {
+      margin-bottom: 12px;
+      font-size: 10px;
+      line-height: 1.35;
+    }
+
+    .santa-rita-tour-list__map-info a {
+      width: 100%;
+      min-height: 30px;
+      height: auto;
+      justify-content: space-between;
+      font-size: 10px;
+      padding-inline: 12px;
+    }
+
+    .santa-rita-tour-list__map-info a svg {
+      flex-basis: 14px;
+      width: 14px;
+      height: 14px;
     }
   }
 </style>
