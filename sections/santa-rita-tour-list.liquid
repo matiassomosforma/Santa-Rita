@@ -81,7 +81,12 @@
                     <div>
                       <strong>{{ variant.price | money }}</strong>
                       {% if duration != blank %}
-                        <small>{{ duration }}</small>
+                        <small>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                          </svg>
+                        {{ duration }}
+                        </small>
                       {% elsif section.settings.price_note != blank %}
                         <small>{{ section.settings.price_note }}</small>
                       {% endif %}
@@ -139,7 +144,12 @@
     </santa-rita-tour-slider>
 
     {% if section.settings.notice != blank %}
-      <p class="santa-rita-tour-list__notice">{{ section.settings.notice }}</p>
+      <p class="santa-rita-tour-list__notice">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+        </svg>
+        {{ section.settings.notice }}
+      </p>
     {% endif %}
   </div>
 
@@ -161,11 +171,36 @@
         {% if transport_blocks.size > 0 %}
           <div class="santa-rita-tour-list__transport-grid">
             {% for block in transport_blocks %}
-              <article class="santa-rita-tour-list__transport" {{ block.shopify_attributes }}>
-                <span class="santa-rita-tour-list__transport-icon" aria-hidden="true">{{ block.settings.icon }}</span>
+              {% liquid
+                assign transport_accent_background = block.settings.accent_background | default: '#fff0f3'
+                assign transport_accent_text = block.settings.accent_text | default: '#8c1a3e'
+              %}
+              <article
+                class="santa-rita-tour-list__transport{% if block.settings.icon_image != blank %} santa-rita-tour-list__transport--has-icon{% endif %}"
+                style="--transport-accent-background: {{ transport_accent_background }}; --transport-accent-text: {{ transport_accent_text }};"
+                {{ block.shopify_attributes }}
+              >
+                {% if block.settings.icon_image != blank %}
+                  <span class="santa-rita-tour-list__transport-icon" aria-hidden="true">
+                    {{
+                      block.settings.icon_image
+                      | image_url: width: 80
+                      | image_tag:
+                        widths: '32, 48, 64, 80',
+                        sizes: '32px',
+                        loading: 'lazy',
+                        class: 'santa-rita-tour-list__transport-icon-image'
+                    }}
+                  </span>
+                {% endif %}
                 <h3>{{ block.settings.title }}</h3>
                 {% if block.settings.time != blank %}
-                  <p>{{ block.settings.time }}</p>
+                  <p>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    {{ block.settings.time }}
+                  </p>
                 {% endif %}
               </article>
             {% endfor %}
@@ -345,12 +380,12 @@
 
   .santa-rita-tour-list__inner {
     padding-block: 48px 34px;
+    background-color: #fffdf7;
   }
 
   .santa-rita-tour-list__header,
   .santa-rita-tour-list__section-heading {
-    max-width: 640px;
-    margin-bottom: 28px;
+    margin-bottom: 35px;
   }
 
   .santa-rita-tour-list h2 {
@@ -365,8 +400,8 @@
   .santa-rita-tour-list__header p,
   .santa-rita-tour-list__section-heading p {
     margin: 0;
-    color: #4f3c43;
-    font-size: 15px;
+    color: #1E0814;
+    font-size: 20px;
     line-height: 1.45;
   }
 
@@ -380,7 +415,7 @@
     scrollbar-width: none;
     scroll-behavior: smooth;
     scroll-snap-type: x mandatory;
-    padding-block: 8px 14px;
+    padding: 8px 10px 14px 10px;
   }
 
   .santa-rita-tour-list__viewport::-webkit-scrollbar {
@@ -399,9 +434,9 @@
     display: grid;
     overflow: hidden;
     border-radius: 8px;
-    background: #ffffff;
-    box-shadow: 0 8px 24px rgba(140, 26, 62, 0.08);
+    background: #FDF8F1;
     scroll-snap-align: start;
+    box-shadow: 0px 10px 10px 0px #8C1A3E0D;
   }
 
   .santa-rita-tour-list__media {
@@ -432,16 +467,16 @@
 
   .santa-rita-tour-list__badge {
     position: absolute;
-    top: 11px;
-    right: 11px;
+    top: 20px;
+    right: 20px;
     display: inline-flex;
     min-height: 24px;
     align-items: center;
     border-radius: 999px;
-    background: #250012;
+    background: #1E0812;
     color: #ffffff;
-    font-size: 10px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 500;
     line-height: 1;
     padding-inline: 12px;
   }
@@ -455,22 +490,23 @@
   .santa-rita-tour-list__body h3 {
     margin: 0;
     font-family: var(--font-heading--family);
-    font-size: 18px;
+    font-size: 22px;
     line-height: 1.18;
     letter-spacing: 0;
+    font-weight: 600;
   }
 
   .santa-rita-tour-list__body h3 a {
-    color: inherit;
+    color: #1E0812;
     text-decoration: none;
   }
 
   .santa-rita-tour-list__body p {
     min-height: 66px;
     margin: 0;
-    color: #2f2026;
-    font-size: 12px;
-    line-height: 1.32;
+    color: #1E0812;
+    font-size: 16px;
+    line-height: 22px;
   }
 
   .santa-rita-tour-list__meta {
@@ -514,25 +550,22 @@
   }
 
   .santa-rita-tour-list__footer strong {
-    font-size: 16px;
+    font-size: 22px;
     line-height: 1.1;
+    color: #2B1E1E;
   }
 
   .santa-rita-tour-list__footer small {
     margin-top: 4px;
-    color: #6e5a61;
-    font-size: 11px;
+    color: #6E5A61;
+    font-size: 16px;
+    display: flex;
+    gap: 5px;
   }
 
-  .santa-rita-tour-list__footer small::before {
-    content: '';
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    margin-right: 4px;
-    border: 1px solid currentColor;
-    border-radius: 50%;
-    vertical-align: -3px;
+
+  .santa-rita-tour-list__footer small svg{
+    flex: 0 0 18px;
   }
 
   .santa-rita-tour-list__button {
@@ -543,23 +576,37 @@
     border-radius: 4px;
     background: #8c1a3e;
     color: #ffffff;
-    font-size: 10px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 500;
     line-height: 1;
     padding-inline: 14px;
     text-decoration: none;
     white-space: nowrap;
+    padding-block: 10px;
+    transition: all .3s ease;
+  }
+
+  .santa-rita-tour-list__button:hover{
+    background: #751634;
   }
 
   .santa-rita-tour-list__notice {
     margin: 28px 0 0;
     border-radius: 4px;
-    background: #fff5e8;
-    color: #4f3c43;
-    font-size: 12px;
-    line-height: 1.35;
+    background: #F6EDD966;
+    color: #1E0812;
+    font-size: 14px;
+    line-height: normal;
     padding: 12px 16px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
   }
+
+ .santa-rita-tour-list__notice svg {
+    flex: 0 0 20px;
+    color: #8c193e;
+}
 
   .santa-rita-tour-list__controls {
     display: flex;
@@ -623,7 +670,7 @@
   }
 
   .santa-rita-tour-list__arrival {
-    background: #fff7f1;
+    background: #FFF7F1;
   }
 
   .santa-rita-tour-list__arrival-inner {
@@ -633,7 +680,7 @@
   .santa-rita-tour-list__transport-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
+    gap: 25px;
     margin-bottom: 28px;
   }
 
@@ -650,29 +697,55 @@
     height: 32px;
     place-items: center;
     border-radius: 50%;
-    background: #fff0f3;
-    color: #8c1a3e;
-    font-size: 17px;
+    background: var(--transport-accent-background, #fff0f3);
+    overflow: hidden;
+  }
+
+  .santa-rita-tour-list__transport-icon-image {
+    display: block;
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
   }
 
   .santa-rita-tour-list__transport h3 {
-    margin: 14px 0 6px;
+    margin: 0 0 15px;
     font-family: var(--font-heading--family);
-    font-size: 15px;
+    font-size: 18px;
     line-height: 1.2;
     letter-spacing: 0;
+    font-weight: 700;
+    color: #2B1E1E;
+  }
+
+  .santa-rita-tour-list__transport--has-icon h3 {
+    margin-top: 14px;
   }
 
   .santa-rita-tour-list__transport p {
+    display: inline-flex;
+    min-height: 22px;
+    align-items: center;
+    gap: 4px;
     margin: 0;
-    color: #8c1a3e;
+    border-radius: 999px;
+    background: var(--transport-accent-background, #fff0f3);
+    color: var(--transport-accent-text, #8c1a3e);
     font-size: 12px;
     font-weight: 700;
+    line-height: 1;
+    padding: 4px 8px;
+  }
+
+  .santa-rita-tour-list__transport p svg {
+    width: 13px;
+    height: 13px;
+    flex: 0 0 13px;
   }
 
   .santa-rita-tour-list__map {
     display: grid;
-    grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.8fr);
+    grid-template-columns: repeat(2, 1fr);
     overflow: hidden;
     border-radius: 8px;
     background: #ffffff;
@@ -714,13 +787,14 @@
     margin: 0 0 8px;
     font-family: var(--font-heading--family);
     font-size: 20px;
+    font-weight: 700;
     letter-spacing: 0;
   }
 
   .santa-rita-tour-list__map-info p {
     margin: 0 0 16px;
     color: #4f3c43;
-    font-size: 13px;
+    font-size: 16px;
     line-height: 1.4;
   }
 
@@ -738,7 +812,7 @@
   }
 
   .santa-rita-tour-list__faq {
-    background: #250012;
+    background: #1E0812;
     color: #ffffff;
   }
 
@@ -747,7 +821,7 @@
   }
 
   .santa-rita-tour-list__faq .santa-rita-tour-list__section-heading p {
-    color: rgba(255, 255, 255, 0.76);
+    color: white;
   }
 
   .santa-rita-tour-list__faq-items {
@@ -756,6 +830,10 @@
 
   .santa-rita-tour-list__faq-item {
     border-top: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .santa-rita-tour-list__faq-item:first-child {
+    border-top: none;
   }
 
   .santa-rita-tour-list__faq-item:last-child {
@@ -770,8 +848,9 @@
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-    font-size: 14px;
+    font-size: 20px;
     line-height: 1.25;
+    color: white;
   }
 
   .santa-rita-tour-list__faq-item summary::-webkit-details-marker {
@@ -792,6 +871,8 @@
 
   .santa-rita-tour-list__faq-item div p {
     margin: 0;
+    font-size: 16px;
+    color: white;
   }
 
   @media screen and (max-width: 989px) {
@@ -986,10 +1067,21 @@
       "name": "Transporte",
       "settings": [
         {
-          "type": "text",
-          "id": "icon",
-          "label": "Icono",
-          "default": "A"
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icono imagen"
+        },
+        {
+          "type": "color",
+          "id": "accent_background",
+          "label": "Color fondo icono y hora",
+          "default": "#fff0f3"
+        },
+        {
+          "type": "color",
+          "id": "accent_text",
+          "label": "Color texto hora",
+          "default": "#8c1a3e"
         },
         {
           "type": "text",
@@ -1031,7 +1123,8 @@
         {
           "type": "transport",
           "settings": {
-            "icon": "A",
+            "accent_background": "#fff0f3",
+            "accent_text": "#8c1a3e",
             "title": "Automovil particular",
             "time": "1 hora"
           }
@@ -1039,7 +1132,8 @@
         {
           "type": "transport",
           "settings": {
-            "icon": "M",
+            "accent_background": "#8c1a3e",
+            "accent_text": "#ffffff",
             "title": "Metro + Taxi colectivo",
             "time": "45 min"
           }
@@ -1047,7 +1141,8 @@
         {
           "type": "transport",
           "settings": {
-            "icon": "B",
+            "accent_background": "#fff0f3",
+            "accent_text": "#8c1a3e",
             "title": "Bus MB81",
             "time": "1 hora"
           }
@@ -1055,7 +1150,8 @@
         {
           "type": "transport",
           "settings": {
-            "icon": "T",
+            "accent_background": "#8c1a3e",
+            "accent_text": "#ffffff",
             "title": "Transporte privado",
             "time": "40 min"
           }

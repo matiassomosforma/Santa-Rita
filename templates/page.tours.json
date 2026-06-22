@@ -17,13 +17,6 @@
         "desktop_image": "shopify://shop_images/BannerTourismoDES_1_1.png",
         "heading": "Nuestros Tours",
         "subheading": "Una invitacion a descubrir el alma de nuestra bodega a solo 45 minutos de Santiago.",
-        "text_alignment": "center",
-        "min_height": 480,
-        "mobile_min_height": 460,
-        "padding_top": 40,
-        "padding_bottom": 108,
-        "mobile_padding_top": 24,
-        "mobile_padding_bottom": 44,
         "show_breadcrumbs": true
       }
     },
@@ -95,7 +88,8 @@
       ],
       "name": "Tours",
       "settings": {
-        "collection": "",
+        "collection": "tours",
+        "products": [],
         "products_limit": 6,
         "heading": "Elige tu experiencia",
         "subheading": "Desde recorridos clasicos hasta vivencias unicas en el corazon de la vina.",
@@ -104,6 +98,7 @@
         "notice": "Reserva con anticipacion. Todos los tours requieren reserva minima con 24 horas de anticipacion.",
         "arrival_heading": "Como llegar a Vina Santa Rita?",
         "arrival_text": "Elige tu medio de transporte preferido y te mostramos el camino hasta la vina.",
+        "map_embed_code": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25538.227778230797!2d-70.84968780314513!3d-33.55943744041927!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662e7a3e4cc8645%3A0x3fc1f219246d5d9c!2sLa%20Primavera%2C%20Padre%20Hurtado%2C%20Regi%C3%B3n%20Metropolitana!5e1!3m2!1ses!2scl!4v1782054866504!5m2!1ses!2scl\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>",
         "map_heading": "Vina Santa Rita",
         "map_text": "Camino Padre Hurtado 0695, Alto Jahuel",
         "map_link": "",
