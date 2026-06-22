@@ -17,7 +17,13 @@
         "desktop_image": "shopify://shop_images/BannerTourismoDES_1_1.png",
         "heading": "Nuestros Tours",
         "subheading": "Una invitacion a descubrir el alma de nuestra bodega a solo 45 minutos de Santiago.",
-        "show_breadcrumbs": true
+        "show_breadcrumbs": true,
+        "desktop_padding_top": 28,
+        "desktop_padding_bottom": 74,
+        "text_alignment": "center",
+        "mobile_padding_top": 14,
+        "mobile_padding_bottom": 18,
+        "mobile_text_alignment": "center"
       }
     },
     "santa_rita_tour_list": {
@@ -26,7 +32,9 @@
         "transport_car": {
           "type": "transport",
           "settings": {
-            "icon": "A",
+            "icon_image": "shopify://shop_images/automovil.png",
+            "accent_background": "#FCEADD",
+            "accent_text": "#8c1a3e",
             "title": "Automovil particular",
             "time": "1 hora"
           }
@@ -34,7 +42,9 @@
         "transport_metro": {
           "type": "transport",
           "settings": {
-            "icon": "M",
+            "icon_image": "shopify://shop_images/metro.png",
+            "accent_background": "#8C1A3E",
+            "accent_text": "#FCEADD",
             "title": "Metro + Taxi colectivo",
             "time": "45 min"
           }
@@ -42,7 +52,9 @@
         "transport_bus": {
           "type": "transport",
           "settings": {
-            "icon": "B",
+            "icon_image": "shopify://shop_images/bus.png",
+            "accent_background": "#FCEADD",
+            "accent_text": "#8c1a3e",
             "title": "Bus MB81",
             "time": "1 hora"
           }
@@ -50,7 +62,9 @@
         "transport_private": {
           "type": "transport",
           "settings": {
-            "icon": "T",
+            "icon_image": "shopify://shop_images/privado.png",
+            "accent_background": "#8C1A3E",
+            "accent_text": "#FCEADD",
             "title": "Transporte privado",
             "time": "40 min"
           }
@@ -101,7 +115,7 @@
         "map_embed_code": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25538.227778230797!2d-70.84968780314513!3d-33.55943744041927!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662e7a3e4cc8645%3A0x3fc1f219246d5d9c!2sLa%20Primavera%2C%20Padre%20Hurtado%2C%20Regi%C3%B3n%20Metropolitana!5e1!3m2!1ses!2scl!4v1782054866504!5m2!1ses!2scl\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>",
         "map_heading": "Vina Santa Rita",
         "map_text": "Camino Padre Hurtado 0695, Alto Jahuel",
-        "map_link": "",
+        "map_link": "https://www.google.com/maps?ll=-33.55692,-70.840971&z=12&t=h&hl=es&gl=CL&mapclient=embed&q=La+Primavera+Padre+Hurtado+Regi%C3%B3n+Metropolitana",
         "map_link_label": "Ir a Google Maps",
         "faq_heading": "Preguntas frecuentes",
         "faq_text": "Todo lo que necesitas saber sobre Tour Vina Santa Rita."
