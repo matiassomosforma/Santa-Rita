@@ -25,7 +25,7 @@
   assign booking_url = current_tour.booking_url.value | default: current_tour.booking_url | default: section.settings.booking_url
   assign tour_price = current_tour.price.value | default: current_tour.price
   assign price_amount = tour_price.amount | default: tour_price | default: 0
-  assign price_cents = price_amount | times: 100 | round
+  assign price_cents = price_amount | round
   assign price_currency = tour_price.currency_code | default: cart.currency.iso_code | default: shop.currency
   assign booking_url_string = booking_url | append: ''
   assign price_amount_string = price_amount | append: ''

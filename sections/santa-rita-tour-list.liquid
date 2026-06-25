@@ -31,8 +31,11 @@
                 assign short_description = tour.short_description.value | default: tour.short_description
                 assign tour_price = tour.price.value | default: tour.price
                 assign price_amount = tour_price.amount | default: tour_price | default: 0
-                assign price_cents = price_amount | times: 100 | round
+                assign price_cents = price_amount | round
                 assign tour_url = tour.system.url
+                if tour_url == blank and tour.system.handle != blank
+                  assign tour_url = routes.root_url | append: 'pages/' | append: tour.system.handle
+                endif
               %}
 
               <article class="santa-rita-tour-list__card">
