@@ -1,30 +1,34 @@
 {% liquid
-  assign current_product = product
-  assign variant = current_product.selected_or_first_available_variant
-  assign hero_image = current_product.metafields.custom.tour_banner_image.value | default: current_product.metafields.custom.tour_banner_image | default: current_product.featured_image
-  assign hero_subheading = current_product.metafields.custom.tour_hero_subheading.value | default: current_product.metafields.custom.tour_hero_subheading | default: section.settings.hero_subheading
-  assign duration = current_product.metafields.custom.tour_duration.value | default: current_product.metafields.custom.tour_duration | default: section.settings.default_duration
-  assign people = current_product.metafields.custom.tour_people.value | default: current_product.metafields.custom.tour_people | default: current_product.metafields.custom.tour_capacity.value | default: current_product.metafields.custom.tour_capacity | default: section.settings.default_schedule
-  assign languages = current_product.metafields.custom.tour_languages.value | default: current_product.metafields.custom.tour_languages | default: section.settings.default_languages
-  assign wines = current_product.metafields.custom.tour_wines.value | default: current_product.metafields.custom.tour_wines | default: section.settings.default_capacity
-  assign route_heading = current_product.metafields.custom.tour_route_heading.value | default: current_product.metafields.custom.tour_route_heading | default: section.settings.route_heading
-  assign route_stops_text = current_product.metafields.custom.tour_route_stops.value | default: current_product.metafields.custom.tour_route_stops
+  assign current_tour = metaobject
+  assign tour_title = current_tour.title.value | default: current_tour.title | default: current_tour.system.title
+  assign hero_image = current_tour.banner_image.value | default: current_tour.banner_image
+  assign hero_subheading = current_tour.hero_subheading.value | default: current_tour.hero_subheading
+  assign short_description = current_tour.short_description.value | default: current_tour.short_description
+  assign duration = current_tour.duration.value | default: current_tour.duration
+  assign people = current_tour.people.value | default: current_tour.people
+  assign languages = current_tour.languages.value | default: current_tour.languages
+  assign wines = current_tour.wines.value | default: current_tour.wines
+  assign route_heading = current_tour.route_heading.value | default: current_tour.route_heading
+  assign route_stops_text = current_tour.route_stops.value | default: current_tour.route_stops
   assign route_stop_lines = route_stops_text | newline_to_br | split: '<br />'
-  assign experience_heading = current_product.metafields.custom.tour_experience_heading.value | default: current_product.metafields.custom.tour_experience_heading | default: section.settings.experience_heading
-  assign experience_metafield = current_product.metafields.custom.tour_experience
-  assign includes_heading = current_product.metafields.custom.tour_includes_heading.value | default: current_product.metafields.custom.tour_includes_heading | default: section.settings.includes_heading
-  assign includes_text = current_product.metafields.custom.tour_includes.value | default: current_product.metafields.custom.tour_includes
+  assign experience_heading = current_tour.experience_heading.value | default: current_tour.experience_heading
+  assign experience_text = current_tour.experience_text
+  assign includes_heading = current_tour.includes_heading.value | default: current_tour.includes_heading
+  assign includes_text = current_tour.includes.value | default: current_tour.includes
   assign include_lines = includes_text | newline_to_br | split: '<br />'
-  assign route_blocks = section.blocks | where: 'type', 'route_stop'
-  assign inclusion_blocks = section.blocks | where: 'type', 'inclusion'
-  assign metric_blocks = section.blocks | where: 'type', 'metric'
-  assign product_form_id = 'SantaRitaTourForm-' | append: section.id
-  assign time_options_source = current_product.metafields.custom.tour_time_options.value | default: current_product.metafields.custom.tour_time_options | default: section.settings.time_options
-  assign language_options_source = current_product.metafields.custom.tour_language_options.value | default: current_product.metafields.custom.tour_language_options | default: section.settings.language_options
-  assign max_people = current_product.metafields.custom.tour_max_people.value | default: current_product.metafields.custom.tour_max_people | default: section.settings.max_people
-  assign disabled_weekdays = current_product.metafields.custom.tour_disabled_weekdays.value | default: current_product.metafields.custom.tour_disabled_weekdays | default: section.settings.disabled_weekdays
-  assign blocked_dates = current_product.metafields.custom.tour_blocked_dates.value | default: current_product.metafields.custom.tour_blocked_dates | default: section.settings.blocked_dates
-  assign enabled_dates = current_product.metafields.custom.tour_enabled_dates.value | default: current_product.metafields.custom.tour_enabled_dates | default: section.settings.enabled_dates
+  assign time_options_source = current_tour.time_options.value | default: current_tour.time_options | default: section.settings.time_options
+  assign language_options_source = current_tour.language_options.value | default: current_tour.language_options | default: section.settings.language_options
+  assign max_people = current_tour.max_people.value | default: current_tour.max_people | default: section.settings.max_people
+  assign disabled_weekdays = current_tour.disabled_weekdays.value | default: current_tour.disabled_weekdays
+  assign blocked_dates = current_tour.blocked_dates.value | default: current_tour.blocked_dates
+  assign enabled_dates = current_tour.enabled_dates.value | default: current_tour.enabled_dates
+  assign booking_url = current_tour.booking_url.value | default: current_tour.booking_url | default: section.settings.booking_url
+  assign tour_price = current_tour.price.value | default: current_tour.price
+  assign price_amount = tour_price.amount | default: tour_price | default: 0
+  assign price_cents = price_amount | times: 100 | round
+  assign price_currency = tour_price.currency_code | default: cart.currency.iso_code | default: shop.currency
+  assign booking_url_string = booking_url | append: ''
+  assign price_amount_string = price_amount | append: ''
   assign time_options = time_options_source | split: ','
   assign language_options = language_options_source | split: ','
 %}
@@ -33,10 +37,14 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js" defer></script>
 
-<santa-rita-tour-detail
+<santa-rita-tour-metaobject-detail
   class="santa-rita-tour-detail"
   data-section-id="{{ section.id }}"
-  data-price-cents="{{ variant.price }}"
+  data-tour-title="{{ tour_title | escape }}"
+  data-tour-handle="{{ current_tour.system.handle | escape }}"
+  data-price-amount="{{ price_amount_string | escape }}"
+  data-price-currency="{{ price_currency | escape }}"
+  data-booking-url="{{ booking_url_string | escape }}"
   data-disabled-weekdays="{{ disabled_weekdays | escape }}"
   data-blocked-dates="{{ blocked_dates | escape }}"
   data-enabled-dates="{{ enabled_dates | escape }}"
@@ -69,19 +77,19 @@
           <span>Tours</span>
         {% endif %}
         <span aria-hidden="true">&gt;</span>
-        <span>{{ current_product.title }}</span>
+        <span>{{ tour_title }}</span>
       </nav>
 
       <div class="santa-rita-tour-detail__hero-content">
-        <h1 id="santa-rita-tour-title-{{ section.id }}">{{ current_product.title }}</h1>
+        <h1 id="santa-rita-tour-title-{{ section.id }}">{{ tour_title }}</h1>
 
         {% if hero_subheading != blank %}
           <p>{{ hero_subheading }}</p>
-        {% elsif current_product.description != blank %}
-          <p>{{ current_product.description | strip_html | truncatewords: 22 }}</p>
+        {% elsif short_description != blank %}
+          <p>{{ short_description | strip_html | truncatewords: 22 }}</p>
         {% endif %}
 
-        <strong>{{ variant.price | money }}</strong>
+        <strong>{{ price_cents | money }}</strong>
         {% if section.settings.price_note != blank %}
           <span>{{ section.settings.price_note }}</span>
         {% endif %}
@@ -93,138 +101,110 @@
     <div class="santa-rita-tour-detail__layout">
       <div class="santa-rita-tour-detail__main">
         <div class="santa-rita-tour-detail__metrics">
-          {% if metric_blocks.size > 0 %}
-            {% for block in metric_blocks %}
-              <div class="santa-rita-tour-detail__metric" {{ block.shopify_attributes }}>
-                <span>{{ block.settings.icon }}</span>
-                <strong>{{ block.settings.value }}</strong>
-                <small>{{ block.settings.label }}</small>
-              </div>
-            {% endfor %}
-          {% else %}
-            {% if duration != blank %}
-              <div class="santa-rita-tour-detail__metric">
-                <span>
-                  <svg viewBox="0 0 24 24" fill="none" focusable="false" aria-hidden="true">
-                    <path d="M12 7v5l3 2M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM9 2h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-                <strong>{{ duration }}</strong>
-                <small>duracion</small>
-              </div>
-            {% endif %}
-            {% if people != blank %}
-              <div class="santa-rita-tour-detail__metric">
-                <span>
-                  <svg viewBox="0 0 24 24" fill="none" focusable="false" aria-hidden="true">
-                    <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4.5 21a7.5 7.5 0 0 1 15 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-                <strong>{{ people }}</strong>
-                <small>personas</small>
-              </div>
-            {% endif %}
-            {% if languages != blank %}
-              <div class="santa-rita-tour-detail__metric">
-                <span>
-                  <svg viewBox="0 0 24 24" fill="none" focusable="false" aria-hidden="true">
-                    <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-                <strong>{{ languages }}</strong>
-                <small>idiomas</small>
-              </div>
-            {% endif %}
-            {% if wines != blank %}
-              <div class="santa-rita-tour-detail__metric">
-                <span>
-                  <svg viewBox="0 0 24 24" fill="none" focusable="false" aria-hidden="true">
-                    <path d="M8 3.5h8v6.2c0 2.1-1.35 3.85-3.2 4.42V18h3.7M7.5 18h9M8 7h8M6 5.5h2M16 5.5h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-                <strong>{{ wines }}</strong>
-                <small>vinos</small>
-              </div>
-            {% endif %}
+          {% if duration != blank %}
+            <div class="santa-rita-tour-detail__metric">
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" focusable="false" aria-hidden="true">
+                  <path d="M12 7v5l3 2M12 21a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM9 2h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <strong>{{ duration }}</strong>
+              <small>duracion</small>
+            </div>
+          {% endif %}
+
+          {% if people != blank %}
+            <div class="santa-rita-tour-detail__metric">
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" focusable="false" aria-hidden="true">
+                  <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4.5 21a7.5 7.5 0 0 1 15 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <strong>{{ people }}</strong>
+              <small>personas</small>
+            </div>
+          {% endif %}
+
+          {% if languages != blank %}
+            <div class="santa-rita-tour-detail__metric">
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" focusable="false" aria-hidden="true">
+                  <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <strong>{{ languages }}</strong>
+              <small>idiomas</small>
+            </div>
+          {% endif %}
+
+          {% if wines != blank %}
+            <div class="santa-rita-tour-detail__metric">
+              <span>
+                <svg viewBox="0 0 24 24" fill="none" focusable="false" aria-hidden="true">
+                  <path d="M8 3.5h8v6.2c0 2.1-1.35 3.85-3.2 4.42V18h3.7M7.5 18h9M8 7h8M6 5.5h2M16 5.5h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <strong>{{ wines }}</strong>
+              <small>vinos</small>
+            </div>
           {% endif %}
         </div>
 
-        {% if route_stops_text != blank or route_blocks.size > 0 %}
+        {% if route_stops_text != blank %}
           <section class="santa-rita-tour-detail__route">
             {% if route_heading != blank %}
               <h2>{{ route_heading }}</h2>
             {% endif %}
 
             <div class="santa-rita-tour-detail__route-items">
-              {% if route_stops_text != blank %}
-                {% for route_stop in route_stop_lines %}
-                  {% assign route_stop = route_stop | strip %}
-                  {% if route_stop != blank %}
-                    <article class="santa-rita-tour-detail__route-item">
-                      <span>{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
-                      <h3>{{ route_stop }}</h3>
-                    </article>
-                  {% endif %}
-                {% endfor %}
-              {% else %}
-                {% for block in route_blocks %}
-                  <article class="santa-rita-tour-detail__route-item" {{ block.shopify_attributes }}>
+              {% for route_stop in route_stop_lines %}
+                {% assign route_stop = route_stop | strip %}
+                {% if route_stop != blank %}
+                  <article class="santa-rita-tour-detail__route-item">
                     <span>{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
-                    <h3>{{ block.settings.title }}</h3>
-                    {% if block.settings.text != blank %}
-                      <div>{{ block.settings.text }}</div>
-                    {% endif %}
+                    <h3>{{ route_stop }}</h3>
                   </article>
-                {% endfor %}
-              {% endif %}
+                {% endif %}
+              {% endfor %}
             </div>
           </section>
         {% endif %}
 
-        <section class="santa-rita-tour-detail__experience">
-          {% if experience_heading != blank %}
-            <h2>{{ experience_heading }}</h2>
-          {% endif %}
+        {% if experience_heading != blank or experience_text != blank or short_description != blank %}
+          <section class="santa-rita-tour-detail__experience">
+            {% if experience_heading != blank %}
+              <h2>{{ experience_heading }}</h2>
+            {% endif %}
 
-          {% if experience_metafield != blank %}
-            <div>{{ experience_metafield | metafield_tag }}</div>
-          {% elsif section.settings.experience_text != blank %}
-            <div>{{ section.settings.experience_text }}</div>
-          {% elsif current_product.description != blank %}
-            <div>{{ current_product.description }}</div>
-          {% endif %}
-        </section>
+            {% if experience_text != blank %}
+              <div>{{ experience_text | metafield_tag }}</div>
+            {% elsif short_description != blank %}
+              <div><p>{{ short_description }}</p></div>
+            {% endif %}
+          </section>
+        {% endif %}
 
-        {% if includes_text != blank or inclusion_blocks.size > 0 %}
+        {% if includes_text != blank %}
           <section class="santa-rita-tour-detail__includes">
             {% if includes_heading != blank %}
               <h2>{{ includes_heading }}</h2>
             {% endif %}
 
             <div class="santa-rita-tour-detail__includes-grid">
-              {% if includes_text != blank %}
-                {% for include_line in include_lines %}
-                  {% assign include_line = include_line | strip %}
-                  {% if include_line != blank %}
-                    {% assign include_parts = include_line | split: '|' %}
-                    {% assign include_icon = include_parts[0] | strip %}
-                    {% assign include_text = include_parts[1] | default: include_parts[0] | strip %}
-                    <div class="santa-rita-tour-detail__include">
-                      {% if include_parts[1] != blank %}
-                        <span aria-hidden="true">{{ include_icon }}</span>
-                      {% endif %}
-                      <p>{{ include_text }}</p>
-                    </div>
-                  {% endif %}
-                {% endfor %}
-              {% else %}
-                {% for block in inclusion_blocks %}
-                  <div class="santa-rita-tour-detail__include" {{ block.shopify_attributes }}>
-                    <span aria-hidden="true">{{ block.settings.icon }}</span>
-                    <p>{{ block.settings.text }}</p>
+              {% for include_line in include_lines %}
+                {% assign include_line = include_line | strip %}
+                {% if include_line != blank %}
+                  {% assign include_parts = include_line | split: '|' %}
+                  {% assign include_icon = include_parts[0] | strip %}
+                  {% assign include_text = include_parts[1] | default: include_parts[0] | strip %}
+                  <div class="santa-rita-tour-detail__include">
+                    {% if include_parts[1] != blank %}
+                      <span aria-hidden="true">{{ include_icon }}</span>
+                    {% endif %}
+                    <p>{{ include_text }}</p>
                   </div>
-                {% endfor %}
-              {% endif %}
+                {% endif %}
+              {% endfor %}
             </div>
           </section>
         {% endif %}
@@ -241,142 +221,109 @@
         </h2>
 
         <div class="santa-rita-tour-detail__reserve-body">
-          {% assign reserve_info_heading = section.settings.reserve_info_heading | default: 'Informacion de tu reserva' %}
-          {% if reserve_info_heading != blank %}
-            <h3 class="santa-rita-tour-detail__reserve-info-heading">{{ reserve_info_heading }}</h3>
+          {% if section.settings.reserve_info_heading != blank %}
+            <h3 class="santa-rita-tour-detail__reserve-info-heading">{{ section.settings.reserve_info_heading }}</h3>
           {% endif %}
 
-          <product-form-component
-            data-section-id="{{ section.id }}"
-            data-product-id="{{ current_product.id }}"
-            data-product-url="{{ current_product.url }}"
-            data-quantity-default="1"
-            data-quantity-error-max="{{ 'products.product.quantity_error_max' | t }}"
-            on:submit="/handleSubmit"
-          >
-            <div
-              class="visually-hidden"
-              aria-live="assertive"
-              role="status"
-              aria-atomic="true"
-              ref="liveRegion"
-            ></div>
+          <form class="santa-rita-tour-detail__form" data-tour-booking-form>
+            <div class="santa-rita-tour-detail__field">
+              <label for="TourLanguage-{{ section.id }}">{{ section.settings.language_label }}</label>
+              <select id="TourLanguage-{{ section.id }}" name="idioma" required data-tour-language>
+                {% for option in language_options %}
+                  {% assign option_value = option | strip %}
+                  {% if option_value != blank %}
+                    <option value="{{ option_value | escape }}">{{ option_value }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
 
-            {% form 'product', current_product, id: product_form_id, class: 'santa-rita-tour-detail__form', data-type: 'add-to-cart-form' %}
-              <input type="hidden" name="id" ref="variantId" value="{{ variant.id }}">
-              <input type="hidden" name="quantity" value="1" data-tour-quantity>
-
+            <div class="santa-rita-tour-detail__fields">
               <div class="santa-rita-tour-detail__field">
-                <label for="TourLanguage-{{ section.id }}">{{ section.settings.language_label }}</label>
-                <select id="TourLanguage-{{ section.id }}" name="properties[Idioma]" required>
-                  {% for option in language_options %}
-                    {% assign option_value = option | strip %}
-                    {% if option_value != blank %}
-                      <option value="{{ option_value | escape }}">{{ option_value }}</option>
-                    {% endif %}
+                <label for="TourAdults-{{ section.id }}">{{ section.settings.adults_label }}</label>
+                <select id="TourAdults-{{ section.id }}" name="adultos" required data-tour-adults>
+                  {% for adult_count in (1..max_people) %}
+                    <option value="{{ adult_count }}">{{ adult_count }}</option>
                   {% endfor %}
                 </select>
               </div>
 
-              <div class="santa-rita-tour-detail__fields">
-                <div class="santa-rita-tour-detail__field">
-                  <label for="TourAdults-{{ section.id }}">{{ section.settings.adults_label | default: 'Adultos' }}</label>
-                  <select id="TourAdults-{{ section.id }}" name="properties[Adultos]" required data-tour-adults>
-                    {% for adult_count in (1..max_people) %}
-                      <option value="{{ adult_count }}">{{ adult_count }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-
-                <div class="santa-rita-tour-detail__field">
-                  <label for="TourChildren-{{ section.id }}">{{ section.settings.children_label | default: 'Ninos' }}</label>
-                  <select id="TourChildren-{{ section.id }}" name="properties[Ninos]" data-tour-children>
-                    {% for child_count in (0..max_people) %}
-                      <option value="{{ child_count }}">{{ child_count }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-              </div>
-
-              <div class="santa-rita-tour-detail__field santa-rita-tour-detail__field--calendar">
-                <label for="TourDate-{{ section.id }}">{{ section.settings.date_label }}</label>
-                <input
-                  id="TourDate-{{ section.id }}"
-                  type="text"
-                  name="properties[Fecha]"
-                  placeholder="{{ section.settings.date_placeholder }}"
-                  required
-                  data-tour-calendar
-                >
-              </div>
-
               <div class="santa-rita-tour-detail__field">
-                <label for="TourTime-{{ section.id }}">{{ section.settings.time_label }}</label>
-                <select id="TourTime-{{ section.id }}" name="properties[Horario]" required>
-                  {% for option in time_options %}
-                    {% assign option_value = option | strip %}
-                    {% if option_value != blank %}
-                      <option value="{{ option_value | escape }}">{{ option_value }}</option>
-                    {% endif %}
+                <label for="TourChildren-{{ section.id }}">{{ section.settings.children_label }}</label>
+                <select id="TourChildren-{{ section.id }}" name="ninos" data-tour-children>
+                  {% for child_count in (0..max_people) %}
+                    <option value="{{ child_count }}">{{ child_count }}</option>
                   {% endfor %}
                 </select>
               </div>
+            </div>
 
-              {% if section.settings.reserve_note != blank %}
-                <p class="santa-rita-tour-detail__reserve-note">{{ section.settings.reserve_note }}</p>
-              {% endif %}
-
-              <div class="santa-rita-tour-detail__total">
-                <span>{{ section.settings.total_label }}</span>
-                <strong data-tour-total>{{ variant.price | money }}</strong>
-              </div>
-
-              <add-to-cart-component
-                ref="addToCartButtonContainer"
-                data-add-to-cart-animation="{{ settings.add_to_cart_animation }}"
+            <div class="santa-rita-tour-detail__field santa-rita-tour-detail__field--calendar">
+              <label for="TourDate-{{ section.id }}">{{ section.settings.date_label }}</label>
+              <input
+                id="TourDate-{{ section.id }}"
+                type="text"
+                name="fecha"
+                placeholder="{{ section.settings.date_placeholder }}"
+                required
+                data-tour-calendar
               >
-                <button
-                  type="submit"
-                  name="add"
-                  ref="addToCartButton"
-                  on:click="/handleClick"
-                  class="santa-rita-tour-detail__submit"
-                  {% unless variant.available %}
-                    disabled
-                  {% endunless %}
-                >
-                  {{ section.settings.reserve_button_label }}
-                </button>
-              </add-to-cart-component>
-            {% endform %}
-          </product-form-component>
+            </div>
+
+            <div class="santa-rita-tour-detail__field">
+              <label for="TourTime-{{ section.id }}">{{ section.settings.time_label }}</label>
+              <select id="TourTime-{{ section.id }}" name="horario" required data-tour-time>
+                {% for option in time_options %}
+                  {% assign option_value = option | strip %}
+                  {% if option_value != blank %}
+                    <option value="{{ option_value | escape }}">{{ option_value }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="santa-rita-tour-detail__total">
+              <span>{{ section.settings.total_label }}</span>
+              <strong data-tour-total>{{ price_cents | money }}</strong>
+            </div>
+
+            <button
+              type="submit"
+              class="santa-rita-tour-detail__submit"
+              {% if booking_url == blank %}
+                disabled
+              {% endif %}
+            >
+              {{ section.settings.reserve_button_label }}
+            </button>
+          </form>
         </div>
       </aside>
     </div>
   </div>
-</santa-rita-tour-detail>
+</santa-rita-tour-metaobject-detail>
 
 <script>
-  if (!customElements.get('santa-rita-tour-detail')) {
+  if (!customElements.get('santa-rita-tour-metaobject-detail')) {
     customElements.define(
-      'santa-rita-tour-detail',
-      class SantaRitaTourDetail extends HTMLElement {
+      'santa-rita-tour-metaobject-detail',
+      class SantaRitaTourMetaobjectDetail extends HTMLElement {
         connectedCallback() {
+          this.form = this.querySelector('[data-tour-booking-form]');
           this.calendarInput = this.querySelector('[data-tour-calendar]');
+          this.languageInput = this.querySelector('[data-tour-language]');
+          this.timeInput = this.querySelector('[data-tour-time]');
           this.adultsInput = this.querySelector('[data-tour-adults]');
           this.childrenInput = this.querySelector('[data-tour-children]');
-          this.quantityInput = this.querySelector('[data-tour-quantity]');
           this.totalElement = this.querySelector('[data-tour-total]');
-          this.priceCents = Number(this.dataset.priceCents || 0);
+          this.priceAmount = Number(this.dataset.priceAmount || 0);
+          this.currency = this.dataset.priceCurrency || 'CLP';
 
           [this.adultsInput, this.childrenInput].forEach((input) => {
-            input?.addEventListener('change', () => {
-              this.syncQuantity();
-              this.updateTotal();
-            });
+            input?.addEventListener('change', () => this.updateTotal());
           });
 
-          this.syncQuantity();
+          this.form?.addEventListener('submit', (event) => this.handleSubmit(event));
           this.updateTotal();
           this.initCalendarWhenReady();
         }
@@ -388,23 +335,43 @@
           return adults + children;
         }
 
-        syncQuantity() {
-          if (!this.quantityInput) return;
-
-          this.quantityInput.value = String(this.getPeopleCount());
-        }
-
         updateTotal() {
           if (!this.totalElement) return;
 
-          const quantity = this.getPeopleCount();
-          const total = this.priceCents * quantity / 100;
+          const total = this.priceAmount * this.getPeopleCount();
 
           this.totalElement.textContent = new Intl.NumberFormat('es-CL', {
             style: 'currency',
-            currency: 'CLP',
+            currency: this.currency,
             maximumFractionDigits: 0
           }).format(total);
+        }
+
+        handleSubmit(event) {
+          event.preventDefault();
+
+          if (!this.form?.reportValidity()) return;
+
+          const bookingUrl = this.dataset.bookingUrl;
+          if (!bookingUrl) return;
+
+          const url = new URL(bookingUrl, window.location.origin);
+          const people = this.getPeopleCount();
+          const total = this.priceAmount * people;
+
+          url.searchParams.set('tour', this.dataset.tourHandle || '');
+          url.searchParams.set('tour_title', this.dataset.tourTitle || '');
+          url.searchParams.set('idioma', this.languageInput?.value || '');
+          url.searchParams.set('adultos', this.adultsInput?.value || '1');
+          url.searchParams.set('ninos', this.childrenInput?.value || '0');
+          url.searchParams.set('personas', String(people));
+          url.searchParams.set('fecha', this.calendarInput?.value || '');
+          url.searchParams.set('horario', this.timeInput?.value || '');
+          url.searchParams.set('precio', String(this.priceAmount));
+          url.searchParams.set('total', String(total));
+          url.searchParams.set('currency', this.currency);
+
+          window.location.href = url.toString();
         }
 
         initCalendarWhenReady() {
@@ -934,14 +901,6 @@
     color: #ffffff;
   }
 
-  .santa-rita-tour-detail__reserve-note {
-    display: none;
-    margin: 0;
-    color: #6e5a61;
-    font-size: 11px;
-    line-height: 1.35;
-  }
-
   .santa-rita-tour-detail__total {
     display: flex;
     align-items: center;
@@ -1051,18 +1010,12 @@
 
 {% schema %}
 {
-  "name": "Detalle tour",
+  "name": "Detalle tour metaobjeto",
   "settings": [
     {
       "type": "page",
       "id": "tours_page",
       "label": "Pagina listado de tours"
-    },
-    {
-      "type": "textarea",
-      "id": "hero_subheading",
-      "label": "Bajada hero",
-      "info": "Si queda vacia se usara la descripcion del producto."
     },
     {
       "type": "text",
@@ -1072,62 +1025,13 @@
     },
     {
       "type": "header",
-      "content": "Datos por defecto"
-    },
-    {
-      "type": "text",
-      "id": "default_duration",
-      "label": "Duracion por defecto",
-      "default": "1h 30'"
-    },
-    {
-      "type": "text",
-      "id": "default_schedule",
-      "label": "Personas por defecto",
-      "default": "1 - 12 personas"
-    },
-    {
-      "type": "text",
-      "id": "default_languages",
-      "label": "Idiomas por defecto",
-      "default": "3 idiomas"
-    },
-    {
-      "type": "text",
-      "id": "default_capacity",
-      "label": "Vinos por defecto",
-      "default": "4 vinos"
-    },
-    {
-      "type": "header",
-      "content": "Contenido"
-    },
-    {
-      "type": "text",
-      "id": "route_heading",
-      "label": "Titulo recorrido",
-      "default": "Recorrido por el alma de Santa Rita"
-    },
-    {
-      "type": "text",
-      "id": "experience_heading",
-      "label": "Titulo experiencia",
-      "default": "La experiencia"
-    },
-    {
-      "type": "richtext",
-      "id": "experience_text",
-      "label": "Texto experiencia"
-    },
-    {
-      "type": "text",
-      "id": "includes_heading",
-      "label": "Titulo incluye",
-      "default": "Que incluye el Tour?"
-    },
-    {
-      "type": "header",
       "content": "Reserva"
+    },
+    {
+      "type": "url",
+      "id": "booking_url",
+      "label": "URL reserva por defecto",
+      "info": "Se usa solo si el metaobjeto no tiene booking_url."
     },
     {
       "type": "text",
@@ -1155,12 +1059,6 @@
     },
     {
       "type": "text",
-      "id": "people_label",
-      "label": "Etiqueta personas",
-      "default": "Personas"
-    },
-    {
-      "type": "text",
       "id": "adults_label",
       "label": "Etiqueta adultos",
       "default": "Adultos"
@@ -1174,7 +1072,7 @@
     {
       "type": "range",
       "id": "max_people",
-      "label": "Maximo personas",
+      "label": "Maximo personas por defecto",
       "min": 1,
       "max": 30,
       "step": 1,
@@ -1189,7 +1087,7 @@
     {
       "type": "text",
       "id": "time_options",
-      "label": "Horarios disponibles",
+      "label": "Horarios por defecto",
       "default": "09:45, 11:30, 13:00, 15:30",
       "info": "Separados por coma."
     },
@@ -1202,33 +1100,9 @@
     {
       "type": "text",
       "id": "language_options",
-      "label": "Idiomas disponibles",
+      "label": "Idiomas por defecto",
       "default": "Espanol, Ingles, Portugues",
       "info": "Separados por coma."
-    },
-    {
-      "type": "text",
-      "id": "disabled_weekdays",
-      "label": "Dias de semana bloqueados",
-      "info": "Usa numeros separados por coma. 0 domingo, 1 lunes, 6 sabado. Ejemplo: 1 para bloquear lunes."
-    },
-    {
-      "type": "textarea",
-      "id": "blocked_dates",
-      "label": "Fechas bloqueadas",
-      "info": "Formato AAAA-MM-DD, separadas por coma."
-    },
-    {
-      "type": "textarea",
-      "id": "enabled_dates",
-      "label": "Solo permitir estas fechas",
-      "info": "Opcional. Formato AAAA-MM-DD, separadas por coma."
-    },
-    {
-      "type": "textarea",
-      "id": "reserve_note",
-      "label": "Nota reserva",
-      "default": "La reserva queda sujeta a confirmacion de disponibilidad."
     },
     {
       "type": "text",
@@ -1243,113 +1117,9 @@
       "default": "Reservar Tour"
     }
   ],
-  "blocks": [
-    {
-      "type": "metric",
-      "name": "Dato superior",
-      "settings": [
-        {
-          "type": "text",
-          "id": "icon",
-          "label": "Icono",
-          "default": "⏱"
-        },
-        {
-          "type": "text",
-          "id": "value",
-          "label": "Valor",
-          "default": "1h 30'"
-        },
-        {
-          "type": "text",
-          "id": "label",
-          "label": "Etiqueta",
-          "default": "duracion"
-        }
-      ]
-    },
-    {
-      "type": "route_stop",
-      "name": "Parada recorrido",
-      "settings": [
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Titulo",
-          "default": "Parque Centenario"
-        },
-        {
-          "type": "richtext",
-          "id": "text",
-          "label": "Descripcion"
-        }
-      ]
-    },
-    {
-      "type": "inclusion",
-      "name": "Incluye",
-      "settings": [
-        {
-          "type": "text",
-          "id": "icon",
-          "label": "Icono",
-          "default": "🍷"
-        },
-        {
-          "type": "text",
-          "id": "text",
-          "label": "Texto",
-          "default": "4 vinos Ultra Premium"
-        }
-      ]
-    }
-  ],
   "presets": [
     {
-      "name": "Detalle tour",
-      "blocks": [
-        {
-          "type": "route_stop",
-          "settings": {
-            "title": "Parque Centenario"
-          }
-        },
-        {
-          "type": "route_stop",
-          "settings": {
-            "title": "Capilla Neogotica"
-          }
-        },
-        {
-          "type": "route_stop",
-          "settings": {
-            "title": "Banos Romanos"
-          }
-        },
-        {
-          "type": "route_stop",
-          "settings": {
-            "title": "Bodega de los 120 Patriotas"
-          }
-        },
-        {
-          "type": "inclusion"
-        },
-        {
-          "type": "inclusion",
-          "settings": {
-            "icon": "🥂",
-            "text": "Copa tallada de regalo"
-          }
-        },
-        {
-          "type": "inclusion",
-          "settings": {
-            "icon": "🚌",
-            "text": "Museo Andino gratuito"
-          }
-        }
-      ]
+      "name": "Detalle tour metaobjeto"
     }
   ]
 }

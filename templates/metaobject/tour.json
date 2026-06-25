@@ -1,0 +1,33 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "santa_rita_tour_metaobject_detail": {
+      "type": "santa-rita-tour-metaobject-detail",
+      "settings": {
+        "tours_page": "tours",
+        "reserve_heading": "Haz tu reserva",
+        "reserve_info_heading": "Informacion de tu reserva",
+        "price_note": "CLP / por persona",
+        "date_label": "Fecha",
+        "date_placeholder": "Selecciona una fecha",
+        "adults_label": "Adultos",
+        "children_label": "Ninos",
+        "time_label": "Horario",
+        "language_label": "Idioma",
+        "total_label": "Total",
+        "reserve_button_label": "Reservar Tour"
+      }
+    }
+  },
+  "order": [
+    "santa_rita_tour_metaobject_detail"
+  ]
+}

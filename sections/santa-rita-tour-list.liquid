@@ -1,11 +1,6 @@
 {% liquid
-  assign tours_collection = section.settings.collection
-  assign tour_products = section.settings.products
+  assign tour_metaobjects = metaobjects.tour.values
   assign products_limit = section.settings.products_limit | default: 6
-
-  if tour_products == blank and tours_collection != blank
-    assign tour_products = tours_collection.products
-  endif
 %}
 
 <section
@@ -27,29 +22,21 @@
     <santa-rita-tour-slider class="santa-rita-tour-list__slider">
       <div class="santa-rita-tour-list__viewport" data-slider-viewport>
         <div class="santa-rita-tour-list__grid" data-slider-track>
-          {% if tour_products != blank %}
-            {% for product in tour_products limit: products_limit %}
+          {% if tour_metaobjects != blank %}
+            {% for tour in tour_metaobjects limit: products_limit %}
               {% liquid
-                assign variant = product.selected_or_first_available_variant
-                assign card_image = product.featured_image
-                assign badge = product.metafields.custom.tour_badge.value | default: product.metafields.custom.tour_badge
-                assign duration = product.metafields.custom.tour_duration.value | default: product.metafields.custom.tour_duration
-                assign short_description_metafield = product.metafields.custom.tour_short_description
-                assign tour_url = product.url | append: '?view=tour'
-
-                capture short_description
-                  if short_description_metafield != blank
-                    echo short_description_metafield | metafield_tag
-                  else
-                    echo product.description
-                  endif
-                endcapture
-
-                assign short_description = short_description | strip_html | strip
+                assign tour_title = tour.title.value | default: tour.title | default: tour.system.handle
+                assign card_image = tour.banner_image.value | default: tour.banner_image
+                assign duration = tour.duration.value | default: tour.duration
+                assign short_description = tour.short_description.value | default: tour.short_description
+                assign tour_price = tour.price.value | default: tour.price
+                assign price_amount = tour_price.amount | default: tour_price | default: 0
+                assign price_cents = price_amount | times: 100 | round
+                assign tour_url = tour.system.url
               %}
 
               <article class="santa-rita-tour-list__card">
-                <a class="santa-rita-tour-list__media" href="{{ tour_url }}" aria-label="Ver {{ product.title | escape }}">
+                <a class="santa-rita-tour-list__media" href="{{ tour_url }}" aria-label="Ver {{ tour_title | escape }}">
                   {% if card_image != blank %}
                     {{
                       card_image
@@ -63,30 +50,26 @@
                   {% else %}
                     {{ 'image' | placeholder_svg_tag: 'santa-rita-tour-list__image santa-rita-tour-list__image--placeholder' }}
                   {% endif %}
-
-                  {% if badge != blank %}
-                    <span class="santa-rita-tour-list__badge">{{ badge }}</span>
-                  {% endif %}
                 </a>
 
                 <div class="santa-rita-tour-list__body">
                   <h3>
-                    <a href="{{ tour_url }}">{{ product.title }}</a>
+                    <a href="{{ tour_url }}">{{ tour_title }}</a>
                   </h3>
 
                   {% if short_description != blank %}
-                    <p>{{ short_description | truncatewords: 23 }}</p>
+                    <p>{{ short_description | strip_html | truncatewords: 23 }}</p>
                   {% endif %}
 
                   <div class="santa-rita-tour-list__footer">
                     <div>
-                      <strong>{{ variant.price | money }}</strong>
+                      <strong>{{ price_cents | money }}</strong>
                       {% if duration != blank %}
                         <small>
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                           </svg>
-                        {{ duration }}
+                          {{ duration }}
                         </small>
                       {% elsif section.settings.price_note != blank %}
                         <small>{{ section.settings.price_note }}</small>
@@ -112,7 +95,7 @@
 
                 <div class="santa-rita-tour-list__body">
                   <h3>Tour Santa Rita</h3>
-                  <p>Selecciona una coleccion de productos para mostrar tours administrables desde Shopify.</p>
+                  <p>Crea entradas del metaobjeto tour para mostrar tours administrables desde Shopify.</p>
                   <div class="santa-rita-tour-list__footer">
                     <div>
                       <strong>$50.000</strong>
@@ -701,8 +684,8 @@
 
   .santa-rita-tour-list__transport-icon {
     display: grid;
-    width: 32px;
-    height: 32px;
+    width: 60px;
+    height: 60px;
     place-items: center;
     border-radius: 50%;
     background: var(--transport-accent-background, #fff0f3);
@@ -711,8 +694,8 @@
 
   .santa-rita-tour-list__transport-icon-image {
     display: block;
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     object-fit: contain;
   }
 
@@ -1196,17 +1179,6 @@
 {
   "name": "Tours",
   "settings": [
-    {
-      "type": "collection",
-      "id": "collection",
-      "label": "Coleccion de tours"
-    },
-    {
-      "type": "product_list",
-      "id": "products",
-      "label": "Productos tour",
-      "info": "Opcional. Si seleccionas productos aqui, se usaran antes que la coleccion."
-    },
     {
       "type": "range",
       "id": "products_limit",
