@@ -13,17 +13,27 @@
       "type": "santa-rita-tour-metaobject-detail",
       "settings": {
         "tours_page": "tours",
+        "price_note": "CLP / por persona",
+        "default_duration": "1h 30'",
+        "default_schedule": "1 - 12 personas",
+        "default_languages": "3 idiomas",
+        "default_capacity": "4 vinos",
+        "route_heading": "Recorrido por el alma de Santa Rita",
+        "experience_heading": "La experiencia",
+        "includes_heading": "Que incluye el Tour?",
         "reserve_heading": "Haz tu reserva",
         "reserve_info_heading": "Informacion de tu reserva",
-        "price_note": "CLP / por persona",
         "date_label": "Fecha",
         "date_placeholder": "Selecciona una fecha",
         "adults_label": "Adultos",
         "children_label": "Ninos",
         "time_label": "Horario",
+        "time_options": "09:45, 11:30, 13:00, 15:30",
         "language_label": "Idioma",
+        "language_options": "Espanol, Ingles, Portugues",
         "total_label": "Total",
-        "reserve_button_label": "Reservar Tour"
+        "reserve_button_label": "Reservar Tour",
+        "reserve_note": "La reserva queda sujeta a confirmacion de disponibilidad."
       }
     }
   },

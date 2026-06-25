@@ -33,13 +33,17 @@
                 assign price_amount = tour_price.amount | default: tour_price | default: 0
                 assign price_cents = price_amount | round
                 assign tour_url = tour.system.url
-                if tour_url == blank and tour.system.handle != blank
-                  assign tour_url = routes.root_url | append: 'pages/' | append: tour.system.handle
-                endif
               %}
 
               <article class="santa-rita-tour-list__card">
-                <a class="santa-rita-tour-list__media" href="{{ tour_url }}" aria-label="Ver {{ tour_title | escape }}">
+                <a
+                  class="santa-rita-tour-list__media"
+                  href="{% if tour_url != blank %}{{ tour_url }}{% else %}{{ routes.root_url }}pages/tours{% endif %}"
+                  aria-label="Ver {{ tour_title | escape }}"
+                  {% if tour_url == blank %}
+                    aria-disabled="true"
+                  {% endif %}
+                >
                   {% if card_image != blank %}
                     {{
                       card_image
@@ -57,7 +61,9 @@
 
                 <div class="santa-rita-tour-list__body">
                   <h3>
-                    <a href="{{ tour_url }}">{{ tour_title }}</a>
+                    <a href="{% if tour_url != blank %}{{ tour_url }}{% else %}{{ routes.root_url }}pages/tours{% endif %}">
+                      {{ tour_title }}
+                    </a>
                   </h3>
 
                   {% if short_description != blank %}
@@ -79,7 +85,10 @@
                       {% endif %}
                     </div>
 
-                    <a class="santa-rita-tour-list__button" href="{{ tour_url }}">
+                    <a
+                      class="santa-rita-tour-list__button"
+                      href="{% if tour_url != blank %}{{ tour_url }}{% else %}{{ routes.root_url }}pages/tours{% endif %}"
+                    >
                       {{ section.settings.card_button_label }}
                     </a>
                   </div>

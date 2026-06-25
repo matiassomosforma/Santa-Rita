@@ -2,26 +2,26 @@
   assign current_tour = metaobject
   assign tour_title = current_tour.title.value | default: current_tour.title | default: current_tour.system.title
   assign hero_image = current_tour.banner_image.value | default: current_tour.banner_image
-  assign hero_subheading = current_tour.hero_subheading.value | default: current_tour.hero_subheading
+  assign hero_subheading = current_tour.hero_subheading.value | default: current_tour.hero_subheading | default: section.settings.hero_subheading
   assign short_description = current_tour.short_description.value | default: current_tour.short_description
-  assign duration = current_tour.duration.value | default: current_tour.duration
-  assign people = current_tour.people.value | default: current_tour.people
-  assign languages = current_tour.languages.value | default: current_tour.languages
-  assign wines = current_tour.wines.value | default: current_tour.wines
-  assign route_heading = current_tour.route_heading.value | default: current_tour.route_heading
+  assign duration = current_tour.duration.value | default: current_tour.duration | default: section.settings.default_duration
+  assign people = current_tour.people.value | default: current_tour.people | default: section.settings.default_schedule
+  assign languages = current_tour.languages.value | default: current_tour.languages | default: section.settings.default_languages
+  assign wines = current_tour.wines.value | default: current_tour.wines | default: section.settings.default_capacity
+  assign route_heading = current_tour.route_heading.value | default: current_tour.route_heading | default: section.settings.route_heading
   assign route_stops_text = current_tour.route_stops.value | default: current_tour.route_stops
   assign route_stop_lines = route_stops_text | newline_to_br | split: '<br />'
-  assign experience_heading = current_tour.experience_heading.value | default: current_tour.experience_heading
+  assign experience_heading = current_tour.experience_heading.value | default: current_tour.experience_heading | default: section.settings.experience_heading
   assign experience_text = current_tour.experience_text
-  assign includes_heading = current_tour.includes_heading.value | default: current_tour.includes_heading
+  assign includes_heading = current_tour.includes_heading.value | default: current_tour.includes_heading | default: section.settings.includes_heading
   assign includes_text = current_tour.includes.value | default: current_tour.includes
   assign include_lines = includes_text | newline_to_br | split: '<br />'
   assign time_options_source = current_tour.time_options.value | default: current_tour.time_options | default: section.settings.time_options
   assign language_options_source = current_tour.language_options.value | default: current_tour.language_options | default: section.settings.language_options
   assign max_people = current_tour.max_people.value | default: current_tour.max_people | default: section.settings.max_people
-  assign disabled_weekdays = current_tour.disabled_weekdays.value | default: current_tour.disabled_weekdays
-  assign blocked_dates = current_tour.blocked_dates.value | default: current_tour.blocked_dates
-  assign enabled_dates = current_tour.enabled_dates.value | default: current_tour.enabled_dates
+  assign disabled_weekdays = current_tour.disabled_weekdays.value | default: current_tour.disabled_weekdays | default: section.settings.disabled_weekdays
+  assign blocked_dates = current_tour.blocked_dates.value | default: current_tour.blocked_dates | default: section.settings.blocked_dates
+  assign enabled_dates = current_tour.enabled_dates.value | default: current_tour.enabled_dates | default: section.settings.enabled_dates
   assign booking_url = current_tour.booking_url.value | default: current_tour.booking_url | default: section.settings.booking_url
   assign tour_price = current_tour.price.value | default: current_tour.price
   assign price_amount = tour_price.amount | default: tour_price | default: 0
@@ -178,6 +178,8 @@
 
             {% if experience_text != blank %}
               <div>{{ experience_text | metafield_tag }}</div>
+            {% elsif section.settings.experience_text != blank %}
+              <div>{{ section.settings.experience_text }}</div>
             {% elsif short_description != blank %}
               <div><p>{{ short_description }}</p></div>
             {% endif %}
@@ -281,6 +283,10 @@
                 {% endfor %}
               </select>
             </div>
+
+            {% if section.settings.reserve_note != blank %}
+              <p class="santa-rita-tour-detail__reserve-note">{{ section.settings.reserve_note }}</p>
+            {% endif %}
 
             <div class="santa-rita-tour-detail__total">
               <span>{{ section.settings.total_label }}</span>
@@ -901,6 +907,14 @@
     color: #ffffff;
   }
 
+  .santa-rita-tour-detail__reserve-note {
+    display: none;
+    margin: 0;
+    color: #6e5a61;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
   .santa-rita-tour-detail__total {
     display: flex;
     align-items: center;
@@ -1018,10 +1032,71 @@
       "label": "Pagina listado de tours"
     },
     {
+      "type": "textarea",
+      "id": "hero_subheading",
+      "label": "Bajada hero",
+      "info": "Si queda vacia se usara la descripcion corta del metaobjeto."
+    },
+    {
       "type": "text",
       "id": "price_note",
       "label": "Nota precio",
       "default": "CLP / por persona"
+    },
+    {
+      "type": "header",
+      "content": "Datos por defecto"
+    },
+    {
+      "type": "text",
+      "id": "default_duration",
+      "label": "Duracion por defecto",
+      "default": "1h 30'"
+    },
+    {
+      "type": "text",
+      "id": "default_schedule",
+      "label": "Personas por defecto",
+      "default": "1 - 12 personas"
+    },
+    {
+      "type": "text",
+      "id": "default_languages",
+      "label": "Idiomas por defecto",
+      "default": "3 idiomas"
+    },
+    {
+      "type": "text",
+      "id": "default_capacity",
+      "label": "Vinos por defecto",
+      "default": "4 vinos"
+    },
+    {
+      "type": "header",
+      "content": "Contenido"
+    },
+    {
+      "type": "text",
+      "id": "route_heading",
+      "label": "Titulo recorrido",
+      "default": "Recorrido por el alma de Santa Rita"
+    },
+    {
+      "type": "text",
+      "id": "experience_heading",
+      "label": "Titulo experiencia",
+      "default": "La experiencia"
+    },
+    {
+      "type": "richtext",
+      "id": "experience_text",
+      "label": "Texto experiencia"
+    },
+    {
+      "type": "text",
+      "id": "includes_heading",
+      "label": "Titulo incluye",
+      "default": "Que incluye el Tour?"
     },
     {
       "type": "header",
@@ -1115,6 +1190,30 @@
       "id": "reserve_button_label",
       "label": "Texto boton reserva",
       "default": "Reservar Tour"
+    },
+    {
+      "type": "text",
+      "id": "disabled_weekdays",
+      "label": "Dias deshabilitados por defecto",
+      "info": "Numeros separados por coma. Domingo=0, lunes=1, martes=2, miercoles=3, jueves=4, viernes=5, sabado=6."
+    },
+    {
+      "type": "textarea",
+      "id": "blocked_dates",
+      "label": "Fechas bloqueadas por defecto",
+      "info": "Formato YYYY-MM-DD, separadas por coma."
+    },
+    {
+      "type": "textarea",
+      "id": "enabled_dates",
+      "label": "Fechas habilitadas por defecto",
+      "info": "Si se completa, solo estas fechas se podran seleccionar. Formato YYYY-MM-DD, separadas por coma."
+    },
+    {
+      "type": "textarea",
+      "id": "reserve_note",
+      "label": "Nota reserva",
+      "default": "La reserva queda sujeta a confirmacion de disponibilidad."
     }
   ],
   "presets": [
