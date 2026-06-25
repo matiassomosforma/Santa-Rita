@@ -15,7 +15,7 @@
   assign experience_heading = current_tour.experience_heading.value | default: current_tour.experience_heading | default: section.settings.experience_heading
   assign experience_text = current_tour.experience_text
   assign includes_heading = current_tour.includes_heading.value | default: current_tour.includes_heading | default: section.settings.includes_heading
-  assign includes_items = current_tour.includes_items.value | default: current_tour.include_items.value | default: current_tour.included_items.value
+  assign includes_items = current_tour.tour_include.value | default: current_tour.includes_items.value | default: current_tour.include_items.value | default: current_tour.included_items.value
   assign includes_text = current_tour.includes.value | default: current_tour.includes
   assign include_lines = includes_text | newline_to_br | split: '<br />'
   assign time_options_source = current_tour.time_options.value | default: current_tour.time_options | default: section.settings.time_options
@@ -222,8 +222,8 @@
               {% if includes_items != blank %}
                 {% for include_item in includes_items %}
                   {% liquid
-                    assign include_image = include_item.image.value | default: include_item.image | default: include_item.icon_image.value | default: include_item.icon_image
-                    assign include_text = include_item.name.value | default: include_item.name | default: include_item.title.value | default: include_item.title | default: include_item.text.value | default: include_item.text
+                    assign include_image = include_item.imagen.value | default: include_item.imagen | default: include_item.image.value | default: include_item.image | default: include_item.icon_image.value | default: include_item.icon_image
+                    assign include_text = include_item.titulo.value | default: include_item.titulo | default: include_item.name.value | default: include_item.name | default: include_item.title.value | default: include_item.title | default: include_item.text.value | default: include_item.text
                   %}
 
                   {% if include_text != blank or include_image != blank %}
