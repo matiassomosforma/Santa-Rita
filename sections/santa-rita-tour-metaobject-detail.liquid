@@ -9,11 +9,13 @@
   assign languages = current_tour.languages.value | default: current_tour.languages | default: section.settings.default_languages
   assign wines = current_tour.wines.value | default: current_tour.wines | default: section.settings.default_capacity
   assign route_heading = current_tour.route_heading.value | default: current_tour.route_heading | default: section.settings.route_heading
+  assign route_stops_value = current_tour.route_stops.value
   assign route_stops_text = current_tour.route_stops.value | default: current_tour.route_stops
   assign route_stop_lines = route_stops_text | newline_to_br | split: '<br />'
   assign experience_heading = current_tour.experience_heading.value | default: current_tour.experience_heading | default: section.settings.experience_heading
   assign experience_text = current_tour.experience_text
   assign includes_heading = current_tour.includes_heading.value | default: current_tour.includes_heading | default: section.settings.includes_heading
+  assign includes_items = current_tour.includes_items.value | default: current_tour.include_items.value | default: current_tour.included_items.value
   assign includes_text = current_tour.includes.value | default: current_tour.includes
   assign include_lines = includes_text | newline_to_br | split: '<br />'
   assign time_options_source = current_tour.time_options.value | default: current_tour.time_options | default: section.settings.time_options
@@ -150,22 +152,46 @@
           {% endif %}
         </div>
 
-        {% if route_stops_text != blank %}
+        {% if route_stops_value != blank or route_stops_text != blank %}
           <section class="santa-rita-tour-detail__route">
             {% if route_heading != blank %}
               <h2>{{ route_heading }}</h2>
             {% endif %}
 
             <div class="santa-rita-tour-detail__route-items">
-              {% for route_stop in route_stop_lines %}
-                {% assign route_stop = route_stop | strip %}
-                {% if route_stop != blank %}
-                  <article class="santa-rita-tour-detail__route-item">
-                    <span>{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
-                    <h3>{{ route_stop }}</h3>
-                  </article>
-                {% endif %}
-              {% endfor %}
+              {% if current_tour.route_stops.type contains 'list.' %}
+                {% for route_stop_entry in route_stops_value %}
+                  {% liquid
+                    assign route_stop_title = route_stop_entry.title.value | default: route_stop_entry.title | default: route_stop_entry.name.value | default: route_stop_entry.name | default: route_stop_entry
+                    assign route_stop_text_field = route_stop_entry.text | default: route_stop_entry.description
+                    assign route_stop_text = route_stop_text_field.value | default: route_stop_text_field
+                  %}
+
+                  {% if route_stop_title != blank %}
+                    <article class="santa-rita-tour-detail__route-item">
+                      <span>{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+                      <h3>{{ route_stop_title }}</h3>
+                      {% if route_stop_text != blank %}
+                        {% if route_stop_text_field.type == 'rich_text_field' %}
+                          <div>{{ route_stop_text_field | metafield_tag }}</div>
+                        {% else %}
+                          <div><p>{{ route_stop_text }}</p></div>
+                        {% endif %}
+                      {% endif %}
+                    </article>
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                {% for route_stop in route_stop_lines %}
+                  {% assign route_stop = route_stop | strip %}
+                  {% if route_stop != blank %}
+                    <article class="santa-rita-tour-detail__route-item">
+                      <span>{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+                      <h3>{{ route_stop }}</h3>
+                    </article>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
             </div>
           </section>
         {% endif %}
@@ -186,27 +212,58 @@
           </section>
         {% endif %}
 
-        {% if includes_text != blank %}
+        {% if includes_items != blank or includes_text != blank %}
           <section class="santa-rita-tour-detail__includes">
             {% if includes_heading != blank %}
               <h2>{{ includes_heading }}</h2>
             {% endif %}
 
             <div class="santa-rita-tour-detail__includes-grid">
-              {% for include_line in include_lines %}
-                {% assign include_line = include_line | strip %}
-                {% if include_line != blank %}
-                  {% assign include_parts = include_line | split: '|' %}
-                  {% assign include_icon = include_parts[0] | strip %}
-                  {% assign include_text = include_parts[1] | default: include_parts[0] | strip %}
-                  <div class="santa-rita-tour-detail__include">
-                    {% if include_parts[1] != blank %}
-                      <span aria-hidden="true">{{ include_icon }}</span>
-                    {% endif %}
-                    <p>{{ include_text }}</p>
-                  </div>
-                {% endif %}
-              {% endfor %}
+              {% if includes_items != blank %}
+                {% for include_item in includes_items %}
+                  {% liquid
+                    assign include_image = include_item.image.value | default: include_item.image | default: include_item.icon_image.value | default: include_item.icon_image
+                    assign include_text = include_item.name.value | default: include_item.name | default: include_item.title.value | default: include_item.title | default: include_item.text.value | default: include_item.text
+                  %}
+
+                  {% if include_text != blank or include_image != blank %}
+                    <div class="santa-rita-tour-detail__include">
+                      {% if include_image != blank %}
+                        <span aria-hidden="true">
+                          {{
+                            include_image
+                            | image_url: width: 160
+                            | image_tag:
+                              widths: '64, 96, 128, 160',
+                              sizes: '72px',
+                              loading: 'lazy',
+                              class: 'santa-rita-tour-detail__include-image'
+                          }}
+                        </span>
+                      {% endif %}
+
+                      {% if include_text != blank %}
+                        <p>{{ include_text }}</p>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                {% for include_line in include_lines %}
+                  {% assign include_line = include_line | strip %}
+                  {% if include_line != blank %}
+                    {% assign include_parts = include_line | split: '|' %}
+                    {% assign include_icon = include_parts[0] | strip %}
+                    {% assign include_text = include_parts[1] | default: include_parts[0] | strip %}
+                    <div class="santa-rita-tour-detail__include">
+                      {% if include_parts[1] != blank %}
+                        <span aria-hidden="true">{{ include_icon }}</span>
+                      {% endif %}
+                      <p>{{ include_text }}</p>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
             </div>
           </section>
         {% endif %}
@@ -713,7 +770,7 @@
   .santa-rita-tour-detail__includes-grid {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 18px;
+    gap: 20px;
   }
 
   .santa-rita-tour-detail__include {
@@ -725,13 +782,20 @@
 
   .santa-rita-tour-detail__include span {
     display: grid;
-    width: 42px;
-    height: 42px;
+    width: 66px;
+    height: 66px;
     place-items: center;
     border-radius: 50%;
     background: #fff0e7;
     color: #8c1a3e;
     font-size: 18px;
+    overflow: hidden;
+  }
+
+  .santa-rita-tour-detail__include-image {
+    width: 72%;
+    height: 72%;
+    object-fit: contain;
   }
 
   .santa-rita-tour-detail__include p {
