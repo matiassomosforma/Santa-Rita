@@ -30,7 +30,6 @@
   assign price_cents = price_amount | round
   assign price_currency = tour_price.currency_code | default: cart.currency.iso_code | default: shop.currency
   assign booking_url_string = booking_url | append: ''
-  assign price_amount_string = price_amount | append: ''
   assign time_options = time_options_source | split: ','
   assign language_options = language_options_source | split: ','
 %}
@@ -44,7 +43,7 @@
   data-section-id="{{ section.id }}"
   data-tour-title="{{ tour_title | escape }}"
   data-tour-handle="{{ current_tour.system.handle | escape }}"
-  data-price-amount="{{ price_amount_string | escape }}"
+  data-price-cents="{{ price_cents }}"
   data-price-currency="{{ price_currency | escape }}"
   data-booking-url="{{ booking_url_string | escape }}"
   data-disabled-weekdays="{{ disabled_weekdays | escape }}"
@@ -379,7 +378,7 @@
           this.adultsInput = this.querySelector('[data-tour-adults]');
           this.childrenInput = this.querySelector('[data-tour-children]');
           this.totalElement = this.querySelector('[data-tour-total]');
-          this.priceAmount = Number(this.dataset.priceAmount || 0);
+          this.priceCents = Number(this.dataset.priceCents || 0);
           this.currency = this.dataset.priceCurrency || 'CLP';
 
           [this.adultsInput, this.childrenInput].forEach((input) => {
@@ -401,7 +400,7 @@
         updateTotal() {
           if (!this.totalElement) return;
 
-          const total = this.priceAmount * this.getPeopleCount();
+          const total = this.priceCents * this.getPeopleCount() / 100;
 
           this.totalElement.textContent = new Intl.NumberFormat('es-CL', {
             style: 'currency',
@@ -420,7 +419,8 @@
 
           const url = new URL(bookingUrl, window.location.origin);
           const people = this.getPeopleCount();
-          const total = this.priceAmount * people;
+          const price = this.priceCents / 100;
+          const total = price * people;
 
           url.searchParams.set('tour', this.dataset.tourHandle || '');
           url.searchParams.set('tour_title', this.dataset.tourTitle || '');
@@ -430,7 +430,7 @@
           url.searchParams.set('personas', String(people));
           url.searchParams.set('fecha', this.calendarInput?.value || '');
           url.searchParams.set('horario', this.timeInput?.value || '');
-          url.searchParams.set('precio', String(this.priceAmount));
+          url.searchParams.set('precio', String(price));
           url.searchParams.set('total', String(total));
           url.searchParams.set('currency', this.currency);
 
