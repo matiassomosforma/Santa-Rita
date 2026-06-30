@@ -12,7 +12,7 @@
 
 {% if section.settings.show_section %}
   <santa-rita-card-slider
-    class="santa-rita-card-slider santa-rita-card-slider--{{ color_scheme }} santa-rita-card-slider--{{ image_ratio }}"
+    class="santa-rita-card-slider santa-rita-card-slider--{{ color_scheme }} santa-rita-card-slider--{{ image_ratio }} santa-rita-card-slider--columns-{{ slides_desktop }}"
     style="--sr-card-slider-columns: {{ slides_desktop }}; --sr-card-slider-gap-width: {{ slides_gap_width }};"
     {{ section.shopify_attributes }}
   >
@@ -291,6 +291,11 @@
   .santa-rita-card-slider--portrait .santa-rita-card-slider__image,
   .santa-rita-card-slider--portrait .santa-rita-card-slider__image--placeholder {
     aspect-ratio: 4 / 5;
+  }
+
+  .santa-rita-card-slider--columns-2 .santa-rita-card-slider__image,
+  .santa-rita-card-slider--columns-2 .santa-rita-card-slider__image--placeholder {
+    aspect-ratio: 2.45 / 1;
   }
 
   .santa-rita-card-slider__image--placeholder {

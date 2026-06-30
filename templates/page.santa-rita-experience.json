@@ -16,7 +16,7 @@
         "banner_style": "background",
         "desktop_video": "shopify://files/videos/BannerTourismoDES (1).mp4",
         "heading": "",
-        "subheading": "Donde la historia se encuentra con la serenidad del valle.",
+        "subheading": "De la Viña Santa Rita.",
         "show_breadcrumbs": true,
         "breadcrumb_top": 28,
         "desktop_padding_top": 200,
@@ -31,77 +31,13 @@
       "type": "santa-rita-page-intro",
       "name": "Contenido con imagen",
       "settings": {
-        "show_section": false,
-        "color_scheme": "light",
-        "heading": "Un legado centenario",
-        "text": "<p>Fue restaurada y convertida en hotel a mediados de los años noventa. Situado en medio del parque centenario de 40 hectáreas diseñado por el paisajista francés, Guillermo Renner.</p>",
-        "show_image": true,
-        "image": "shopify://shop_images/Frame_8582.png",
-        "image_position": "right"
-      }
-    },
-    "grid_one": {
-      "type": "santa-rita-card-slider",
-      "blocks": {
-        "card_1": {
-          "type": "card",
-          "settings": {
-            "show_card": true,
-            "image": "shopify://shop_images/image_52.png",
-            "title": "Jardin de Variedades",
-            "text": "<p>Diseñado por paisajistas europeos, el parque alberga especies arbóreas traídas de diversos rincones del mundo.</p>",
-            "button_label": "",
-            "button_url": ""
-          }
-        },
-        "card_2": {
-          "type": "card",
-          "settings": {
-            "show_card": true,
-            "image": "shopify://shop_images/image_52.png",
-            "title": "Jardin de Variedades",
-            "text": "<p>Diseñado por paisajistas europeos, el parque alberga especies arbóreas traídas de diversos rincones del mundo.</p>",
-            "button_label": "",
-            "button_url": ""
-          }
-        },
-        "card_3": {
-          "type": "card",
-          "settings": {
-            "show_card": true,
-            "image": "shopify://shop_images/image_52.png",
-            "title": "Jardin de Variedades",
-            "text": "<p>Salones señoriales, bibliotecas y terrazas cubiertas que invitan a la contemplación. Cada rincón de la casona ha sido preservado para ofrecer el máximo confort sin perder su carácter histórico. </p>",
-            "button_label": "",
-            "button_url": ""
-          }
-        },
-        "card_UMXaHa": {
-          "type": "card",
-          "settings": {
-            "show_card": true,
-            "image": "shopify://shop_images/image_52.png",
-            "title": "Jardin de Variedades",
-            "text": "<p>Salones señoriales, bibliotecas y terrazas cubiertas que invitan a la contemplación. Cada rincón de la casona ha sido preservado para ofrecer el máximo confort sin perder su carácter histórico. </p>",
-            "button_label": "",
-            "button_url": ""
-          }
-        }
-      },
-      "block_order": [
-        "card_1",
-        "card_2",
-        "card_3",
-        "card_UMXaHa"
-      ],
-      "name": "Slider de tarjetas",
-      "settings": {
         "show_section": true,
         "color_scheme": "light",
-        "heading": "Nuestros espacios",
-        "text": "Cada rincón está diseñado para transformar momentos especiales en recuerdos eternos.",
-        "slides_desktop": "3",
-        "image_ratio": "wide"
+        "heading": "Descubra un viaje sensorial",
+        "text": "<p>Un lugar donde la herencia culinaria de Santa Rita se fusiona con la sostificación contemporánea en un entorno monumental. </p>",
+        "show_image": true,
+        "image": "shopify://shop_images/Frame_8583.png",
+        "image_position": "right"
       }
     },
     "santa_rita_card_grid_edXbgw": {
@@ -111,10 +47,10 @@
           "type": "card",
           "settings": {
             "show_card": true,
-            "image": "shopify://shop_images/image_52.png",
-            "title": "Vinos para tu evento",
-            "text": "<p>Encuentra el maridaje perfecto para tu evento.</p>",
-            "button_label": "Consultar",
+            "image": "shopify://shop_images/image_57.png",
+            "title": "Restaurante Doña Paula",
+            "text": "<p>Ofrecemos una propuesta de alta cocina que reinterpreta los sabores tradicionales con técnicas modernas, maridados perfectamente con los mejores vinos de nuestra cava privada.</p>",
+            "button_label": "Reservar",
             "button_url": "https://google.cl"
           }
         },
@@ -122,54 +58,26 @@
           "type": "card",
           "settings": {
             "show_card": true,
-            "image": "shopify://shop_images/image_52.png",
-            "title": "Eventos Corporativos",
-            "text": "<p>Un ambiente distinguido para eventos corporativos y cumpleaños. </p>",
-            "button_label": "Consultar",
-            "button_url": "#"
-          }
-        },
-        "card_8pze7y": {
-          "type": "card",
-          "settings": {
-            "show_card": true,
-            "image": "shopify://shop_images/image_52.png",
-            "title": "Matrimonios en Viña Santa Rita",
-            "text": "<p>Romance y sostificación en un entorno histórico. </p>",
-            "button_label": "Consultar",
+            "image": "shopify://shop_images/image_58.png",
+            "title": "Panadería",
+            "text": "<p>Un lugar ideal para hacer una pausa en el recorrido, ya sea para tomar un rico café de grano, un jugo natural o una comida gourmet al paso, para continuar visitando y disfrutando del día en Santa Rita.</p>",
+            "button_label": "Reservar",
             "button_url": "#"
           }
         }
       },
       "block_order": [
         "card_JKVUEm",
-        "card_cqjDzi",
-        "card_8pze7y"
+        "card_cqjDzi"
       ],
       "name": "Grilla de tarjetas",
       "settings": {
         "show_section": true,
         "color_scheme": "dark",
-        "heading": "Espacios singulares",
-        "text": "El día, la noche, y un vino de Viña Santa Rita está por abrirse.",
-        "columns_desktop": "3",
+        "heading": "Viva la experiencia",
+        "text": "Asegure su mesa en el corazón del valle del Maipo y déjenos crear una velada inolvidable.",
+        "columns_desktop": "2",
         "image_ratio": "wide"
-      }
-    },
-    "quote": {
-      "type": "santa-rita-page-quote",
-      "name": "Cita o CTA",
-      "settings": {
-        "show_section": true,
-        "color_scheme": "light",
-        "show_icon": true,
-        "icon_image": "shopify://shop_images/Vector_1.svg",
-        "heading": "Experiencias y Programas",
-        "text_version": "version-2",
-        "text": "<p><em>“La luz del atardecer en los jardines de Santa Rita hizo de nuestro matrimonio algo verdaderamente mágico.”</em></p>",
-        "author": "MARÍA & SEBASTIÁN",
-        "button_label": "",
-        "button_url": ""
       }
     },
     "arrival_faq": {
@@ -312,9 +220,7 @@
   "order": [
     "banner",
     "intro",
-    "grid_one",
     "santa_rita_card_grid_edXbgw",
-    "quote",
     "arrival_faq"
   ]
 }

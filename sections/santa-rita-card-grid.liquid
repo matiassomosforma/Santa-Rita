@@ -6,7 +6,7 @@
 
 {% if section.settings.show_section %}
   <section
-    class="santa-rita-card-grid santa-rita-card-grid--{{ color_scheme }} santa-rita-card-grid--{{ image_ratio }}"
+    class="santa-rita-card-grid santa-rita-card-grid--{{ color_scheme }} santa-rita-card-grid--{{ image_ratio }} santa-rita-card-grid--columns-{{ columns_desktop }}"
     style="--sr-card-columns: {{ columns_desktop }};"
     {{ section.shopify_attributes }}
   >
@@ -87,7 +87,6 @@
   }
 
   .santa-rita-card-grid__header {
-    max-width: 760px;
     margin-bottom: 30px;
   }
 
@@ -144,6 +143,11 @@
   .santa-rita-card-grid--portrait .santa-rita-card-grid__image,
   .santa-rita-card-grid--portrait .santa-rita-card-grid__image--placeholder {
     aspect-ratio: 4 / 5;
+  }
+
+  .santa-rita-card-grid--columns-2 .santa-rita-card-grid__image,
+  .santa-rita-card-grid--columns-2 .santa-rita-card-grid__image--placeholder {
+    aspect-ratio: 2.45 / 1;
   }
 
   .santa-rita-card-grid__image--placeholder {
