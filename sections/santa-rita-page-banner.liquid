@@ -40,6 +40,7 @@
   style="
     --banner-padding-top: {{ section.settings.desktop_padding_top | default: 28 }}px;
     --banner-padding-bottom: {{ section.settings.desktop_padding_bottom | default: 74 }}px;
+    --banner-breadcrumb-top: {{ section.settings.breadcrumb_top | default: 28 }}px;
     --banner-mobile-padding-top: {{ section.settings.mobile_padding_top | default: 14 }}px;
     --banner-mobile-padding-bottom: {{ section.settings.mobile_padding_bottom | default: 18 }}px;
     --banner-text-align: {{ text_alignment }};
@@ -201,10 +202,12 @@
     min-height: inherit;
     flex-direction: column;
     margin-inline: auto;
-    padding-block: var(--banner-padding-top) var(--banner-padding-bottom);
   }
 
   .santa-rita-page-banner__breadcrumbs {
+    position: absolute;
+    top: var(--banner-breadcrumb-top);
+    left: 0;
     display: flex;
     align-items: center;
     gap: 7px;
@@ -226,8 +229,11 @@
   }
 
   .santa-rita-page-banner__grid {
-    display: block;
-    margin-block: auto 0;
+    display: flex;
+    min-height: inherit;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-block: var(--banner-padding-top) var(--banner-padding-bottom);
   }
 
   .santa-rita-page-banner__content h1 {
@@ -262,7 +268,6 @@
   .santa-rita-page-banner--split .santa-rita-page-banner__inner {
     display: grid;
     min-height: 350px;
-    padding-block: var(--banner-padding-top) var(--banner-padding-bottom);
   }
 
   .santa-rita-page-banner--split .santa-rita-page-banner__breadcrumbs {
@@ -351,7 +356,6 @@
     .santa-rita-page-banner__inner {
       width: calc(100% - 24px);
       min-height: inherit;
-      padding-block: var(--banner-mobile-padding-top) var(--banner-mobile-padding-bottom);
     }
 
     .santa-rita-page-banner__breadcrumbs {
@@ -360,9 +364,12 @@
 
     .santa-rita-page-banner__content {
       width: min(100%, 270px);
-      margin-top: auto;
       margin-inline: var(--banner-mobile-content-margin-inline);
       text-align: var(--banner-mobile-text-align);
+    }
+
+    .santa-rita-page-banner__grid {
+      padding-block: var(--banner-mobile-padding-top) var(--banner-mobile-padding-bottom);
     }
 
     .santa-rita-page-banner__content h1 {
@@ -389,7 +396,6 @@
       display: block;
       width: calc(100% - 28px);
       min-height: 0;
-      padding-block: var(--banner-mobile-padding-top) var(--banner-mobile-padding-bottom);
     }
 
     .santa-rita-page-banner--split .santa-rita-page-banner__breadcrumbs {
@@ -483,6 +489,16 @@
       "id": "show_breadcrumbs",
       "label": "Mostrar breadcrumb en desktop",
       "default": true
+    },
+    {
+      "type": "range",
+      "id": "breadcrumb_top",
+      "label": "Posicion superior breadcrumb",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 28
     },
     {
       "type": "header",
