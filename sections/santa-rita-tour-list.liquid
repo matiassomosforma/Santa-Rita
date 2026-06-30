@@ -3,6 +3,32 @@
   assign products_limit = section.settings.products_limit | default: 6
 %}
 
+{%- capture tour_entries_string -%}
+  {%- for tour in tour_metaobjects -%}
+    {%- liquid
+      assign tour_sort_date = tour.date.value | default: tour.fecha.value | default: tour.tour_date.value | default: tour.fecha_tour.value | default: tour.created_at.value | default: tour.created_at | default: tour.system.created_at | default: tour.system.updated_at
+
+      if tour_sort_date != blank
+        assign tour_sort_key = tour_sort_date | date: '%s'
+      else
+        assign tour_sort_key = tour.system.id
+      endif
+
+      assign tour_sort_key = tour_sort_key | append: ''
+      assign tour_sort_key_length = tour_sort_key | size
+
+      if tour_sort_key_length < 16
+        assign tour_sort_key = '0000000000000000' | append: tour_sort_key | slice: -16, 16
+      endif
+    -%}
+    {{- tour_sort_key -}}::{{- tour.system.handle -}}{%- unless forloop.last -%},{%- endunless -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{% liquid
+  assign sorted_tour_entries = tour_entries_string | split: ',' | sort | reverse
+%}
+
 <section
   class="santa-rita-tour-list"
   aria-labelledby="santa-rita-tour-list-title-{{ section.id }}"
@@ -23,8 +49,10 @@
       <div class="santa-rita-tour-list__viewport" data-slider-viewport>
         <div class="santa-rita-tour-list__grid" data-slider-track>
           {% if tour_metaobjects != blank %}
-            {% for tour in tour_metaobjects limit: products_limit %}
+            {% for tour_entry in sorted_tour_entries limit: products_limit %}
               {% liquid
+                assign tour_handle = tour_entry | split: '::' | last
+                assign tour = metaobjects.tour[tour_handle]
                 assign tour_title = tour.title.value | default: tour.title | default: tour.system.handle
                 assign card_image = tour.banner_image.value | default: tour.banner_image
                 assign duration = tour.duration.value | default: tour.duration
@@ -78,7 +106,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                           </svg>
-                          {{ duration }}
+                          {{ duration }} aprox.
                         </small>
                       {% elsif section.settings.price_note != blank %}
                         <small>{{ section.settings.price_note }}</small>
@@ -290,6 +318,7 @@
           this.dotsContainer = this.querySelector('[data-slider-dots]');
           this.controls = this.querySelector('.santa-rita-tour-list__controls');
           this.handleResize = () => this.setupDots();
+          this.resizeObserver = null;
 
           if (!this.viewport || !this.track) return;
 
@@ -298,11 +327,18 @@
           this.viewport.addEventListener('scroll', () => this.updateState(), { passive: true });
           window.addEventListener('resize', this.handleResize);
 
-          this.setupDots();
+          if (typeof ResizeObserver === 'function') {
+            this.resizeObserver = new ResizeObserver(() => this.setupDots());
+            this.resizeObserver.observe(this.viewport);
+            this.resizeObserver.observe(this.track);
+          }
+
+          window.requestAnimationFrame(() => this.setupDots());
         }
 
         disconnectedCallback() {
           window.removeEventListener('resize', this.handleResize);
+          this.resizeObserver?.disconnect();
         }
 
         getStep() {
@@ -315,10 +351,15 @@
         }
 
         getPageCount() {
-          const total = this.track.querySelectorAll('.santa-rita-tour-list__card').length;
-          const visible = Math.max(1, Math.round(this.viewport.clientWidth / this.getStep()));
+          const maxScroll = this.getMaxScroll();
 
-          return Math.max(1, total - visible + 1);
+          if (maxScroll <= 4) return 1;
+
+          return Math.max(1, Math.ceil(maxScroll / this.getStep()) + 1);
+        }
+
+        getMaxScroll() {
+          return Math.max(0, this.viewport.scrollWidth - this.viewport.clientWidth);
         }
 
         setupDots() {
@@ -326,9 +367,16 @@
 
           this.dotsContainer.innerHTML = '';
           const count = this.getPageCount();
+          const canScroll = count > 1;
 
           if (this.controls) {
-            this.controls.hidden = count <= 1;
+            this.controls.hidden = !canScroll;
+          }
+
+          if (!canScroll) {
+            if (this.prevButton) this.prevButton.disabled = true;
+            if (this.nextButton) this.nextButton.disabled = true;
+            return;
           }
 
           for (let index = 0; index < count; index += 1) {
@@ -351,8 +399,9 @@
 
         updateState() {
           const step = this.getStep();
-          const activeIndex = Math.round(this.viewport.scrollLeft / step);
-          const maxScroll = Math.max(0, this.viewport.scrollWidth - this.viewport.clientWidth);
+          const maxScroll = this.getMaxScroll();
+          const maxIndex = Math.max(0, (this.dotsContainer?.children.length || 1) - 1);
+          const activeIndex = Math.max(0, Math.min(maxIndex, Math.round(this.viewport.scrollLeft / step)));
 
           Array.from(this.dotsContainer?.children || []).forEach((dot, index) => {
             dot.classList.toggle('is-active', index === activeIndex);

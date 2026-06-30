@@ -1,0 +1,615 @@
+{% liquid
+  assign transport_blocks = section.blocks | where: 'type', 'transport'
+  assign faq_blocks = section.blocks | where: 'type', 'faq'
+%}
+
+{% if section.settings.show_section %}
+  <section class="santa-rita-arrival-faq" {{ section.shopify_attributes }}>
+    {% if section.settings.show_arrival %}
+      <div class="santa-rita-arrival-faq__arrival">
+        <div class="santa-rita-arrival-faq__inner">
+          {% if section.settings.arrival_heading != blank or section.settings.arrival_text != blank %}
+            <div class="santa-rita-arrival-faq__heading">
+              {% if section.settings.arrival_heading != blank %}
+                <h2>{{ section.settings.arrival_heading }}</h2>
+              {% endif %}
+
+              {% if section.settings.arrival_text != blank %}
+                <p>{{ section.settings.arrival_text }}</p>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          {% if section.settings.show_transport and transport_blocks.size > 0 %}
+            <div class="santa-rita-arrival-faq__transport-grid" style="--sr-transport-columns: {{ section.settings.transport_columns }};">
+              {% for block in transport_blocks %}
+                {% if block.settings.show_block %}
+                  <article
+                    class="santa-rita-arrival-faq__transport"
+                    style="--sr-transport-bg: {{ block.settings.accent_background }}; --sr-transport-text: {{ block.settings.accent_text }};"
+                    {{ block.shopify_attributes }}
+                  >
+                    {% if block.settings.icon_image != blank %}
+                      <span class="santa-rita-arrival-faq__transport-icon" aria-hidden="true">
+                        {{
+                          block.settings.icon_image
+                          | image_url: width: 80
+                          | image_tag:
+                            widths: '32, 48, 64, 80',
+                            sizes: '32px',
+                            loading: 'lazy',
+                            class: 'santa-rita-arrival-faq__transport-icon-image'
+                        }}
+                      </span>
+                    {% endif %}
+
+                    {% if block.settings.title != blank %}
+                      <h3>{{ block.settings.title }}</h3>
+                    {% endif %}
+
+                    {% if block.settings.time != blank %}
+                      <p>{{ block.settings.time }}</p>
+                    {% endif %}
+                  </article>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endif %}
+
+          {% if section.settings.show_map %}
+            <div class="santa-rita-arrival-faq__map">
+              <div class="santa-rita-arrival-faq__map-media">
+                {% if section.settings.map_embed_code != blank %}
+                  {{ section.settings.map_embed_code }}
+                {% elsif section.settings.map_image != blank %}
+                  {{
+                    section.settings.map_image
+                    | image_url: width: 1200
+                    | image_tag:
+                      widths: '360, 640, 960, 1200',
+                      sizes: '(min-width: 990px) 56vw, 100vw',
+                      loading: 'lazy',
+                      class: 'santa-rita-arrival-faq__map-image'
+                  }}
+                {% elsif request.design_mode %}
+                  {{ 'image' | placeholder_svg_tag: 'santa-rita-arrival-faq__map-image santa-rita-arrival-faq__map-image--placeholder' }}
+                {% endif %}
+              </div>
+
+              <div class="santa-rita-arrival-faq__map-info">
+                {% if section.settings.map_heading != blank %}
+                  <h3>{{ section.settings.map_heading }}</h3>
+                {% endif %}
+
+                {% if section.settings.map_text != blank %}
+                  <p>{{ section.settings.map_text }}</p>
+                {% endif %}
+
+                {% if section.settings.map_link != blank %}
+                  <a href="{{ section.settings.map_link }}" target="_blank" rel="noopener">
+                    {{ section.settings.map_link_label }}
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if section.settings.show_faq and faq_blocks.size > 0 %}
+      <div class="santa-rita-arrival-faq__faq">
+        <div class="santa-rita-arrival-faq__inner">
+          {% if section.settings.faq_heading != blank or section.settings.faq_text != blank %}
+            <div class="santa-rita-arrival-faq__heading">
+              {% if section.settings.faq_heading != blank %}
+                <h2>{{ section.settings.faq_heading }}</h2>
+              {% endif %}
+
+              {% if section.settings.faq_text != blank %}
+                <p>{{ section.settings.faq_text }}</p>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          <div class="santa-rita-arrival-faq__items">
+            {% for block in faq_blocks %}
+              {% if block.settings.show_block %}
+                <details class="santa-rita-arrival-faq__item" {{ block.shopify_attributes }}>
+                  <summary>
+                    <span>{{ block.settings.question }}</span>
+                    <span aria-hidden="true">+</span>
+                  </summary>
+                  <div>{{ block.settings.answer }}</div>
+                </details>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </section>
+{% endif %}
+
+<style>
+  .santa-rita-arrival-faq {
+    display: block;
+    background: #fffbf6;
+    color: #21000f;
+  }
+
+  .santa-rita-arrival-faq__inner {
+    width: min(100% - 48px, 1140px);
+    margin-inline: auto;
+  }
+
+  .santa-rita-arrival-faq__arrival {
+    background: #fffbf6;
+  }
+
+  .santa-rita-arrival-faq__arrival .santa-rita-arrival-faq__inner {
+    padding-block: 52px;
+  }
+
+  .santa-rita-arrival-faq__heading {
+    margin-bottom: 26px;
+  }
+
+  .santa-rita-arrival-faq__heading h2 {
+    margin: 0 0 8px;
+    font-family: var(--font-heading--family);
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-arrival-faq__heading p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.45;
+  }
+
+  .santa-rita-arrival-faq__transport-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--sr-transport-columns, 4), minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+
+  .santa-rita-arrival-faq__transport {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    min-height: 74px;
+    border-radius: 4px;
+    background: #ffffff;
+    padding: 14px;
+  }
+
+  .santa-rita-arrival-faq__transport-icon {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--sr-transport-bg, #f8e8dd);
+  }
+
+  .santa-rita-arrival-faq__transport-icon-image {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+  }
+
+  .santa-rita-arrival-faq__transport h3 {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .santa-rita-arrival-faq__transport p {
+    display: inline-flex;
+    grid-column: 2;
+    justify-self: start;
+    margin: 0;
+    border-radius: 999px;
+    background: var(--sr-transport-bg, #f8e8dd);
+    color: var(--sr-transport-text, #8c1a3e);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 4px 8px;
+  }
+
+  .santa-rita-arrival-faq__map {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 420px);
+    overflow: hidden;
+    border-radius: 4px;
+    background: #ffffff;
+  }
+
+  .santa-rita-arrival-faq__map-media,
+  .santa-rita-arrival-faq__map-media iframe,
+  .santa-rita-arrival-faq__map-image,
+  .santa-rita-arrival-faq__map-image--placeholder {
+    display: block;
+    width: 100%;
+    min-height: 210px;
+  }
+
+  .santa-rita-arrival-faq__map-media iframe,
+  .santa-rita-arrival-faq__map-image {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .santa-rita-arrival-faq__map-image--placeholder {
+    background: #dff2ed;
+    fill: rgba(140, 26, 62, 0.2);
+  }
+
+  .santa-rita-arrival-faq__map-info {
+    display: grid;
+    align-content: center;
+    gap: 8px;
+    padding: 26px;
+  }
+
+  .santa-rita-arrival-faq__map-info h3 {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.15;
+  }
+
+  .santa-rita-arrival-faq__map-info p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .santa-rita-arrival-faq__map-info a {
+    justify-self: start;
+    display: inline-flex;
+    min-height: 30px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+    border-radius: 4px;
+    background: #8c1a3e;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    padding-inline: 14px;
+    text-decoration: none;
+  }
+
+  .santa-rita-arrival-faq__faq {
+    background: #21000f;
+    color: #ffffff;
+  }
+
+  .santa-rita-arrival-faq__faq .santa-rita-arrival-faq__inner {
+    padding-block: 52px;
+  }
+
+  .santa-rita-arrival-faq__faq .santa-rita-arrival-faq__heading p {
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .santa-rita-arrival-faq__items {
+    display: grid;
+  }
+
+  .santa-rita-arrival-faq__item {
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .santa-rita-arrival-faq__item:last-child {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .santa-rita-arrival-faq__item summary {
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding-block: 17px;
+    font-size: 15px;
+    line-height: 1.35;
+    list-style: none;
+  }
+
+  .santa-rita-arrival-faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .santa-rita-arrival-faq__item[open] summary span:last-child {
+    transform: rotate(45deg);
+  }
+
+  .santa-rita-arrival-faq__item div {
+    max-width: 760px;
+    padding-bottom: 18px;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .santa-rita-arrival-faq__item div p {
+    margin: 0;
+  }
+
+  @media screen and (max-width: 989px) {
+    .santa-rita-arrival-faq__transport-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .santa-rita-arrival-faq__map {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-arrival-faq__inner {
+      width: calc(100% - 40px);
+    }
+
+    .santa-rita-arrival-faq__arrival .santa-rita-arrival-faq__inner,
+    .santa-rita-arrival-faq__faq .santa-rita-arrival-faq__inner {
+      padding-block: 36px;
+    }
+
+    .santa-rita-arrival-faq__heading h2 {
+      font-size: 25px;
+    }
+
+    .santa-rita-arrival-faq__heading p {
+      font-size: 13px;
+    }
+
+    .santa-rita-arrival-faq__transport-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .santa-rita-arrival-faq__transport {
+      min-height: 68px;
+      padding: 10px;
+    }
+
+    .santa-rita-arrival-faq__transport h3 {
+      font-size: 12px;
+    }
+
+    .santa-rita-arrival-faq__transport p {
+      font-size: 10px;
+    }
+
+    .santa-rita-arrival-faq__map-info {
+      padding: 20px;
+    }
+
+    .santa-rita-arrival-faq__item summary {
+      font-size: 13px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "SR llegada y FAQ",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_section",
+      "label": "Mostrar seccion",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrival",
+      "label": "Mostrar como llegar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "arrival_heading",
+      "label": "Titulo como llegar",
+      "default": "Como llegar a Vina Santa Rita?"
+    },
+    {
+      "type": "text",
+      "id": "arrival_text",
+      "label": "Texto como llegar",
+      "default": "Elige tu medio de transporte preferido y te mostramos el camino hasta la vina."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_transport",
+      "label": "Mostrar medios de transporte",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "transport_columns",
+      "label": "Transportes por fila",
+      "default": "4",
+      "options": [
+        {
+          "value": "2",
+          "label": "2 por fila"
+        },
+        {
+          "value": "3",
+          "label": "3 por fila"
+        },
+        {
+          "value": "4",
+          "label": "4 por fila"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "show_map",
+      "label": "Mostrar mapa",
+      "default": true
+    },
+    {
+      "type": "html",
+      "id": "map_embed_code",
+      "label": "Codigo embed mapa"
+    },
+    {
+      "type": "image_picker",
+      "id": "map_image",
+      "label": "Imagen mapa"
+    },
+    {
+      "type": "text",
+      "id": "map_heading",
+      "label": "Titulo mapa",
+      "default": "Vina Santa Rita"
+    },
+    {
+      "type": "text",
+      "id": "map_text",
+      "label": "Texto mapa",
+      "default": "Camino Padre Hurtado 0695, Alto Jahuel"
+    },
+    {
+      "type": "url",
+      "id": "map_link",
+      "label": "Link mapa"
+    },
+    {
+      "type": "text",
+      "id": "map_link_label",
+      "label": "Texto boton mapa",
+      "default": "Ir a Google Maps"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_faq",
+      "label": "Mostrar preguntas frecuentes",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "faq_heading",
+      "label": "Titulo FAQ",
+      "default": "Preguntas frecuentes"
+    },
+    {
+      "type": "text",
+      "id": "faq_text",
+      "label": "Texto FAQ",
+      "default": "Todo lo que necesitas saber."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "transport",
+      "name": "Transporte",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_block",
+          "label": "Mostrar bloque",
+          "default": true
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icono"
+        },
+        {
+          "type": "color",
+          "id": "accent_background",
+          "label": "Fondo etiqueta",
+          "default": "#f8e8dd"
+        },
+        {
+          "type": "color",
+          "id": "accent_text",
+          "label": "Texto etiqueta",
+          "default": "#8c1a3e"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titulo",
+          "default": "Transporte"
+        },
+        {
+          "type": "text",
+          "id": "time",
+          "label": "Tiempo",
+          "default": "1 hora"
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "name": "Pregunta",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_block",
+          "label": "Mostrar pregunta",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Pregunta",
+          "default": "Pregunta frecuente"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Respuesta",
+          "default": "<p>Agrega la respuesta desde el editor.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SR llegada y FAQ",
+      "blocks": [
+        {
+          "type": "transport"
+        },
+        {
+          "type": "transport"
+        },
+        {
+          "type": "transport"
+        },
+        {
+          "type": "transport"
+        },
+        {
+          "type": "faq"
+        },
+        {
+          "type": "faq"
+        },
+        {
+          "type": "faq"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,219 @@
+{% liquid
+  assign image = section.settings.image
+  assign image_position = section.settings.image_position | default: 'right'
+  assign color_scheme = section.settings.color_scheme | default: 'light'
+%}
+
+{% if section.settings.show_section %}
+  <section
+    class="santa-rita-page-intro santa-rita-page-intro--{{ color_scheme }} santa-rita-page-intro--image-{{ image_position }}"
+    {{ section.shopify_attributes }}
+  >
+    <div class="santa-rita-page-intro__inner">
+      <div class="santa-rita-page-intro__content">
+        {% if section.settings.heading != blank %}
+          <h2>{{ section.settings.heading }}</h2>
+        {% endif %}
+
+        {% if section.settings.text != blank %}
+          <div class="santa-rita-page-intro__text">
+            {{ section.settings.text }}
+          </div>
+        {% endif %}
+      </div>
+
+      {% if section.settings.show_image %}
+        <div class="santa-rita-page-intro__media">
+          {% if image != blank %}
+            {{
+              image
+              | image_url: width: 1100
+              | image_tag:
+                widths: '360, 550, 720, 900, 1100',
+                sizes: '(min-width: 990px) 46vw, 100vw',
+                loading: 'lazy',
+                class: 'santa-rita-page-intro__image'
+            }}
+          {% elsif request.design_mode %}
+            {{ 'image' | placeholder_svg_tag: 'santa-rita-page-intro__image santa-rita-page-intro__image--placeholder' }}
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </section>
+{% endif %}
+
+<style>
+  .santa-rita-page-intro {
+    display: block;
+    background: #fffbf6;
+    color: #21000f;
+  }
+
+  .santa-rita-page-intro--dark {
+    background: #21000f;
+    color: #ffffff;
+  }
+
+  .santa-rita-page-intro__inner {
+    display: grid;
+    width: min(100% - 48px, 1140px);
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 520px);
+    gap: 68px;
+    align-items: center;
+    margin-inline: auto;
+    padding-block: 56px;
+  }
+
+  .santa-rita-page-intro--image-left .santa-rita-page-intro__content {
+    order: 2;
+  }
+
+  .santa-rita-page-intro--image-left .santa-rita-page-intro__media {
+    order: 1;
+  }
+
+  .santa-rita-page-intro__content h2 {
+    margin: 0 0 18px;
+    font-family: var(--font-heading--family);
+    font-size: clamp(28px, 3vw, 40px);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-page-intro__text {
+    max-width: 610px;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .santa-rita-page-intro__text p {
+    margin: 0;
+  }
+
+  .santa-rita-page-intro__text p + p {
+    margin-top: 12px;
+  }
+
+  .santa-rita-page-intro__media {
+    overflow: hidden;
+    border-radius: 4px;
+  }
+
+  .santa-rita-page-intro__image,
+  .santa-rita-page-intro__image--placeholder {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1.75 / 1;
+    object-fit: cover;
+  }
+
+  .santa-rita-page-intro__image--placeholder {
+    background: #eadfd5;
+    fill: rgba(140, 26, 62, 0.22);
+  }
+
+  @media screen and (max-width: 989px) {
+    .santa-rita-page-intro__inner {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+
+    .santa-rita-page-intro--image-left .santa-rita-page-intro__content,
+    .santa-rita-page-intro--image-left .santa-rita-page-intro__media {
+      order: initial;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-page-intro__inner {
+      width: calc(100% - 40px);
+      padding-block: 34px;
+    }
+
+    .santa-rita-page-intro__content h2 {
+      margin-bottom: 12px;
+      font-size: 25px;
+    }
+
+    .santa-rita-page-intro__text {
+      font-size: 13px;
+      line-height: 1.45;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "SR contenido con imagen",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_section",
+      "label": "Mostrar seccion",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Fondo",
+      "default": "light",
+      "options": [
+        {
+          "value": "light",
+          "label": "Claro"
+        },
+        {
+          "value": "dark",
+          "label": "Burdeo"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titulo",
+      "default": "Un legado centenario"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texto",
+      "default": "<p>Agrega una descripcion para presentar esta experiencia, espacio o servicio.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Mostrar imagen",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Imagen"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Posicion de imagen",
+      "default": "right",
+      "options": [
+        {
+          "value": "right",
+          "label": "Derecha"
+        },
+        {
+          "value": "left",
+          "label": "Izquierda"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SR contenido con imagen"
+    }
+  ]
+}
+{% endschema %}

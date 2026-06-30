@@ -1,0 +1,175 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner": {
+      "type": "santa-rita-page-banner",
+      "name": "Banner de pagina",
+      "settings": {
+        "banner_style": "background",
+        "heading": "",
+        "subheading": "",
+        "show_breadcrumbs": true,
+        "desktop_padding_top": 28,
+        "desktop_padding_bottom": 144,
+        "text_alignment": "center",
+        "mobile_padding_top": 14,
+        "mobile_padding_bottom": 24,
+        "mobile_text_alignment": "left"
+      }
+    },
+    "intro": {
+      "type": "santa-rita-page-intro",
+      "name": "Contenido con imagen",
+      "settings": {
+        "show_section": true,
+        "color_scheme": "light",
+        "heading": "Un legado centenario",
+        "text": "<p>Agrega una descripcion para presentar esta experiencia, espacio o servicio.</p>",
+        "show_image": true,
+        "image_position": "right"
+      }
+    },
+    "grid_one": {
+      "type": "santa-rita-card-grid",
+      "blocks": {
+        "card_1": {
+          "type": "card",
+          "settings": {
+            "show_card": true,
+            "title": "Titulo de tarjeta",
+            "text": "<p>Agrega una descripcion breve para esta tarjeta.</p>",
+            "button_label": ""
+          }
+        },
+        "card_2": {
+          "type": "card",
+          "settings": {
+            "show_card": true,
+            "title": "Titulo de tarjeta",
+            "text": "<p>Agrega una descripcion breve para esta tarjeta.</p>",
+            "button_label": ""
+          }
+        },
+        "card_3": {
+          "type": "card",
+          "settings": {
+            "show_card": true,
+            "title": "Titulo de tarjeta",
+            "text": "<p>Agrega una descripcion breve para esta tarjeta.</p>",
+            "button_label": ""
+          }
+        }
+      },
+      "block_order": ["card_1", "card_2", "card_3"],
+      "name": "Grilla de tarjetas",
+      "settings": {
+        "show_section": true,
+        "color_scheme": "dark",
+        "heading": "Espacios singulares",
+        "text": "Edita los contenidos y decide cuantas tarjetas se ven por fila.",
+        "columns_desktop": "3",
+        "image_ratio": "wide"
+      }
+    },
+    "quote": {
+      "type": "santa-rita-page-quote",
+      "name": "Cita o CTA",
+      "settings": {
+        "show_section": true,
+        "color_scheme": "light",
+        "show_icon": true,
+        "heading": "Experiencias y Programas",
+        "text": "<p>Agrega una cita, mensaje destacado o llamado a la accion.</p>",
+        "author": "",
+        "button_label": ""
+      }
+    },
+    "arrival_faq": {
+      "type": "santa-rita-arrival-faq",
+      "blocks": {
+        "transport_1": {
+          "type": "transport",
+          "settings": {
+            "show_block": true,
+            "accent_background": "#f8e8dd",
+            "accent_text": "#8c1a3e",
+            "title": "Automovil particular",
+            "time": "1 hora"
+          }
+        },
+        "transport_2": {
+          "type": "transport",
+          "settings": {
+            "show_block": true,
+            "accent_background": "#8c1a3e",
+            "accent_text": "#f8e8dd",
+            "title": "Metro + Taxi colectivo",
+            "time": "45 min"
+          }
+        },
+        "transport_3": {
+          "type": "transport",
+          "settings": {
+            "show_block": true,
+            "accent_background": "#f8e8dd",
+            "accent_text": "#8c1a3e",
+            "title": "Bus",
+            "time": "1 hora"
+          }
+        },
+        "transport_4": {
+          "type": "transport",
+          "settings": {
+            "show_block": true,
+            "accent_background": "#8c1a3e",
+            "accent_text": "#f8e8dd",
+            "title": "Transporte privado",
+            "time": "40 min"
+          }
+        },
+        "faq_1": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "Pregunta frecuente",
+            "answer": "<p>Agrega la respuesta desde el editor.</p>"
+          }
+        },
+        "faq_2": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "Pregunta frecuente",
+            "answer": "<p>Agrega la respuesta desde el editor.</p>"
+          }
+        }
+      },
+      "block_order": ["transport_1", "transport_2", "transport_3", "transport_4", "faq_1", "faq_2"],
+      "name": "Llegada y FAQ",
+      "settings": {
+        "show_section": true,
+        "show_arrival": true,
+        "arrival_heading": "Como llegar a Vina Santa Rita?",
+        "arrival_text": "Elige tu medio de transporte preferido y te mostramos el camino hasta la vina.",
+        "show_transport": true,
+        "transport_columns": "4",
+        "show_map": true,
+        "map_heading": "Vina Santa Rita",
+        "map_text": "Camino Padre Hurtado 0695, Alto Jahuel",
+        "map_link_label": "Ir a Google Maps",
+        "show_faq": true,
+        "faq_heading": "Preguntas frecuentes",
+        "faq_text": "Todo lo que necesitas saber."
+      }
+    }
+  },
+  "order": ["banner", "intro", "grid_one", "quote", "arrival_faq"]
+}
