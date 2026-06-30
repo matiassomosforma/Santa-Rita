@@ -1,0 +1,602 @@
+{% liquid
+  assign color_scheme = section.settings.color_scheme | default: 'light'
+  assign image_ratio = section.settings.image_ratio | default: 'wide'
+  assign slides_desktop = section.settings.slides_desktop | default: '3'
+
+  if slides_desktop == '2'
+    assign slides_gap_width = '28px'
+  else
+    assign slides_gap_width = '56px'
+  endif
+%}
+
+{% if section.settings.show_section %}
+  <santa-rita-card-slider
+    class="santa-rita-card-slider santa-rita-card-slider--{{ color_scheme }} santa-rita-card-slider--{{ image_ratio }}"
+    style="--sr-card-slider-columns: {{ slides_desktop }}; --sr-card-slider-gap-width: {{ slides_gap_width }};"
+    {{ section.shopify_attributes }}
+  >
+    <div class="santa-rita-card-slider__inner">
+      {% if section.settings.heading != blank or section.settings.text != blank %}
+        <div class="santa-rita-card-slider__header">
+          {% if section.settings.heading != blank %}
+            <h2>{{ section.settings.heading }}</h2>
+          {% endif %}
+
+          {% if section.settings.text != blank %}
+            <p>{{ section.settings.text }}</p>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <div class="santa-rita-card-slider__viewport" data-card-slider-viewport>
+        <div class="santa-rita-card-slider__track" data-card-slider-track>
+          {% for block in section.blocks %}
+            {% if block.settings.show_card %}
+              <article class="santa-rita-card-slider__card" {{ block.shopify_attributes }}>
+                {% if block.settings.image != blank %}
+                  {{
+                    block.settings.image
+                    | image_url: width: 900
+                    | image_tag:
+                      widths: '320, 480, 640, 900',
+                      sizes: '(min-width: 990px) 33vw, 86vw',
+                      loading: 'lazy',
+                      class: 'santa-rita-card-slider__image'
+                  }}
+                {% elsif request.design_mode %}
+                  {{ 'image' | placeholder_svg_tag: 'santa-rita-card-slider__image santa-rita-card-slider__image--placeholder' }}
+                {% endif %}
+
+                <div class="santa-rita-card-slider__body">
+                  {% if block.settings.title != blank %}
+                    <h3>{{ block.settings.title }}</h3>
+                  {% endif %}
+
+                  {% if block.settings.text != blank %}
+                    <div class="santa-rita-card-slider__text">
+                      {{ block.settings.text }}
+                    </div>
+                  {% endif %}
+
+                  {% if block.settings.button_label != blank and block.settings.button_url != blank %}
+                    <a href="{{ block.settings.button_url }}" class="santa-rita-card-slider__button">
+                      {{ block.settings.button_label }}
+                    </a>
+                  {% endif %}
+                </div>
+              </article>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="santa-rita-card-slider__controls" data-card-slider-controls>
+        <div class="santa-rita-card-slider__dots" data-card-slider-dots aria-label="Paginacion de tarjetas"></div>
+        <div class="santa-rita-card-slider__arrows">
+          <button type="button" class="santa-rita-card-slider__arrow" data-card-slider-prev aria-label="Tarjetas anteriores">
+            <svg viewBox="0 0 32 20" fill="none" focusable="false" aria-hidden="true">
+              <path d="M11 1C11 2.05 9.99 3.59 8.97 4.89C7.66 6.56 6.09 8.02 4.3 9.13C2.95 9.97 1.31 10.78 0 10.78M0 10.78C1.31 10.78 2.95 11.58 4.3 12.42C6.09 13.54 7.66 15 8.97 16.67C9.99 17.97 11 19.5 11 20.55M0 10.78H32" stroke="currentColor" stroke-width="1.2"/>
+            </svg>
+          </button>
+          <button type="button" class="santa-rita-card-slider__arrow" data-card-slider-next aria-label="Tarjetas siguientes">
+            <svg viewBox="0 0 32 20" fill="none" focusable="false" aria-hidden="true">
+              <path d="M21 1C21 2.05 22.01 3.59 23.03 4.89C24.34 6.56 25.91 8.02 27.7 9.13C29.05 9.97 30.69 10.78 32 10.78M32 10.78C30.69 10.78 29.05 11.58 27.7 12.42C25.91 13.54 24.34 15 23.03 16.67C22.01 17.97 21 19.5 21 20.55M32 10.78H0" stroke="currentColor" stroke-width="1.2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </santa-rita-card-slider>
+{% endif %}
+
+<script>
+  if (!customElements.get('santa-rita-card-slider')) {
+    customElements.define(
+      'santa-rita-card-slider',
+      class SantaRitaCardSlider extends HTMLElement {
+        connectedCallback() {
+          this.viewport = this.querySelector('[data-card-slider-viewport]');
+          this.track = this.querySelector('[data-card-slider-track]');
+          this.controls = this.querySelector('[data-card-slider-controls]');
+          this.dotsContainer = this.querySelector('[data-card-slider-dots]');
+          this.prevButton = this.querySelector('[data-card-slider-prev]');
+          this.nextButton = this.querySelector('[data-card-slider-next]');
+          this.resizeObserver = null;
+          this.handleResize = () => this.setupControls();
+
+          if (!this.viewport || !this.track) return;
+
+          this.prevButton?.addEventListener('click', () => this.scrollByPage(-1));
+          this.nextButton?.addEventListener('click', () => this.scrollByPage(1));
+          this.viewport.addEventListener('scroll', () => this.updateState(), { passive: true });
+          window.addEventListener('resize', this.handleResize);
+
+          if (typeof ResizeObserver === 'function') {
+            this.resizeObserver = new ResizeObserver(() => this.setupControls());
+            this.resizeObserver.observe(this.viewport);
+            this.resizeObserver.observe(this.track);
+          }
+
+          window.requestAnimationFrame(() => this.setupControls());
+        }
+
+        disconnectedCallback() {
+          window.removeEventListener('resize', this.handleResize);
+          this.resizeObserver?.disconnect();
+        }
+
+        getStep() {
+          const card = this.track.querySelector('.santa-rita-card-slider__card');
+
+          if (!card) return this.viewport.clientWidth;
+
+          const gap = parseFloat(window.getComputedStyle(this.track).columnGap || '0');
+          return card.getBoundingClientRect().width + gap;
+        }
+
+        getMaxScroll() {
+          return Math.max(0, this.viewport.scrollWidth - this.viewport.clientWidth);
+        }
+
+        getPageCount() {
+          const maxScroll = this.getMaxScroll();
+
+          if (maxScroll <= 4) return 1;
+
+          return Math.max(1, Math.ceil(maxScroll / this.getStep()) + 1);
+        }
+
+        setupControls() {
+          if (!this.dotsContainer) return;
+
+          this.dotsContainer.innerHTML = '';
+          const count = this.getPageCount();
+          const canScroll = count > 1;
+
+          if (this.controls) this.controls.hidden = !canScroll;
+
+          if (!canScroll) {
+            if (this.prevButton) this.prevButton.disabled = true;
+            if (this.nextButton) this.nextButton.disabled = true;
+            return;
+          }
+
+          for (let index = 0; index < count; index += 1) {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'santa-rita-card-slider__dot';
+            dot.setAttribute('aria-label', `Ir al grupo ${index + 1}`);
+            dot.addEventListener('click', () => {
+              this.viewport.scrollTo({ left: index * this.getStep(), behavior: 'smooth' });
+            });
+            this.dotsContainer.append(dot);
+          }
+
+          this.updateState();
+        }
+
+        scrollByPage(direction) {
+          this.viewport.scrollBy({ left: direction * this.getStep(), behavior: 'smooth' });
+        }
+
+        updateState() {
+          const step = this.getStep();
+          const maxScroll = this.getMaxScroll();
+          const maxIndex = Math.max(0, (this.dotsContainer?.children.length || 1) - 1);
+          const activeIndex = Math.max(0, Math.min(maxIndex, Math.round(this.viewport.scrollLeft / step)));
+
+          Array.from(this.dotsContainer?.children || []).forEach((dot, index) => {
+            dot.classList.toggle('is-active', index === activeIndex);
+            dot.setAttribute('aria-current', index === activeIndex ? 'true' : 'false');
+          });
+
+          if (this.prevButton) this.prevButton.disabled = this.viewport.scrollLeft <= 4;
+          if (this.nextButton) this.nextButton.disabled = this.viewport.scrollLeft >= maxScroll - 4;
+        }
+      }
+    );
+  }
+</script>
+
+<style>
+  .santa-rita-card-slider {
+    display: block;
+    background: #fffbf6;
+    color: #21000f;
+  }
+
+  .santa-rita-card-slider--dark {
+    background: #21000f;
+    color: #ffffff;
+  }
+
+  .santa-rita-card-slider__inner {
+    width: min(100% - 48px, 1140px);
+    margin-inline: auto;
+    padding-block: 56px;
+  }
+
+  .santa-rita-card-slider__header {
+    max-width: 760px;
+    margin-bottom: 30px;
+  }
+
+  .santa-rita-card-slider__header h2 {
+    margin: 0 0 8px;
+    font-family: var(--font-heading--family);
+    font-size: clamp(28px, 3vw, 36px);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-card-slider__header p {
+    margin: 0;
+    font-size: 20px;
+    line-height: 1.45;
+  }
+
+  .santa-rita-card-slider__viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    padding: 0 2px 10px;
+  }
+
+  .santa-rita-card-slider__viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .santa-rita-card-slider__track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - var(--sr-card-slider-gap-width, 56px)) / var(--sr-card-slider-columns, 3));
+    column-gap: 28px;
+    align-items: stretch;
+  }
+
+  .santa-rita-card-slider__card {
+    display: grid;
+    align-content: start;
+    align-items: start;
+    grid-template-rows: auto 1fr;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #fdf8f1;
+    color: #21000f;
+    scroll-snap-align: start;
+    box-shadow: 0 10px 10px 0 rgba(140, 26, 62, 0.05);
+  }
+
+  .santa-rita-card-slider--dark .santa-rita-card-slider__card {
+    background: #fffbf6;
+  }
+
+  .santa-rita-card-slider__image,
+  .santa-rita-card-slider__image--placeholder {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1.45 / 1;
+    object-fit: cover;
+  }
+
+  .santa-rita-card-slider--square .santa-rita-card-slider__image,
+  .santa-rita-card-slider--square .santa-rita-card-slider__image--placeholder {
+    aspect-ratio: 1 / 1;
+  }
+
+  .santa-rita-card-slider--portrait .santa-rita-card-slider__image,
+  .santa-rita-card-slider--portrait .santa-rita-card-slider__image--placeholder {
+    aspect-ratio: 4 / 5;
+  }
+
+  .santa-rita-card-slider__image--placeholder {
+    background: #eadfd5;
+    fill: rgba(140, 26, 62, 0.22);
+  }
+
+  .santa-rita-card-slider__body {
+    display: grid;
+    align-self: start;
+    align-content: start;
+    align-items: start;
+    grid-auto-rows: max-content;
+    gap: 10px;
+    padding: 18px;
+  }
+
+  .santa-rita-card-slider__body h3 {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.18;
+    letter-spacing: 0;
+  }
+
+  .santa-rita-card-slider__text {
+    color: #1e0812;
+    font-size: 16px;
+    line-height: 1.45;
+  }
+
+  .santa-rita-card-slider__text p {
+    margin: 0;
+  }
+
+  .santa-rita-card-slider__button {
+    justify-self: start;
+    display: inline-flex;
+    min-height: 30px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background: #8c1a3e;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    padding-inline: 14px;
+    text-decoration: none;
+  }
+
+  .santa-rita-card-slider__controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 28px;
+    margin-top: 18px;
+  }
+
+  .santa-rita-card-slider__controls[hidden] {
+    display: none;
+  }
+
+  .santa-rita-card-slider__dots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .santa-rita-card-slider__dot {
+    width: 8px;
+    height: 8px;
+    cursor: pointer;
+    border: 1px solid #8c1a3e;
+    border-radius: 50%;
+    background: transparent;
+    padding: 0;
+  }
+
+  .santa-rita-card-slider__dot.is-active {
+    background: #8c1a3e;
+  }
+
+  .santa-rita-card-slider__arrows {
+    display: flex;
+    gap: 16px;
+  }
+
+  .santa-rita-card-slider__arrow {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    place-items: center;
+    border: 1px solid rgba(140, 26, 62, 0.45);
+    border-radius: 50%;
+    background: transparent;
+    color: #8c1a3e;
+    padding: 0;
+  }
+
+  .santa-rita-card-slider__arrow svg {
+    width: 32px;
+    height: 20px;
+  }
+
+  .santa-rita-card-slider__arrow:disabled {
+    cursor: default;
+    opacity: 0.45;
+  }
+
+  @media screen and (max-width: 989px) {
+    .santa-rita-card-slider__track {
+      grid-auto-columns: calc((100% - 20px) / 2);
+      column-gap: 20px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-card-slider__inner {
+      width: calc(100% - 40px);
+      padding-block: 36px;
+    }
+
+    .santa-rita-card-slider__header {
+      margin-bottom: 22px;
+    }
+
+    .santa-rita-card-slider__header h2 {
+      font-size: 25px;
+    }
+
+    .santa-rita-card-slider__header p {
+      font-size: 13px;
+    }
+
+    .santa-rita-card-slider__track {
+      grid-auto-columns: 100%;
+      column-gap: 16px;
+    }
+
+    .santa-rita-card-slider__body {
+      padding: 16px;
+    }
+
+    .santa-rita-card-slider__controls {
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .santa-rita-card-slider__dot {
+      width: 6px;
+      height: 6px;
+    }
+
+    .santa-rita-card-slider__arrows {
+      gap: 8px;
+    }
+
+    .santa-rita-card-slider__arrow {
+      width: 32px;
+      height: 32px;
+    }
+
+    .santa-rita-card-slider__arrow svg {
+      width: 18px;
+      height: 12px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "SR slider de tarjetas",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_section",
+      "label": "Mostrar seccion",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Fondo",
+      "default": "light",
+      "options": [
+        {
+          "value": "light",
+          "label": "Claro"
+        },
+        {
+          "value": "dark",
+          "label": "Burdeo"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Titulo",
+      "default": "Nuestros espacios"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Bajada",
+      "default": "Cada rincon esta disenado para transformar momentos especiales en recuerdos eternos."
+    },
+    {
+      "type": "select",
+      "id": "slides_desktop",
+      "label": "Tarjetas visibles en desktop",
+      "default": "3",
+      "options": [
+        {
+          "value": "2",
+          "label": "2 visibles"
+        },
+        {
+          "value": "3",
+          "label": "3 visibles"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Formato de imagen",
+      "default": "wide",
+      "options": [
+        {
+          "value": "wide",
+          "label": "Horizontal"
+        },
+        {
+          "value": "square",
+          "label": "Cuadrada"
+        },
+        {
+          "value": "portrait",
+          "label": "Vertical"
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Tarjeta",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_card",
+          "label": "Mostrar tarjeta",
+          "default": true
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Imagen"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titulo",
+          "default": "Titulo de tarjeta"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "<p>Agrega una descripcion breve para esta tarjeta.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Texto boton"
+        },
+        {
+          "type": "url",
+          "id": "button_url",
+          "label": "Link boton"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SR slider de tarjetas",
+      "blocks": [
+        {
+          "type": "card"
+        },
+        {
+          "type": "card"
+        },
+        {
+          "type": "card"
+        },
+        {
+          "type": "card"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

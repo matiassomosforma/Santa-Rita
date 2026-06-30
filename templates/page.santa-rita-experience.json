@@ -18,6 +18,7 @@
         "heading": "",
         "subheading": "Donde la historia se encuentra con la serenidad del valle.",
         "show_breadcrumbs": true,
+        "breadcrumb_top": 28,
         "desktop_padding_top": 200,
         "desktop_padding_bottom": 200,
         "text_alignment": "center",
@@ -30,7 +31,7 @@
       "type": "santa-rita-page-intro",
       "name": "Contenido con imagen",
       "settings": {
-        "show_section": true,
+        "show_section": false,
         "color_scheme": "light",
         "heading": "Un legado centenario",
         "text": "<p>Fue restaurada y convertida en hotel a mediados de los años noventa. Situado en medio del parque centenario de 40 hectáreas diseñado por el paisajista francés, Guillermo Renner.</p>",
@@ -40,14 +41,14 @@
       }
     },
     "grid_one": {
-      "type": "santa-rita-card-grid",
+      "type": "santa-rita-card-slider",
       "blocks": {
         "card_1": {
           "type": "card",
           "settings": {
             "show_card": true,
             "image": "shopify://shop_images/image_52.png",
-            "title": "El Parque Centenario",
+            "title": "Jardin de Variedades",
             "text": "<p>Diseñado por paisajistas europeos, el parque alberga especies arbóreas traídas de diversos rincones del mundo.</p>",
             "button_label": "",
             "button_url": ""
@@ -58,13 +59,65 @@
           "settings": {
             "show_card": true,
             "image": "shopify://shop_images/image_52.png",
-            "title": "La Capilla",
+            "title": "Jardin de Variedades",
             "text": "<p>Diseñado por paisajistas europeos, el parque alberga especies arbóreas traídas de diversos rincones del mundo.</p>",
             "button_label": "",
             "button_url": ""
           }
         },
         "card_3": {
+          "type": "card",
+          "settings": {
+            "show_card": true,
+            "image": "shopify://shop_images/image_52.png",
+            "title": "Jardin de Variedades",
+            "text": "<p>Salones señoriales, bibliotecas y terrazas cubiertas que invitan a la contemplación. Cada rincón de la casona ha sido preservado para ofrecer el máximo confort sin perder su carácter histórico. </p>",
+            "button_label": "",
+            "button_url": ""
+          }
+        }
+      },
+      "block_order": [
+        "card_1",
+        "card_2",
+        "card_3"
+      ],
+      "name": "Slider de tarjetas",
+      "settings": {
+        "show_section": true,
+        "color_scheme": "light",
+        "heading": "Nuestros espacios",
+        "text": "Cada rincón está diseñado para transformar momentos especiales en recuerdos eternos.",
+        "slides_desktop": "3",
+        "image_ratio": "wide"
+      }
+    },
+    "santa_rita_card_grid_edXbgw": {
+      "type": "santa-rita-card-grid",
+      "blocks": {
+        "card_JKVUEm": {
+          "type": "card",
+          "settings": {
+            "show_card": true,
+            "image": "shopify://shop_images/image_52.png",
+            "title": "El Parque Centenario",
+            "text": "<p>Diseñado por paisajistas europeos, el parque alberga especies arbóreas traídas de diversos rincones del mundo.</p>",
+            "button_label": "",
+            "button_url": ""
+          }
+        },
+        "card_cqjDzi": {
+          "type": "card",
+          "settings": {
+            "show_card": true,
+            "image": "shopify://shop_images/image_52.png",
+            "title": "La Capilla",
+            "text": "<p>Diseñado por paisajistas europeos, el parque alberga especies arbóreas traídas de diversos rincones del mundo.</p>",
+            "button_label": "",
+            "button_url": ""
+          }
+        },
+        "card_8pze7y": {
           "type": "card",
           "settings": {
             "show_card": true,
@@ -77,9 +130,9 @@
         }
       },
       "block_order": [
-        "card_1",
-        "card_2",
-        "card_3"
+        "card_JKVUEm",
+        "card_cqjDzi",
+        "card_8pze7y"
       ],
       "name": "Grilla de tarjetas",
       "settings": {
@@ -246,6 +299,7 @@
     "banner",
     "intro",
     "grid_one",
+    "santa_rita_card_grid_edXbgw",
     "quote",
     "arrival_faq"
   ]
