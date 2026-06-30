@@ -9,6 +9,11 @@
   assign banner_style = section.settings.banner_style | default: 'background'
   assign text_alignment = section.settings.text_alignment | default: 'left'
   assign mobile_text_alignment = section.settings.mobile_text_alignment | default: text_alignment
+  assign is_santa_rita_experience_template = false
+
+  if template.name == 'page' and template.suffix == 'santa-rita-experience'
+    assign is_santa_rita_experience_template = true
+  endif
 
   case text_alignment
     when 'center'
@@ -122,6 +127,10 @@
       <nav class="santa-rita-page-banner__breadcrumbs" aria-label="Breadcrumb">
         <a href="{{ routes.root_url }}">Inicio</a>
         <span aria-hidden="true">&gt;</span>
+        {% if is_santa_rita_experience_template %}
+          <a href="{{ routes.root_url }}pages/turismo">Turismo</a>
+          <span aria-hidden="true">&gt;</span>
+        {% endif %}
         <span>{{ breadcrumb_label }}</span>
       </nav>
     {% endif %}
