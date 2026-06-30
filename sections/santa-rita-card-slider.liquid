@@ -300,10 +300,10 @@
 
   .santa-rita-card-slider__body {
     display: grid;
-    align-self: start;
-    align-content: start;
+    align-self: stretch;
+    align-content: stretch;
     align-items: start;
-    grid-auto-rows: max-content;
+    grid-template-rows: auto minmax(0, 1fr) auto;
     gap: 10px;
     padding: 18px;
   }
@@ -329,6 +329,7 @@
 
   .santa-rita-card-slider__button {
     justify-self: start;
+    align-self: end;
     display: inline-flex;
     min-height: 30px;
     align-items: center;

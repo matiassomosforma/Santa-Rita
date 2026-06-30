@@ -75,12 +75,24 @@
             "button_label": "",
             "button_url": ""
           }
+        },
+        "card_UMXaHa": {
+          "type": "card",
+          "settings": {
+            "show_card": true,
+            "image": "shopify://shop_images/image_52.png",
+            "title": "Jardin de Variedades",
+            "text": "<p>Salones señoriales, bibliotecas y terrazas cubiertas que invitan a la contemplación. Cada rincón de la casona ha sido preservado para ofrecer el máximo confort sin perder su carácter histórico. </p>",
+            "button_label": "",
+            "button_url": ""
+          }
         }
       },
       "block_order": [
         "card_1",
         "card_2",
-        "card_3"
+        "card_3",
+        "card_UMXaHa"
       ],
       "name": "Slider de tarjetas",
       "settings": {
@@ -100,10 +112,10 @@
           "settings": {
             "show_card": true,
             "image": "shopify://shop_images/image_52.png",
-            "title": "El Parque Centenario",
-            "text": "<p>Diseñado por paisajistas europeos, el parque alberga especies arbóreas traídas de diversos rincones del mundo.</p>",
-            "button_label": "",
-            "button_url": ""
+            "title": "Vinos para tu evento",
+            "text": "<p>Encuentra el maridaje perfecto para tu evento.</p>",
+            "button_label": "Consultar",
+            "button_url": "https://google.cl"
           }
         },
         "card_cqjDzi": {
@@ -111,10 +123,10 @@
           "settings": {
             "show_card": true,
             "image": "shopify://shop_images/image_52.png",
-            "title": "La Capilla",
-            "text": "<p>Diseñado por paisajistas europeos, el parque alberga especies arbóreas traídas de diversos rincones del mundo.</p>",
-            "button_label": "",
-            "button_url": ""
+            "title": "Eventos Corporativos",
+            "text": "<p>Un ambiente distinguido para eventos corporativos y cumpleaños. </p>",
+            "button_label": "Consultar",
+            "button_url": "#"
           }
         },
         "card_8pze7y": {
@@ -122,10 +134,10 @@
           "settings": {
             "show_card": true,
             "image": "shopify://shop_images/image_52.png",
-            "title": "Instalaciones",
-            "text": "<p>Salones señoriales, bibliotecas y terrazas cubiertas que invitan a la contemplación. Cada rincón de la casona ha sido preservado para ofrecer el máximo confort sin perder su carácter histórico. </p>",
-            "button_label": "",
-            "button_url": ""
+            "title": "Matrimonios en Viña Santa Rita",
+            "text": "<p>Romance y sostificación en un entorno histórico. </p>",
+            "button_label": "Consultar",
+            "button_url": "#"
           }
         }
       },
@@ -152,10 +164,10 @@
         "color_scheme": "light",
         "show_icon": true,
         "heading": "Experiencias y Programas",
-        "text": "<p>Te invitamos a conocer más en detalle nuestras exclusivas instalaciones y la diversidad de programas diseñados para sumergirse en la historia y el confort de nuestra casona. </p>",
-        "author": "",
-        "button_label": "Descubre más",
-        "button_url": "shopify://metaobjects/tour/tour-clasico"
+        "text": "<p><em>“La luz del atardecer en los jardines de Santa Rita hizo de nuestro matrimonio algo verdaderamente mágico.”</em></p>",
+        "author": "MARÍA & SEBASTIÁN",
+        "button_label": "",
+        "button_url": ""
       }
     },
     "arrival_faq": {
