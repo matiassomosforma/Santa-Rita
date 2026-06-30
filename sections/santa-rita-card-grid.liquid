@@ -92,7 +92,7 @@
   .santa-rita-card-grid__header h2 {
     margin: 0 0 8px;
     font-family: var(--font-heading--family);
-    font-size: clamp(28px, 3vw, 40px);
+    font-size: clamp(28px, 3vw, 36px);
     font-weight: 700;
     line-height: 1.08;
     letter-spacing: 0;
@@ -100,7 +100,7 @@
 
   .santa-rita-card-grid__header p {
     margin: 0;
-    font-size: 16px;
+    font-size: 20px;
     line-height: 1.45;
   }
 
@@ -112,8 +112,11 @@
 
   .santa-rita-card-grid__card {
     display: grid;
+    align-content: start;
+    align-items: start;
+    grid-template-rows: auto 1fr;
     overflow: hidden;
-    border-radius: 4px;
+    border-radius: 8px;
     background: #fdf8f1;
     color: #21000f;
     box-shadow: 0 10px 10px 0 rgba(140, 26, 62, 0.05);
@@ -148,6 +151,10 @@
 
   .santa-rita-card-grid__body {
     display: grid;
+    align-self: start;
+    align-content: start;
+    align-items: start;
+    grid-auto-rows: max-content;
     gap: 10px;
     padding: 18px;
   }
@@ -155,7 +162,7 @@
   .santa-rita-card-grid__body h3 {
     margin: 0;
     font-family: var(--font-heading--family);
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
     line-height: 1.18;
     letter-spacing: 0;
@@ -163,7 +170,7 @@
 
   .santa-rita-card-grid__text {
     color: #1e0812;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.45;
   }
 

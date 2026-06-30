@@ -1,4 +1,6 @@
 {% liquid
+  assign banner_video = section.settings.desktop_video | default: section.settings.mobile_video
+  assign mobile_video = section.settings.mobile_video | default: banner_video
   assign banner_image = section.settings.desktop_image | default: section.settings.mobile_image
   assign mobile_image = section.settings.mobile_image | default: banner_image
   assign banner_title = section.settings.heading | default: page.title
@@ -51,7 +53,35 @@
   {{ section.shopify_attributes }}
 >
   {% capture banner_media %}
-    {% if banner_image != blank %}
+    {% if banner_video != blank %}
+      <div class="santa-rita-page-banner__video-wrapper{% if mobile_video != blank and mobile_video != banner_video %} santa-rita-page-banner__video-wrapper--has-mobile{% endif %}">
+        {% if mobile_video != blank and mobile_video != banner_video %}
+          {{
+            mobile_video
+            | video_tag:
+              image_size: '1200x',
+              autoplay: true,
+              loop: true,
+              controls: false,
+              muted: true,
+              playsinline: true,
+              class: 'santa-rita-page-banner__video santa-rita-page-banner__video--mobile'
+          }}
+        {% endif %}
+
+        {{
+          banner_video
+          | video_tag:
+            image_size: '2200x',
+            autoplay: true,
+            loop: true,
+            controls: false,
+            muted: true,
+            playsinline: true,
+            class: 'santa-rita-page-banner__video santa-rita-page-banner__video--desktop'
+        }}
+      </div>
+    {% elsif banner_image != blank %}
       <picture class="santa-rita-page-banner__picture">
         {% if mobile_image != blank %}
           <source
@@ -127,6 +157,8 @@
   }
 
   .santa-rita-page-banner__picture,
+  .santa-rita-page-banner__video-wrapper,
+  .santa-rita-page-banner__video,
   .santa-rita-page-banner__image,
   .santa-rita-page-banner__image--placeholder {
     position: absolute;
@@ -134,6 +166,15 @@
     display: block;
     width: 100%;
     height: 100%;
+  }
+
+  .santa-rita-page-banner__video {
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .santa-rita-page-banner__video--mobile {
+    display: none;
   }
 
   .santa-rita-page-banner__image {
@@ -258,6 +299,8 @@
   }
 
   .santa-rita-page-banner--split .santa-rita-page-banner__picture,
+  .santa-rita-page-banner--split .santa-rita-page-banner__video-wrapper,
+  .santa-rita-page-banner--split .santa-rita-page-banner__video,
   .santa-rita-page-banner--split .santa-rita-page-banner__image,
   .santa-rita-page-banner--split .santa-rita-page-banner__image--placeholder {
     position: static;
@@ -270,7 +313,14 @@
     border-radius: 8px;
   }
 
+  .santa-rita-page-banner--split .santa-rita-page-banner__video-wrapper {
+    aspect-ratio: 2.28 / 1;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
   .santa-rita-page-banner--split .santa-rita-page-banner__image,
+  .santa-rita-page-banner--split .santa-rita-page-banner__video,
   .santa-rita-page-banner--split .santa-rita-page-banner__image--placeholder {
     height: 100%;
     object-fit: cover;
@@ -284,6 +334,14 @@
 
     .santa-rita-page-banner__image {
       object-position: center;
+    }
+
+    .santa-rita-page-banner__video-wrapper--has-mobile .santa-rita-page-banner__video--desktop {
+      display: none;
+    }
+
+    .santa-rita-page-banner__video--mobile {
+      display: block;
     }
 
     .santa-rita-page-banner__overlay {
@@ -386,6 +444,18 @@
         }
       ],
       "default": "background"
+    },
+    {
+      "type": "video",
+      "id": "desktop_video",
+      "label": "Video desktop",
+      "info": "Si agregas video, se mostrara antes que la imagen. Se reproduce automaticamente, en loop y sin sonido."
+    },
+    {
+      "type": "video",
+      "id": "mobile_video",
+      "label": "Video mobile",
+      "info": "Opcional. Si queda vacio se usara el video desktop."
     },
     {
       "type": "image_picker",

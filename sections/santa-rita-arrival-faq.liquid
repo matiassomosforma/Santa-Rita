@@ -25,7 +25,7 @@
               {% for block in transport_blocks %}
                 {% if block.settings.show_block %}
                   <article
-                    class="santa-rita-arrival-faq__transport"
+                    class="santa-rita-arrival-faq__transport{% if block.settings.icon_image != blank %} santa-rita-arrival-faq__transport--has-icon{% endif %}"
                     style="--sr-transport-bg: {{ block.settings.accent_background }}; --sr-transport-text: {{ block.settings.accent_text }};"
                     {{ block.shopify_attributes }}
                   >
@@ -48,7 +48,12 @@
                     {% endif %}
 
                     {% if block.settings.time != blank %}
-                      <p>{{ block.settings.time }}</p>
+                      <p>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                        {{ block.settings.time }}
+                      </p>
                     {% endif %}
                   </article>
                 {% endif %}
@@ -77,17 +82,22 @@
               </div>
 
               <div class="santa-rita-arrival-faq__map-info">
-                {% if section.settings.map_heading != blank %}
-                  <h3>{{ section.settings.map_heading }}</h3>
-                {% endif %}
+                <div class="santa-rita-arrival-faq__map-info-header">
+                  {% if section.settings.map_heading != blank %}
+                    <h3>{{ section.settings.map_heading }}</h3>
+                  {% endif %}
 
-                {% if section.settings.map_text != blank %}
-                  <p>{{ section.settings.map_text }}</p>
-                {% endif %}
+                  {% if section.settings.map_text != blank %}
+                    <p>{{ section.settings.map_text }}</p>
+                  {% endif %}
+                </div>
 
                 {% if section.settings.map_link != blank %}
                   <a href="{{ section.settings.map_link }}" target="_blank" rel="noopener">
                     {{ section.settings.map_link_label }}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+                    </svg>
                   </a>
                 {% endif %}
               </div>
@@ -134,7 +144,7 @@
 <style>
   .santa-rita-arrival-faq {
     display: block;
-    background: #fffbf6;
+    background: #fff7f1;
     color: #21000f;
   }
 
@@ -144,15 +154,15 @@
   }
 
   .santa-rita-arrival-faq__arrival {
-    background: #fffbf6;
+    background: #fff7f1;
   }
 
   .santa-rita-arrival-faq__arrival .santa-rita-arrival-faq__inner {
-    padding-block: 52px;
+    padding-block: 56px;
   }
 
   .santa-rita-arrival-faq__heading {
-    margin-bottom: 26px;
+    margin-bottom: 35px;
   }
 
   .santa-rita-arrival-faq__heading h2 {
@@ -166,142 +176,181 @@
 
   .santa-rita-arrival-faq__heading p {
     margin: 0;
-    font-size: 16px;
+    color: #1e0814;
+    font-size: 20px;
     line-height: 1.45;
   }
 
   .santa-rita-arrival-faq__transport-grid {
     display: grid;
     grid-template-columns: repeat(var(--sr-transport-columns, 4), minmax(0, 1fr));
-    gap: 18px;
-    margin-bottom: 24px;
+    gap: 25px;
+    margin-bottom: 28px;
   }
 
   .santa-rita-arrival-faq__transport {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 10px;
-    align-items: center;
-    min-height: 74px;
-    border-radius: 4px;
+    border-radius: 6px;
     background: #ffffff;
-    padding: 14px;
+    padding: 18px;
+    box-shadow: 0 4px 18px rgba(140, 26, 62, 0.06);
   }
 
   .santa-rita-arrival-faq__transport-icon {
     display: grid;
-    width: 34px;
-    height: 34px;
+    width: 60px;
+    height: 60px;
     place-items: center;
     border-radius: 50%;
-    background: var(--sr-transport-bg, #f8e8dd);
+    background: var(--sr-transport-bg, #fceadd);
+    overflow: hidden;
   }
 
   .santa-rita-arrival-faq__transport-icon-image {
-    width: 18px;
-    height: 18px;
+    display: block;
+    width: 30px;
+    height: 30px;
     object-fit: contain;
   }
 
   .santa-rita-arrival-faq__transport h3 {
-    margin: 0;
+    margin: 0 0 15px;
+    color: #2b1e1e;
     font-family: var(--font-heading--family);
-    font-size: 15px;
+    font-size: 18px;
+    line-height: 1.2;
+    letter-spacing: 0;
     font-weight: 700;
-    line-height: 1.1;
+  }
+
+  .santa-rita-arrival-faq__transport--has-icon h3 {
+    margin-top: 14px;
   }
 
   .santa-rita-arrival-faq__transport p {
     display: inline-flex;
-    grid-column: 2;
-    justify-self: start;
+    min-height: 22px;
+    align-items: center;
+    gap: 4px;
     margin: 0;
     border-radius: 999px;
-    background: var(--sr-transport-bg, #f8e8dd);
+    background: var(--sr-transport-bg, #fceadd);
     color: var(--sr-transport-text, #8c1a3e);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     line-height: 1;
     padding: 4px 8px;
   }
 
+  .santa-rita-arrival-faq__transport p svg {
+    width: 13px;
+    height: 13px;
+    flex: 0 0 13px;
+  }
+
   .santa-rita-arrival-faq__map {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(260px, 420px);
+    grid-template-columns: repeat(2, 1fr);
     overflow: hidden;
-    border-radius: 4px;
+    border-radius: 8px;
     background: #ffffff;
+    box-shadow: 0 4px 18px rgba(140, 26, 62, 0.08);
   }
 
-  .santa-rita-arrival-faq__map-media,
-  .santa-rita-arrival-faq__map-media iframe,
-  .santa-rita-arrival-faq__map-image,
-  .santa-rita-arrival-faq__map-image--placeholder {
+  .santa-rita-arrival-faq__map-media {
     display: block;
     width: 100%;
-    min-height: 210px;
+    min-height: 180px;
+    background: #eadfd5;
   }
 
-  .santa-rita-arrival-faq__map-media iframe,
-  .santa-rita-arrival-faq__map-image {
+  .santa-rita-arrival-faq__map-media iframe {
+    display: block;
+    width: 100%;
     height: 100%;
+    min-height: 220px;
+    border: 0;
+  }
+
+  .santa-rita-arrival-faq__map-image {
+    width: 100%;
+    height: 100%;
+    min-height: 180px;
     object-fit: cover;
   }
 
   .santa-rita-arrival-faq__map-image--placeholder {
-    background: #dff2ed;
-    fill: rgba(140, 26, 62, 0.2);
+    display: block;
+    background: #eadfd5;
+    fill: rgba(140, 26, 62, 0.22);
   }
 
   .santa-rita-arrival-faq__map-info {
-    display: grid;
-    align-content: center;
-    gap: 8px;
-    padding: 26px;
+    align-self: center;
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 28px;
+  }
+
+  .santa-rita-arrival-faq__map-info-header {
+    flex: 0 0 180px;
   }
 
   .santa-rita-arrival-faq__map-info h3 {
-    margin: 0;
+    margin: 0 0 8px;
     font-family: var(--font-heading--family);
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
-    line-height: 1.15;
+    letter-spacing: 0;
   }
 
   .santa-rita-arrival-faq__map-info p {
     margin: 0;
-    font-size: 14px;
-    line-height: 1.35;
+    color: #000000;
+    font-size: 16px;
+    line-height: 1.4;
   }
 
   .santa-rita-arrival-faq__map-info a {
-    justify-self: start;
     display: inline-flex;
-    min-height: 30px;
+    width: auto;
+    height: 35px;
+    min-height: 25px;
     align-items: center;
-    justify-content: center;
-    margin-top: 8px;
     border-radius: 4px;
     background: #8c1a3e;
     color: #ffffff;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 1;
+    font-size: 14px;
+    font-weight: 500;
     padding-inline: 14px;
     text-decoration: none;
+    transition: all .3s ease;
+  }
+
+  .santa-rita-arrival-faq__map-info a:hover {
+    background: #811739;
+  }
+
+  .santa-rita-arrival-faq__map-info a svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    transform: rotate(-45deg);
   }
 
   .santa-rita-arrival-faq__faq {
-    background: #21000f;
+    background: #1e0812;
     color: #ffffff;
   }
 
   .santa-rita-arrival-faq__faq .santa-rita-arrival-faq__inner {
-    padding-block: 52px;
+    padding-block: 52px 62px;
   }
 
   .santa-rita-arrival-faq__faq .santa-rita-arrival-faq__heading p {
-    color: rgba(255, 255, 255, 0.78);
+    color: #ffffff;
   }
 
   .santa-rita-arrival-faq__items {
@@ -309,23 +358,28 @@
   }
 
   .santa-rita-arrival-faq__item {
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  .santa-rita-arrival-faq__item:first-child {
+    border-top: none;
   }
 
   .santa-rita-arrival-faq__item:last-child {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
   }
 
   .santa-rita-arrival-faq__item summary {
     display: flex;
+    min-height: 58px;
     cursor: pointer;
+    list-style: none;
     align-items: center;
     justify-content: space-between;
-    gap: 18px;
-    padding-block: 17px;
-    font-size: 15px;
-    line-height: 1.35;
-    list-style: none;
+    gap: 20px;
+    color: #ffffff;
+    font-size: 20px;
+    line-height: 1.25;
   }
 
   .santa-rita-arrival-faq__item summary::-webkit-details-marker {
@@ -338,14 +392,16 @@
 
   .santa-rita-arrival-faq__item div {
     max-width: 760px;
-    padding-bottom: 18px;
-    color: rgba(255, 255, 255, 0.78);
-    font-size: 14px;
+    padding-bottom: 22px;
+    color: rgba(255, 255, 255, 0.76);
+    font-size: 13px;
     line-height: 1.45;
   }
 
   .santa-rita-arrival-faq__item div p {
     margin: 0;
+    color: #ffffff;
+    font-size: 16px;
   }
 
   @media screen and (max-width: 989px) {
@@ -360,42 +416,139 @@
 
   @media screen and (max-width: 749px) {
     .santa-rita-arrival-faq__inner {
-      width: calc(100% - 40px);
+      width: calc(100% - 24px);
     }
 
-    .santa-rita-arrival-faq__arrival .santa-rita-arrival-faq__inner,
-    .santa-rita-arrival-faq__faq .santa-rita-arrival-faq__inner {
-      padding-block: 36px;
+    .santa-rita-arrival-faq__arrival .santa-rita-arrival-faq__inner {
+      padding-block: 28px 30px;
+    }
+
+    .santa-rita-arrival-faq__heading {
+      margin-bottom: 16px;
     }
 
     .santa-rita-arrival-faq__heading h2 {
-      font-size: 25px;
+      margin-bottom: 6px;
+      font-size: 24px;
+      line-height: 1.05;
     }
 
     .santa-rita-arrival-faq__heading p {
-      font-size: 13px;
+      max-width: 290px;
+      font-size: 12px;
+      line-height: 1.25;
     }
 
     .santa-rita-arrival-faq__transport-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .santa-rita-arrival-faq__transport-grid .santa-rita-arrival-faq__transport:nth-child(3) {
+      order: 4;
+    }
+
+    .santa-rita-arrival-faq__transport-grid .santa-rita-arrival-faq__transport:nth-child(4) {
+      order: 3;
     }
 
     .santa-rita-arrival-faq__transport {
-      min-height: 68px;
-      padding: 10px;
+      position: relative;
+      min-height: 128px;
+      padding: 14px 12px;
+      border-radius: 6px;
+    }
+
+    .santa-rita-arrival-faq__transport::after {
+      content: '>';
+      position: absolute;
+      right: 12px;
+      bottom: 13px;
+      color: #21000f;
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .santa-rita-arrival-faq__transport-icon {
+      width: 34px;
+      height: 34px;
+    }
+
+    .santa-rita-arrival-faq__transport-icon-image {
+      width: 18px;
+      height: 18px;
     }
 
     .santa-rita-arrival-faq__transport h3 {
-      font-size: 12px;
+      max-width: 92px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      line-height: 1.08;
+    }
+
+    .santa-rita-arrival-faq__transport--has-icon h3 {
+      margin-top: 11px;
     }
 
     .santa-rita-arrival-faq__transport p {
-      font-size: 10px;
+      min-height: 18px;
+      gap: 3px;
+      font-size: 9px;
+      padding: 3px 6px;
+    }
+
+    .santa-rita-arrival-faq__transport p svg {
+      width: 10px;
+      height: 10px;
+      flex-basis: 10px;
+    }
+
+    .santa-rita-arrival-faq__map {
+      grid-template-columns: 1fr;
+      border-radius: 6px;
+    }
+
+    .santa-rita-arrival-faq__map-media,
+    .santa-rita-arrival-faq__map-media iframe,
+    .santa-rita-arrival-faq__map-image {
+      min-height: 156px;
     }
 
     .santa-rita-arrival-faq__map-info {
-      padding: 20px;
+      display: block;
+      padding: 14px 14px 16px;
+    }
+
+    .santa-rita-arrival-faq__map-info-header {
+      flex-basis: auto;
+    }
+
+    .santa-rita-arrival-faq__map-info h3 {
+      margin-bottom: 5px;
+      font-size: 15px;
+      line-height: 1.15;
+    }
+
+    .santa-rita-arrival-faq__map-info p {
+      margin-bottom: 12px;
+      font-size: 10px;
+      line-height: 1.35;
+    }
+
+    .santa-rita-arrival-faq__map-info a {
+      width: 100%;
+      height: auto;
+      min-height: 30px;
+      justify-content: space-between;
+      font-size: 10px;
+      padding-inline: 12px;
+    }
+
+    .santa-rita-arrival-faq__map-info a svg {
+      width: 14px;
+      height: 14px;
+      flex-basis: 14px;
     }
 
     .santa-rita-arrival-faq__item summary {
@@ -536,7 +689,7 @@
           "type": "color",
           "id": "accent_background",
           "label": "Fondo etiqueta",
-          "default": "#f8e8dd"
+          "default": "#fceadd"
         },
         {
           "type": "color",

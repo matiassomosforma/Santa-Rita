@@ -15,7 +15,7 @@
       "settings": {
         "banner_style": "background",
         "heading": "",
-        "subheading": "",
+        "subheading": "Donde la historia se encuentra con la serenidad del valle.",
         "show_breadcrumbs": true,
         "desktop_padding_top": 28,
         "desktop_padding_bottom": 144,
@@ -32,8 +32,9 @@
         "show_section": true,
         "color_scheme": "light",
         "heading": "Un legado centenario",
-        "text": "<p>Agrega una descripcion para presentar esta experiencia, espacio o servicio.</p>",
+        "text": "<p>Fue restaurada y convertida en hotel a mediados de los años noventa. Situado en medio del parque centenario de 40 hectáreas diseñado por el paisajista francés, Guillermo Renner.</p>",
         "show_image": true,
+        "image": "shopify://shop_images/Frame_8582.png",
         "image_position": "right"
       }
     },
@@ -44,37 +45,47 @@
           "type": "card",
           "settings": {
             "show_card": true,
-            "title": "Titulo de tarjeta",
-            "text": "<p>Agrega una descripcion breve para esta tarjeta.</p>",
-            "button_label": ""
+            "image": "shopify://shop_images/image_52.png",
+            "title": "El Parque Centenario",
+            "text": "<p>Diseñado por paisajistas europeos, el parque alberga especies arbóreas traídas de diversos rincones del mundo.</p>",
+            "button_label": "",
+            "button_url": ""
           }
         },
         "card_2": {
           "type": "card",
           "settings": {
             "show_card": true,
-            "title": "Titulo de tarjeta",
-            "text": "<p>Agrega una descripcion breve para esta tarjeta.</p>",
-            "button_label": ""
+            "image": "shopify://shop_images/image_52.png",
+            "title": "La Capilla",
+            "text": "<p>Diseñado por paisajistas europeos, el parque alberga especies arbóreas traídas de diversos rincones del mundo.</p>",
+            "button_label": "",
+            "button_url": ""
           }
         },
         "card_3": {
           "type": "card",
           "settings": {
             "show_card": true,
-            "title": "Titulo de tarjeta",
-            "text": "<p>Agrega una descripcion breve para esta tarjeta.</p>",
-            "button_label": ""
+            "image": "shopify://shop_images/image_52.png",
+            "title": "Instalaciones",
+            "text": "<p>Salones señoriales, bibliotecas y terrazas cubiertas que invitan a la contemplación. Cada rincón de la casona ha sido preservado para ofrecer el máximo confort sin perder su carácter histórico. </p>",
+            "button_label": "",
+            "button_url": ""
           }
         }
       },
-      "block_order": ["card_1", "card_2", "card_3"],
+      "block_order": [
+        "card_1",
+        "card_2",
+        "card_3"
+      ],
       "name": "Grilla de tarjetas",
       "settings": {
         "show_section": true,
         "color_scheme": "dark",
         "heading": "Espacios singulares",
-        "text": "Edita los contenidos y decide cuantas tarjetas se ven por fila.",
+        "text": "El día, la noche, y un vino de Viña Santa Rita está por abrirse.",
         "columns_desktop": "3",
         "image_ratio": "wide"
       }
@@ -87,9 +98,10 @@
         "color_scheme": "light",
         "show_icon": true,
         "heading": "Experiencias y Programas",
-        "text": "<p>Agrega una cita, mensaje destacado o llamado a la accion.</p>",
+        "text": "<p>Te invitamos a conocer más en detalle nuestras exclusivas instalaciones y la diversidad de programas diseñados para sumergirse en la historia y el confort de nuestra casona. </p>",
         "author": "",
-        "button_label": ""
+        "button_label": "Descubre más",
+        "button_url": "shopify://metaobjects/tour/tour-clasico"
       }
     },
     "arrival_faq": {
@@ -99,7 +111,8 @@
           "type": "transport",
           "settings": {
             "show_block": true,
-            "accent_background": "#f8e8dd",
+            "icon_image": "shopify://shop_images/automovil.png",
+            "accent_background": "#fceadd",
             "accent_text": "#8c1a3e",
             "title": "Automovil particular",
             "time": "1 hora"
@@ -109,8 +122,9 @@
           "type": "transport",
           "settings": {
             "show_block": true,
+            "icon_image": "shopify://shop_images/metro.png",
             "accent_background": "#8c1a3e",
-            "accent_text": "#f8e8dd",
+            "accent_text": "#fceadd",
             "title": "Metro + Taxi colectivo",
             "time": "45 min"
           }
@@ -119,9 +133,10 @@
           "type": "transport",
           "settings": {
             "show_block": true,
-            "accent_background": "#f8e8dd",
+            "icon_image": "shopify://shop_images/bus.png",
+            "accent_background": "#fceadd",
             "accent_text": "#8c1a3e",
-            "title": "Bus",
+            "title": "Bus MB81",
             "time": "1 hora"
           }
         },
@@ -129,8 +144,9 @@
           "type": "transport",
           "settings": {
             "show_block": true,
+            "icon_image": "shopify://shop_images/privado.png",
             "accent_background": "#8c1a3e",
-            "accent_text": "#f8e8dd",
+            "accent_text": "#fceadd",
             "title": "Transporte privado",
             "time": "40 min"
           }
@@ -139,7 +155,7 @@
           "type": "faq",
           "settings": {
             "show_block": true,
-            "question": "Pregunta frecuente",
+            "question": "¿En qué idiomas están disponibles los tours?",
             "answer": "<p>Agrega la respuesta desde el editor.</p>"
           }
         },
@@ -147,12 +163,64 @@
           "type": "faq",
           "settings": {
             "show_block": true,
-            "question": "Pregunta frecuente",
+            "question": "¿Se permiten mascotas en la Viña Santa Rita?",
+            "answer": "<p>Agrega la respuesta desde el editor.</p>"
+          }
+        },
+        "faq_DT6trH": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿Hay algún restaurante para almorzar en la viña?",
+            "answer": "<p>Agrega la respuesta desde el editor.</p>"
+          }
+        },
+        "faq_QrEgNQ": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿La Viña es accesible para personas con movilidad reducida?",
+            "answer": "<p>Agrega la respuesta desde el editor.</p>"
+          }
+        },
+        "faq_EAGqdY": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿Cómo puedo ingresar al Museo Andino y cuál es su costo?",
+            "answer": "<p>Agrega la respuesta desde el editor.</p>"
+          }
+        },
+        "faq_9qY4xB": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿Puedo comprar los tours directamente en la viña o solo online?",
+            "answer": "<p>Agrega la respuesta desde el editor.</p>"
+          }
+        },
+        "faq_dA9p76": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿Existe alguna tienda para comprar vinos y recuerdos en la Viña?",
             "answer": "<p>Agrega la respuesta desde el editor.</p>"
           }
         }
       },
-      "block_order": ["transport_1", "transport_2", "transport_3", "transport_4", "faq_1", "faq_2"],
+      "block_order": [
+        "transport_1",
+        "transport_2",
+        "transport_3",
+        "transport_4",
+        "faq_1",
+        "faq_2",
+        "faq_DT6trH",
+        "faq_QrEgNQ",
+        "faq_EAGqdY",
+        "faq_9qY4xB",
+        "faq_dA9p76"
+      ],
       "name": "Llegada y FAQ",
       "settings": {
         "show_section": true,
@@ -162,14 +230,22 @@
         "show_transport": true,
         "transport_columns": "4",
         "show_map": true,
+        "map_embed_code": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25538.227778230797!2d-70.84968780314513!3d-33.55943744041927!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662e7a3e4cc8645%3A0x3fc1f219246d5d9c!2sLa%20Primavera%2C%20Padre%20Hurtado%2C%20Regi%C3%B3n%20Metropolitana!5e1!3m2!1ses!2scl!4v1782054866504!5m2!1ses!2scl\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>",
         "map_heading": "Vina Santa Rita",
         "map_text": "Camino Padre Hurtado 0695, Alto Jahuel",
+        "map_link": "https://www.google.com/maps?ll=-33.55692,-70.840971&z=12&t=h&hl=es&gl=CL&mapclient=embed&q=La+Primavera+Padre+Hurtado+Regi%C3%B3n+Metropolitana",
         "map_link_label": "Ir a Google Maps",
         "show_faq": true,
         "faq_heading": "Preguntas frecuentes",
-        "faq_text": "Todo lo que necesitas saber."
+        "faq_text": "Todo lo que necesitas saber sobre Tour Vina Santa Rita."
       }
     }
   },
-  "order": ["banner", "intro", "grid_one", "quote", "arrival_faq"]
+  "order": [
+    "banner",
+    "intro",
+    "grid_one",
+    "quote",
+    "arrival_faq"
+  ]
 }
