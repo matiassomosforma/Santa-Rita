@@ -1,5 +1,33 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
+    "santa_rita_page_banner_iLDtca": {
+      "type": "santa-rita-page-banner",
+      "name": "Banner de pagina",
+      "settings": {
+        "banner_style": "background",
+        "desktop_image": "shopify://shop_images/corina-rainer-sScNrKruEPs-unsplash_1.png",
+        "mobile_image": "shopify://shop_images/404-mobile.png",
+        "heading": "Estamos para ayudarte",
+        "subheading": "Escríbenos a través del formulario y te contactaremos a la brevedad.",
+        "show_breadcrumbs": true,
+        "breadcrumb_top": 28,
+        "desktop_padding_top": 56,
+        "desktop_padding_bottom": 116,
+        "text_alignment": "left",
+        "mobile_padding_top": 160,
+        "mobile_padding_bottom": 46,
+        "mobile_text_alignment": "left"
+      }
+    },
     "contact_tabs": {
       "type": "santa-rita-contact-tabs",
       "blocks": {
@@ -97,7 +125,7 @@
         "faq_delivery_3"
       ],
       "settings": {
-        "accent_color": "#8C1A3E",
+        "accent_color": "#8c1a3e",
         "contact_tab_label": "Contacto",
         "faq_tab_label": "Preguntas Frecuentes",
         "form_heading": "Formulario de Contacto",
@@ -126,6 +154,7 @@
     }
   },
   "order": [
+    "santa_rita_page_banner_iLDtca",
     "contact_tabs"
   ]
 }

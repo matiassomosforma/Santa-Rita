@@ -13,20 +13,7 @@
   "sections": {
     "santa_rita_footer": {
       "type": "santa-rita-footer",
-      "settings": {
-        "newsletter_heading": "NEWSLETTER",
-        "newsletter_text": "Recibe las mejores ofertas y promociones",
-        "newsletter_button": "SUSCRIBIR",
-        "categories_heading": "CATEGORÍAS",
-        "categories_menu": "",
-        "info_heading": "INFORMACIÓN",
-        "info_menu": "footer-informaci-n",
-        "contact_heading": "CONTACTO",
-        "contact_menu": "",
-        "copyright_text": "© 2026 Viña Santa Rita S.A | Diseño y desarrollo por",
-        "partner_label": "Moovmedia Group",
-        "partner_link": "https://www.moovmedia.cl/"
-      }
+      "settings": {}
     }
   },
   "order": [

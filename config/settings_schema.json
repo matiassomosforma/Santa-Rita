@@ -2380,5 +2380,109 @@
         "default": "equal-width-buttons"
       }
     ]
+  },
+  {
+    "name": "Santa Rita footer",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Newsletter"
+      },
+      {
+        "type": "text",
+        "id": "santa_rita_footer_newsletter_heading",
+        "label": "Título newsletter",
+        "default": "NEWSLETTER"
+      },
+      {
+        "type": "text",
+        "id": "santa_rita_footer_newsletter_text",
+        "label": "Texto newsletter",
+        "default": "Recibe las mejores ofertas y promociones"
+      },
+      {
+        "type": "text",
+        "id": "santa_rita_footer_newsletter_placeholder",
+        "label": "Placeholder email",
+        "default": "Correo electrónico"
+      },
+      {
+        "type": "text",
+        "id": "santa_rita_footer_newsletter_button",
+        "label": "Texto botón newsletter",
+        "default": "SUSCRIBIR"
+      },
+      {
+        "type": "header",
+        "content": "Columna categorías"
+      },
+      {
+        "type": "text",
+        "id": "santa_rita_footer_categories_heading",
+        "label": "Título categorías",
+        "default": "CATEGORÍAS"
+      },
+      {
+        "type": "link_list",
+        "id": "santa_rita_footer_categories_menu",
+        "label": "Menú categorías"
+      },
+      {
+        "type": "header",
+        "content": "Columna información"
+      },
+      {
+        "type": "text",
+        "id": "santa_rita_footer_info_heading",
+        "label": "Título información",
+        "default": "INFORMACIÓN"
+      },
+      {
+        "type": "link_list",
+        "id": "santa_rita_footer_info_menu",
+        "label": "Menú información"
+      },
+      {
+        "type": "header",
+        "content": "Columna contacto"
+      },
+      {
+        "type": "text",
+        "id": "santa_rita_footer_contact_heading",
+        "label": "Título contacto",
+        "default": "CONTACTO"
+      },
+      {
+        "type": "link_list",
+        "id": "santa_rita_footer_contact_menu",
+        "label": "Menú contacto"
+      },
+      {
+        "type": "header",
+        "content": "Legal y créditos"
+      },
+      {
+        "type": "link_list",
+        "id": "santa_rita_footer_legal_menu",
+        "label": "Menú legal"
+      },
+      {
+        "type": "text",
+        "id": "santa_rita_footer_copyright_text",
+        "label": "Copyright",
+        "default": "© 2026 Viña Santa Rita S.A | Diseño y desarrollo por"
+      },
+      {
+        "type": "text",
+        "id": "santa_rita_footer_partner_label",
+        "label": "Texto enlace partner",
+        "default": "Moovmedia Group"
+      },
+      {
+        "type": "url",
+        "id": "santa_rita_footer_partner_link",
+        "label": "Enlace partner"
+      }
+    ]
   }
 ]
