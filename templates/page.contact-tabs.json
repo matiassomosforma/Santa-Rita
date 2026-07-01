@@ -1,0 +1,134 @@
+{
+  "sections": {
+    "contact_tabs": {
+      "type": "santa-rita-contact-tabs",
+      "blocks": {
+        "faq_online_1": {
+          "type": "faq",
+          "settings": {
+            "group": "Santa Rita Online",
+            "question": "¿Qué es SantaRitaOnline.com?",
+            "answer": "<p>Es la tienda online oficial de Santa Rita.</p>"
+          }
+        },
+        "faq_online_2": {
+          "type": "faq",
+          "settings": {
+            "group": "Santa Rita Online",
+            "question": "¿En qué consiste la sección “Saldos”?",
+            "answer": "<p>Es una selección de productos con disponibilidad u ofertas especiales.</p>"
+          }
+        },
+        "faq_online_3": {
+          "type": "faq",
+          "settings": {
+            "group": "Santa Rita Online",
+            "question": "¿Puedo comprar en todo Chile?",
+            "answer": "<p>La cobertura depende de las zonas de despacho disponibles al momento de la compra.</p>"
+          }
+        },
+        "faq_online_4": {
+          "type": "faq",
+          "settings": {
+            "group": "Santa Rita Online",
+            "question": "¿Puedo comprar desde el extranjero?",
+            "answer": "<p>La compra y despacho se gestionan según las condiciones disponibles para Chile.</p>"
+          }
+        },
+        "faq_orders_1": {
+          "type": "faq",
+          "settings": {
+            "group": "Pedidos",
+            "question": "¿Hay un monto mínimo de compra?",
+            "answer": "<p>El monto mínimo puede variar según promociones y condiciones comerciales vigentes.</p>"
+          }
+        },
+        "faq_orders_2": {
+          "type": "faq",
+          "settings": {
+            "group": "Pedidos",
+            "question": "¿Cuáles son las condiciones completas para comprar?",
+            "answer": "<p>Las condiciones completas se informan durante el proceso de compra y en las páginas informativas del sitio.</p>"
+          }
+        },
+        "faq_orders_3": {
+          "type": "faq",
+          "settings": {
+            "group": "Pedidos",
+            "question": "¿Aceptan cambios o devoluciones, si mi pedido tiene problemas?",
+            "answer": "<p>Sí, puedes contactarnos mediante este formulario para revisar tu caso.</p>"
+          }
+        },
+        "faq_delivery_1": {
+          "type": "faq",
+          "settings": {
+            "group": "Despacho",
+            "question": "¿Cuáles son los tiempos de entrega de despacho?",
+            "answer": "<p>Los tiempos dependen de la comuna y del operador logístico.</p>"
+          }
+        },
+        "faq_delivery_2": {
+          "type": "faq",
+          "settings": {
+            "group": "Despacho",
+            "question": "¿Cuáles son los costos de despacho?",
+            "answer": "<p>El costo de despacho se calcula durante el checkout según la dirección ingresada.</p>"
+          }
+        },
+        "faq_delivery_3": {
+          "type": "faq",
+          "settings": {
+            "group": "Despacho",
+            "question": "¿En qué horarios despachan?",
+            "answer": "<p>Los horarios dependen del operador logístico y la zona de despacho.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_online_1",
+        "faq_online_2",
+        "faq_online_3",
+        "faq_online_4",
+        "faq_orders_1",
+        "faq_orders_2",
+        "faq_orders_3",
+        "faq_delivery_1",
+        "faq_delivery_2",
+        "faq_delivery_3"
+      ],
+      "settings": {
+        "show_breadcrumbs": true,
+        "heading": "Estamos para ayudarte",
+        "subheading": "Escríbenos a través del formulario y te contactaremos a la brevedad.",
+        "accent_color": "#8C1A3E",
+        "contact_tab_label": "Contacto",
+        "faq_tab_label": "Preguntas Frecuentes",
+        "form_heading": "Formulario de Contacto",
+        "help_heading": "¿En qué te podemos ayudar? (*)",
+        "subject_label": "Asunto",
+        "subject_options": "Consulta\nPedido\nDespacho\nCambio o devolución",
+        "location_label": "Lugar donde compraste",
+        "location_options": "Santa Rita Online\nTienda física\nMarketplace\nOtro",
+        "area_label": "Área relacionada",
+        "area_options": "Ventas\nDespacho\nPostventa\nTurismo",
+        "data_heading": "Tus datos (*)",
+        "name_label": "Nombre y Apellido",
+        "rut_label": "RUT",
+        "email_label": "Correo electrónico",
+        "phone_label": "Teléfono",
+        "message_heading": "Cuéntanos más",
+        "message_label": "Mensaje *",
+        "show_file_input": true,
+        "file_help": "Imágenes en formato JPG, PNG o PDF / Máx. 10MB (opcional)",
+        "file_placeholder": "Selecciona archivo",
+        "file_button_label": "Seleccionar",
+        "submit_label": "Enviar solicitud",
+        "success_message": "Gracias por contactarnos. Te responderemos a la brevedad.",
+        "faq_heading": "Preguntas frecuentes"
+      }
+    }
+  },
+  "order": [
+    "contact_tabs"
+  ]
+}
