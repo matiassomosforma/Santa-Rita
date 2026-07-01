@@ -171,8 +171,14 @@ class HeaderMenu extends Component {
     }
 
     this.headerComponent.style.setProperty('--submenu-height', `${finalHeight}px`);
-    this.#setFullOpenHeaderHeight(finalHeight);
+    const fullOpenHeaderHeight = this.#setFullOpenHeaderHeight(finalHeight);
     this.style.setProperty('--submenu-opacity', '1');
+
+    if (finalHeight > 0 && fullOpenHeaderHeight > 0) {
+      document.body.dataset.megaMenuOpen = 'true';
+    } else {
+      delete document.body.dataset.megaMenuOpen;
+    }
   };
 
   /**
@@ -214,6 +220,7 @@ class HeaderMenu extends Component {
 
     this.headerComponent?.style.setProperty('--submenu-height', '0px');
     this.#setFullOpenHeaderHeight(0);
+    delete document.body.dataset.megaMenuOpen;
     this.style.setProperty('--submenu-opacity', '0');
     this.dataset.overflowExpanded = 'false';
 
@@ -256,9 +263,10 @@ class HeaderMenu extends Component {
   /**
    * Calculate and set the full open header height. If the submenu is not open, the full open header height is 0.
    * @param {number} submenuHeight
+   * @returns {number}
    */
   #setFullOpenHeaderHeight(submenuHeight) {
-    if (!this.headerComponent) return;
+    if (!this.headerComponent) return 0;
 
     const isOverlapSituation = this.headerComponent.hasAttribute('data-submenu-overlap-bottom-row');
 
@@ -271,6 +279,7 @@ class HeaderMenu extends Component {
     const fullOpenHeaderHeight = nothingToOpen ? 0 : submenuHeight + (headerVisibleHeight ?? 0);
 
     this.headerComponent?.style.setProperty('--full-open-header-height', `${fullOpenHeaderHeight}px`);
+    return fullOpenHeaderHeight;
   }
 
   /**

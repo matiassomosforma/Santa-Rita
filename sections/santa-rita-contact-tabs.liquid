@@ -224,7 +224,7 @@
                 <span>{{ block.settings.question }}</span>
                 <span aria-hidden="true">+</span>
               </summary>
-              <div>{{ block.settings.answer }}</div>
+              <div class="santa-rita-contact-tabs__faq-answer">{{ block.settings.answer }}</div>
             </details>
           {% endfor %}
         </div>
@@ -235,7 +235,11 @@
 
 <script>
   (() => {
-    const root = document.querySelector('[data-section-id="{{ section.id }}"]');
+    const script = document.currentScript;
+    const root = script?.previousElementSibling?.matches('.santa-rita-contact-tabs')
+      ? script.previousElementSibling
+      : document.querySelector('[data-section-id="{{ section.id }}"]');
+
     if (!root) return;
 
     const tabs = root.querySelectorAll('[data-sr-contact-tab]');
@@ -258,9 +262,11 @@
       const params = new URLSearchParams(window.location.search);
       const queryKeys = Array.from(params.keys()).map(normalize);
       const queryValues = Array.from(params.values()).map(normalize);
-      const hash = normalize(window.location.hash.replace('#', ''));
+      const rawHash = window.location.hash.replace('#', '').trim().toLowerCase();
+      const hash = normalize(rawHash);
       const allValues = [hash, ...queryKeys, ...queryValues];
 
+      if (rawHash === 'faq' || rawHash.includes('faq')) return 'faq';
       if (allValues.some((value) => faqAliases.includes(value))) return 'faq';
       if (allValues.some((value) => contactAliases.includes(value))) return 'contact';
       return 'contact';
@@ -282,7 +288,9 @@
 
       if (updateUrl) {
         const hash = tabName === 'faq' ? '#faq' : '#contacto';
-        history.replaceState(null, '', `${window.location.pathname}${window.location.search}${hash}`);
+        if (window.location.hash !== hash) {
+          window.location.hash = hash;
+        }
       }
     };
 
@@ -297,8 +305,62 @@
       });
     });
 
-    activate(getRequestedTab(), false);
-    window.addEventListener('hashchange', () => activate(getRequestedTab(), false));
+    root.querySelectorAll('.santa-rita-contact-tabs__faq-item').forEach((item) => {
+      const summary = item.querySelector('summary');
+      const content = item.querySelector('.santa-rita-contact-tabs__faq-answer');
+      if (!summary || !content) return;
+
+      const openItem = () => {
+        item.open = true;
+        content.style.height = '0px';
+        content.style.opacity = '0';
+
+        requestAnimationFrame(() => {
+          content.style.height = `${content.scrollHeight}px`;
+          content.style.opacity = '1';
+        });
+      };
+
+      const closeItem = () => {
+        content.style.height = `${content.scrollHeight}px`;
+        content.style.opacity = '1';
+
+        requestAnimationFrame(() => {
+          content.style.height = '0px';
+          content.style.opacity = '0';
+        });
+      };
+
+      summary.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        if (item.open) {
+          closeItem();
+          return;
+        }
+
+        openItem();
+      });
+
+      content.addEventListener('transitionend', (event) => {
+        if (event.propertyName !== 'height') return;
+
+        if (item.open && content.style.height !== '0px') {
+          content.style.height = 'auto';
+          return;
+        }
+
+        if (content.style.height === '0px') item.open = false;
+      });
+    });
+
+    const syncFromUrl = () => activate(getRequestedTab(), false);
+
+    syncFromUrl();
+    requestAnimationFrame(syncFromUrl);
+    document.addEventListener('DOMContentLoaded', syncFromUrl);
+    window.addEventListener('pageshow', syncFromUrl);
+    window.addEventListener('hashchange', syncFromUrl);
   })();
 </script>
 
@@ -377,13 +439,29 @@
   }
 
   .santa-rita-contact-tabs__tabbar {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(100% - 32px, 640px);
+    margin-inline: auto;
+  }
+
+  .santa-rita-contact-tabs__tabbar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    z-index: 0;
+    width: 100vw;
     background: #fff;
     border-bottom: 1px solid rgb(0 0 0 / 0.08);
+    transform: translateX(-50%);
   }
 
   .santa-rita-contact-tabs__tab {
+    position: relative;
+    z-index: 1;
     min-height: 52px;
     border: 0;
     border-bottom: 2px solid transparent;
@@ -391,12 +469,14 @@
     color: #1d1117;
     cursor: pointer;
     font: inherit;
+    font-size: 18px;
+    min-width: 320px;
   }
 
   .santa-rita-contact-tabs__tab--active {
     border-bottom-color: var(--sr-contact-accent);
     color: var(--sr-contact-accent);
-    font-weight: 700;
+    font-weight: 600;
   }
 
   .santa-rita-contact-tabs__body {
@@ -420,8 +500,9 @@
   }
 
   .santa-rita-contact-tabs__card h2 {
-    font-size: clamp(2rem, 3.2vw, 3rem);
+    font-size: clamp(2rem, 3.2vw, 36px);
     line-height: 1.14;
+    font-weight: 600;
   }
 
   .santa-rita-contact-tabs__form {
@@ -437,7 +518,7 @@
     margin: 0;
     padding: 0 0 18px;
     border: 0;
-    border-bottom: 1px dashed rgb(140 26 62 / 0.35);
+    border-bottom: 1px dashed #8C1A3E;
   }
 
   .santa-rita-contact-tabs__form legend,
@@ -447,6 +528,10 @@
     font-family: var(--font-primary--family);
     font-weight: 700;
   }
+
+    .santa-rita-contact-tabs__faq-list h3{
+      font-size: 16px;
+    }
 
   .santa-rita-contact-tabs__form input,
   .santa-rita-contact-tabs__form select,
@@ -551,8 +636,15 @@
     justify-content: space-between;
     gap: 20px;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 500;
     list-style: none;
+    font-size: 16px;
+  }
+
+  .santa-rita-contact-tabs__faq-item summary span + span {
+    font-size: 23px;
+    font-weight: 100;
+    transition: transform 240ms ease;
   }
 
   .santa-rita-contact-tabs__faq-item summary::-webkit-details-marker {
@@ -563,10 +655,30 @@
     transform: rotate(45deg);
   }
 
-  .santa-rita-contact-tabs__faq-item div {
-    padding: 0 44px 20px 0;
+  .santa-rita-contact-tabs__faq-answer {
+    box-sizing: border-box;
+    height: 0;
+    overflow: hidden;
+    padding: 0 44px 0 0;
     color: rgb(29 17 23 / 0.72);
     line-height: 1.6;
+    opacity: 0;
+    transition:
+      height 260ms ease,
+      opacity 200ms ease,
+      padding-bottom 260ms ease;
+  }
+
+  .santa-rita-contact-tabs__faq-item[open] .santa-rita-contact-tabs__faq-answer {
+    padding-bottom: 20px;
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .santa-rita-contact-tabs__faq-answer,
+    .santa-rita-contact-tabs__faq-item summary span + span {
+      transition: none;
+    }
   }
 
   @media screen and (max-width: 749px) {
@@ -579,14 +691,114 @@
       position: sticky;
       top: 0;
       z-index: 2;
+      width: 100%;
+      margin-inline: 0;
+    }
+
+    .santa-rita-contact-tabs__tab {
+      min-width: 0;
+      min-height: 34px;
+      font-size: 10px;
+      line-height: 1.2;
     }
 
     .santa-rita-contact-tabs__body {
-      padding-block: 32px 56px;
+      width: 100%;
+      padding: 24px 12px 48px;
     }
 
     .santa-rita-contact-tabs__card {
-      padding: 28px 22px;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .santa-rita-contact-tabs__card h2 {
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .santa-rita-contact-tabs__form {
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .santa-rita-contact-tabs__form fieldset {
+      gap: 8px;
+      padding-bottom: 14px;
+    }
+
+    .santa-rita-contact-tabs__form legend,
+    .santa-rita-contact-tabs__faq-list h3 {
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .santa-rita-contact-tabs__form input,
+    .santa-rita-contact-tabs__form select,
+    .santa-rita-contact-tabs__form textarea {
+      min-height: 38px;
+      padding: 10px 12px;
+      background: transparent;
+      font-size: 12px;
+    }
+
+    .santa-rita-contact-tabs__form textarea {
+      min-height: 118px;
+    }
+
+    .santa-rita-contact-tabs__file p {
+      font-size: 11px;
+    }
+
+    .santa-rita-contact-tabs__file label {
+      min-height: 42px;
+      padding: 8px 10px;
+      background: transparent;
+      font-size: 11px;
+    }
+
+    .santa-rita-contact-tabs__file strong {
+      padding: 7px 14px;
+      font-size: 10px;
+    }
+
+    .santa-rita-contact-tabs__form button[type='submit'] {
+      min-height: 42px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .santa-rita-contact-tabs__faq-list {
+      margin-top: 18px;
+    }
+
+    .santa-rita-contact-tabs__faq-list h3 {
+      margin-top: 22px;
+    }
+
+    .santa-rita-contact-tabs__faq-item summary {
+      min-height: 34px;
+      gap: 12px;
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    .santa-rita-contact-tabs__faq-item summary span + span {
+      font-size: 16px;
+    }
+
+    .santa-rita-contact-tabs__faq-answer {
+      padding-right: 24px;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .santa-rita-contact-tabs__faq-item[open] .santa-rita-contact-tabs__faq-answer {
+      padding-bottom: 12px;
     }
   }
 </style>
