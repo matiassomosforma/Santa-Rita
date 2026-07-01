@@ -71,6 +71,7 @@
     endif
   endif
 
+  assign santa_rita_menu_layout = true
   assign santa_rita_featured_link_count = 0
   for santa_rita_link in parent_link.links
     assign santa_rita_link_has_image = false
@@ -110,10 +111,10 @@
   endfor
 %}
 
-{% if santa_rita_featured_link_count > 0 %}
+{% if santa_rita_menu_layout %}
   <ul
     data-menu-list-id="{{ id }}"
-    class="mega-menu__list mega-menu__list--santa-rita list-unstyled"
+    class="mega-menu__list mega-menu__list--santa-rita{% if santa_rita_featured_link_count > 0 %} mega-menu__list--has-featured{% endif %} list-unstyled"
     style="--menu-image-border-radius: {{ image_border_radius }}px;"
   >
     {% for link in parent_link.links %}
@@ -158,10 +159,6 @@
       {% unless santa_rita_is_featured_link %}
         {% liquid
           assign column_span = 1
-          if link.links.size > 5
-            assign column_span = 2
-          endif
-
           assign column_span_float = column_span | times: 1.0
           assign links_per_column = link.links.size | divided_by: column_span_float | ceil | at_least: 1
         %}
@@ -206,59 +203,63 @@
     {% endfor %}
   </ul>
 
-  <span
-    class="mega-menu__content mega-menu__content--santa-rita-featured"
-    style="--menu-content-columns-desktop: 2; --menu-content-columns-tablet: 2; --resource-card-corner-radius: 6px;"
-  >
-    <ul class="mega-menu__featured-list list-unstyled">
-      {% for link in parent_link.links %}
-        {% liquid
-          assign santa_rita_link_has_image = false
-          assign santa_rita_metafield_image = link.object.metafields.custom.mega_menu_image.value | default: link.object.metafields.custom.featured_image.value | default: link.object.metafields.custom.image.value
+  {% if santa_rita_featured_link_count > 0 %}
+    <span
+      class="mega-menu__content mega-menu__content--santa-rita-featured"
+      style="--menu-content-columns-desktop: 3; --menu-content-columns-tablet: 2; --resource-card-corner-radius: 6px;"
+    >
+      <ul class="mega-menu__featured-list list-unstyled">
+        {% assign santa_rita_rendered_featured_links = 0 %}
+        {% for link in parent_link.links %}
+          {% liquid
+            assign santa_rita_link_has_image = false
+            assign santa_rita_metafield_image = link.object.metafields.custom.mega_menu_image.value | default: link.object.metafields.custom.featured_image.value | default: link.object.metafields.custom.image.value
 
-          if santa_rita_metafield_image != blank
-            assign santa_rita_link_has_image = true
-          elsif link.type == 'product_link'
-            assign santa_rita_product_image = link.object.featured_image | default: link.object.featured_media.preview_image
-            if santa_rita_product_image
+            if santa_rita_metafield_image != blank
               assign santa_rita_link_has_image = true
-            endif
-          elsif link.type == 'collection_link'
-            if link.object.featured_image
-              assign santa_rita_link_has_image = true
-            elsif link.object.products.size > 0
-              assign santa_rita_collection_product = link.object.products | where: 'featured_image' | first
-              if santa_rita_collection_product.featured_image
+            elsif link.type == 'product_link'
+              assign santa_rita_product_image = link.object.featured_image | default: link.object.featured_media.preview_image
+              if santa_rita_product_image
+                assign santa_rita_link_has_image = true
+              endif
+            elsif link.type == 'collection_link'
+              if link.object.featured_image
+                assign santa_rita_link_has_image = true
+              elsif link.object.products.size > 0
+                assign santa_rita_collection_product = link.object.products | where: 'featured_image' | first
+                if santa_rita_collection_product.featured_image
+                  assign santa_rita_link_has_image = true
+                endif
+              endif
+            elsif link.type == 'collections_link'
+              assign santa_rita_collection_object = collections | where: 'featured_image' | first
+              if santa_rita_collection_object.featured_image
+                assign santa_rita_link_has_image = true
+              endif
+            elsif link.type == 'catalog_link'
+              assign santa_rita_catalog_product = collections.all.products | where: 'featured_image' | first
+              if santa_rita_catalog_product.featured_image
                 assign santa_rita_link_has_image = true
               endif
             endif
-          elsif link.type == 'collections_link'
-            assign santa_rita_collection_object = collections | where: 'featured_image' | first
-            if santa_rita_collection_object.featured_image
-              assign santa_rita_link_has_image = true
-            endif
-          elsif link.type == 'catalog_link'
-            assign santa_rita_catalog_product = collections.all.products | where: 'featured_image' | first
-            if santa_rita_catalog_product.featured_image
-              assign santa_rita_link_has_image = true
-            endif
-          endif
-        %}
+          %}
 
-        {% if link.links == blank and santa_rita_link_has_image %}
-          <li class="mega-menu__featured-list-item">
-            <a
-              href="{{ link.url }}"
-              class="mega-menu__featured-card"
-            >
-              {% render 'link-featured-image', link: link, class: 'mega-menu__featured-card-image', sizes: '(min-width: 990px) 240px, 50vw' %}
-              <span class="mega-menu__featured-card-title wrap-text">{{- link.title -}}</span>
-            </a>
-          </li>
-        {% endif %}
-      {% endfor %}
-    </ul>
-  </span>
+          {% if link.links == blank and santa_rita_link_has_image and santa_rita_rendered_featured_links < 2 %}
+            {% assign santa_rita_rendered_featured_links = santa_rita_rendered_featured_links | plus: 1 %}
+            <li class="mega-menu__featured-list-item">
+              <a
+                href="{{ link.url }}"
+                class="mega-menu__featured-card"
+              >
+                {% render 'link-featured-image', link: link, class: 'mega-menu__featured-card-image', sizes: '(min-width: 990px) 240px, 50vw' %}
+                <span class="mega-menu__featured-card-title wrap-text">{{- link.title -}}</span>
+              </a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </span>
+  {% endif %}
 {% else %}
   <ul
     data-menu-list-id="{{ id }}"
@@ -451,9 +452,12 @@
   }
 
   [data-menu-list-id="{{ id }}"] {
-    {% if santa_rita_featured_link_count > 0 %}
-      --menu-columns-desktop: 4;
+    {% if santa_rita_menu_layout and santa_rita_featured_link_count > 0 %}
+      --menu-columns-desktop: 3;
       --menu-columns-tablet: 2;
+    {% elsif santa_rita_menu_layout %}
+      --menu-columns-desktop: {{ grid_columns_count }};
+      --menu-columns-tablet: {{ grid_columns_count_tablet }};
     {% elsif menu_content_type == 'collection_images' and parent_link.links.size < 5 %}
       --menu-columns-desktop: {{ grid_columns_count_collection_images }};
       --menu-columns-tablet: {{ max_menu_columns_tablet }};
@@ -464,7 +468,7 @@
   }
 {% endstyle %}
 
-{% unless santa_rita_featured_link_count > 0 %}
+{% unless santa_rita_menu_layout %}
   {% case menu_content_type %}
     {% when 'featured_products' %}
       {%- capture image_sizes -%}

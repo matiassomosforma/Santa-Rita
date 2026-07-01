@@ -325,6 +325,18 @@
     margin-bottom: calc(-1 * var(--header-padding));
   }
 
+  .menu-list__list-item:not([slot='overflow']) > .menu-list__link[aria-haspopup='true']::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    z-index: calc(var(--layer-header-menu) + 1);
+    display: block;
+    height: max(var(--header-padding), 56px);
+    background: transparent;
+  }
+
   [slot='overflow'] > .menu-list__link::after {
     content: none;
   }
@@ -642,13 +654,18 @@
 
   .mega-menu__featured-list {
     display: grid;
-    grid-template-columns: repeat(var(--menu-content-columns-tablet), minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--menu-vertical-gap) var(--menu-horizontal-gap);
     justify-content: end;
 
     @media screen and (min-width: 990px) {
-      grid-template-columns: repeat(var(--menu-content-columns-desktop), minmax(0, 241px));
+      grid-template-columns: repeat(2, minmax(0, 241px));
     }
+  }
+
+  .mega-menu__content--santa-rita-featured {
+    justify-self: end;
+    width: 100%;
   }
 
   .mega-menu__featured-card {

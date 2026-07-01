@@ -22,6 +22,11 @@ class HeaderMenu extends Component {
    */
   #submenuMutationObserver = null;
 
+  /**
+   * @type {number | null}
+   */
+  #deactivationTimeout = null;
+
   connectedCallback() {
     super.connectedCallback();
 
@@ -34,6 +39,7 @@ class HeaderMenu extends Component {
     super.disconnectedCallback();
     window.removeEventListener('resize', this.#resizeListener);
     this.overflowMenu?.removeEventListener('pointerleave', this.#overflowSubmenuListener);
+    this.#clearDeactivationTimeout();
     this.#cleanupMutationObserver();
   }
 
@@ -48,6 +54,13 @@ class HeaderMenu extends Component {
   #overflowSubmenuListener = () => {
     this.#deactivate();
   };
+
+  #clearDeactivationTimeout() {
+    if (this.#deactivationTimeout === null) return;
+
+    clearTimeout(this.#deactivationTimeout);
+    this.#deactivationTimeout = null;
+  }
 
   /**
    * @type {State}
@@ -81,6 +94,7 @@ class HeaderMenu extends Component {
    */
   activate = (event) => {
     this.dispatchEvent(new MegaMenuHoverEvent());
+    this.#clearDeactivationTimeout();
 
     if (!(event.target instanceof Element) || !this.headerComponent) return;
 
@@ -169,15 +183,21 @@ class HeaderMenu extends Component {
     if (!(event.target instanceof Element)) return;
 
     const menu = findSubmenu(this.#state.activeItem);
-    const isMovingWithinMenu = event.relatedTarget instanceof Node && menu?.contains(document.activeElement);
+    const isMovingWithinMenu = event.relatedTarget instanceof Node && Boolean(menu?.contains(event.relatedTarget));
     const isMovingToSubmenu =
       event.relatedTarget instanceof Node && event.type === 'blur' && menu?.contains(event.relatedTarget);
     const isMovingToOverflowMenu =
       event.relatedTarget instanceof Node && event.relatedTarget.parentElement?.matches('[slot="overflow"]');
+    const isMovingWithinActiveItem =
+      event.relatedTarget instanceof Node && Boolean(this.#state.activeItem?.contains(event.relatedTarget));
 
-    if (isMovingWithinMenu || isMovingToOverflowMenu || isMovingToSubmenu) return;
+    if (isMovingWithinMenu || isMovingToOverflowMenu || isMovingToSubmenu || isMovingWithinActiveItem) return;
 
-    this.#deactivate();
+    this.#clearDeactivationTimeout();
+    this.#deactivationTimeout = window.setTimeout(() => {
+      this.#deactivationTimeout = null;
+      this.#deactivate();
+    }, 120);
   }
 
   /**
@@ -187,15 +207,15 @@ class HeaderMenu extends Component {
   #deactivate = (item = this.#state.activeItem) => {
     if (!item || item != this.#state.activeItem) return;
 
+    const submenu = findSubmenu(item);
+
     // Don't deactivate if the overflow menu or overflow list is still being hovered
-    if (this.overflowListHovered || this.overflowMenu?.matches(':hover')) return;
+    if (this.overflowListHovered || this.overflowMenu?.matches(':hover') || item.matches(':hover') || submenu?.matches(':hover')) return;
 
     this.headerComponent?.style.setProperty('--submenu-height', '0px');
     this.#setFullOpenHeaderHeight(0);
     this.style.setProperty('--submenu-opacity', '0');
     this.dataset.overflowExpanded = 'false';
-
-    const submenu = findSubmenu(item);
 
     this.#state.activeItem = null;
     this.ariaExpanded = 'false';
