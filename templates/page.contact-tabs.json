@@ -97,9 +97,6 @@
         "faq_delivery_3"
       ],
       "settings": {
-        "show_breadcrumbs": true,
-        "heading": "Estamos para ayudarte",
-        "subheading": "Escríbenos a través del formulario y te contactaremos a la brevedad.",
         "accent_color": "#8C1A3E",
         "contact_tab_label": "Contacto",
         "faq_tab_label": "Preguntas Frecuentes",
