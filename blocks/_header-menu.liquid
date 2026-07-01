@@ -286,6 +286,7 @@
     cursor: pointer;
     height: 100%;
     margin-block: 0;
+    position: relative;
 
     &:hover,
     &:focus {
@@ -295,6 +296,16 @@
     @media screen and (min-width: 750px) {
       font-size: var(--menu-top-level-font-size-desktop);
     }
+  }
+
+  .menu-list__list-item:not([slot='overflow']) > .menu-list__link:is([aria-expanded='true'], .menu-list__link--active)::after {
+    content: '';
+    position: absolute;
+    right: calc(var(--gap-xl) / 2);
+    bottom: 0;
+    left: calc(var(--gap-xl) / 2);
+    height: 2px;
+    background: currentColor;
   }
 
   .menu-list__link-title {
@@ -500,6 +511,27 @@
     }
   }
 
+  .mega-menu__grid:has(.mega-menu__featured-list) {
+    --menu-horizontal-gap: 48px;
+    --menu-vertical-gap: 44px;
+  }
+
+  .mega-menu__grid:has(.mega-menu__featured-list) .mega-menu__list {
+    align-content: start;
+  }
+
+  .mega-menu__grid:has(.mega-menu__featured-list) .mega-menu__link {
+    padding-block: 4px;
+  }
+
+  .mega-menu__grid:has(.mega-menu__featured-list) .mega-menu__link--parent {
+    padding-block: 0 12px;
+  }
+
+  .mega-menu__grid:has(.mega-menu__featured-list) .mega-menu__child-list {
+    column-gap: var(--menu-horizontal-gap);
+  }
+
   .mega-menu__link--parent {
     font-family: var(--menu-parent-font-family);
     font-style: var(--menu-parent-font-style);
@@ -606,6 +638,45 @@
     display: grid;
     justify-content: end;
     gap: var(--menu-vertical-gap) var(--menu-horizontal-gap);
+  }
+
+  .mega-menu__featured-list {
+    display: grid;
+    grid-template-columns: repeat(var(--menu-content-columns-tablet), minmax(0, 1fr));
+    gap: var(--menu-vertical-gap) var(--menu-horizontal-gap);
+    justify-content: end;
+
+    @media screen and (min-width: 990px) {
+      grid-template-columns: repeat(var(--menu-content-columns-desktop), minmax(0, 241px));
+    }
+  }
+
+  .mega-menu__featured-card {
+    color: var(--menu-child-font-color);
+    display: flex;
+    flex-direction: column;
+    font-family: var(--menu-child-font-family);
+    font-size: 0.875rem;
+    gap: 12px;
+    line-height: 1.2;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .mega-menu__featured-card:hover {
+    color: var(--menu-child-active-font-color);
+  }
+
+  .mega-menu__featured-card-image {
+    aspect-ratio: 1 / 1;
+    border-radius: 6px;
+    display: block;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  .mega-menu__featured-card-title {
+    color: rgb(var(--color-foreground-rgb) / var(--opacity-70));
   }
 
   .mega-menu__content-list--products {

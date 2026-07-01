@@ -10,8 +10,24 @@
 {%- enddoc -%}
 
 {% assign image_sizes = sizes | default: 'auto' %}
+{% assign metafield_image = link.object.metafields.custom.mega_menu_image.value | default: link.object.metafields.custom.featured_image.value | default: link.object.metafields.custom.image.value %}
 
-{% if link.type == 'collection_link' %}
+{% if metafield_image != blank %}
+  {{
+    metafield_image
+    | image_url: width: 800
+    | image_tag: loading: 'lazy', class: class, sizes: image_sizes
+  }}
+{% elsif link.type == 'product_link' %}
+  {% assign product_image = link.object.featured_image | default: link.object.featured_media.preview_image %}
+  {% if product_image %}
+    {{
+      product_image
+      | image_url: width: 800
+      | image_tag: loading: 'lazy', class: class, sizes: image_sizes
+    }}
+  {% endif %}
+{% elsif link.type == 'collection_link' %}
   {% if link.object.featured_image %}
     {{
       link.object.featured_image
