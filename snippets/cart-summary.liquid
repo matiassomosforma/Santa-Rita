@@ -5,6 +5,24 @@
   @param {string} [section_id] - The section ID for cart discount component.
 {%- enddoc -%}
 
+{% liquid
+  assign cart_discount_label = 'content.discount' | t
+  assign cart_estimated_total_label = 'content.cart_estimated_total' | t
+  assign cart_checkout_label = 'content.checkout' | t
+  assign cart_discount_code_label = 'content.discount_code' | t
+  assign cart_apply_label = 'actions.apply' | t
+  assign cart_tax_note = blank
+
+  if template.name == 'cart'
+    assign cart_discount_label = 'Descuento'
+    assign cart_estimated_total_label = 'Total estimado'
+    assign cart_checkout_label = 'Finalizar la compra'
+    assign cart_discount_code_label = 'Código de descuento'
+    assign cart_apply_label = 'Aplicar'
+    assign cart_tax_note = 'Los impuestos y los gastos de envío se calculan al finalizar la compra.'
+  endif
+%}
+
 <div class="cart-totals">
   {% # We need to keep this node in place to allow morphing to work properly # %}
   <div class="cart-totals__original-container cart-primary-typography">
@@ -119,9 +137,9 @@
             {% if disclosure_expanded %}
               open
             {% endif %}
-          >
+            >
             <summary class="cart-discount__summary">
-              <span class="cart-discount__label cart-primary-typography">{{ 'content.discount' | t }}</span>
+              <span class="cart-discount__label cart-primary-typography">{{ cart_discount_label }}</span>
 
               <span class="cart-totals__icon">
                 {{- 'icon-plus.svg' | inline_asset_content -}}
@@ -153,14 +171,14 @@
                         type="text"
                         name="discount"
                         size="8"
-                        placeholder="{{ 'content.discount_code' | t }}"
+                        placeholder="{{ cart_discount_code_label }}"
                         required
                       >
                       <button
                         type="submit"
                         class="button cart-discount__button"
                       >
-                        {{ 'actions.apply' | t }}
+                        {{ cart_apply_label }}
                       </button>
                     </form>
                   </div>
@@ -228,7 +246,7 @@
       class="cart-totals__item cart-totals__total"
       role="status"
     >
-      <span class="cart-totals__total-label cart-primary-typography">{{ 'content.cart_estimated_total' | t }}</span>
+      <span class="cart-totals__total-label cart-primary-typography">{{ cart_estimated_total_label }}</span>
       <text-component
         ref="cartTotal"
         value="{{ total_price | strip_html }}"
@@ -248,7 +266,11 @@
       </span>
     {% endif %}
     <div class="cart-totals__item cart-totals__tax-note cart-primary-typography">
-      {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
+      {% if cart_tax_note != blank %}
+        <small>{{ cart_tax_note }}</small>
+      {% else %}
+        {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
+      {% endif %}
     </div>
   </div>
 </div>
@@ -265,7 +287,7 @@
     form="cart-form"
   >
     <span class="button-text">
-      {{ 'content.checkout' | t }}
+      {{ cart_checkout_label }}
     </span>
   </button>
 

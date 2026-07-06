@@ -12,10 +12,11 @@
   assign liter_price_label = product.metafields.custom.liter_price_label | default: section_settings.liter_price_label
   assign rating_count = product.metafields.custom.rating_count | default: section_settings.rating_count
   assign location_metafield = product.metafields.custom.location
-  assign location = location_metafield.value | join: ', '
+  assign location = ''
 
-  if location == blank
-    assign location = location_metafield.value | default: location_metafield
+  if location_metafield != blank
+    assign location_value = location_metafield.value
+    assign location = location_value | default: location_metafield
   endif
 
   assign cepa = product.metafields.custom.cepa
@@ -99,6 +100,13 @@
   {% if location != blank %}
     <p class="santa-rita-product-card__origin">{{ location }}</p>
   {% endif %}
+
+  <div class="santa-rita-product-card__mobile-pack-options" aria-hidden="true">
+    <span>1 un.</span>
+    {% if pack_label != blank %}
+      <span class="is-active">{{ pack_label }}</span>
+    {% endif %}
+  </div>
 
   <div class="santa-rita-product-card__price">
     <strong>{{ variant.price | money }}</strong>

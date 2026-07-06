@@ -16,7 +16,9 @@
   <div class="santa-rita-best-sellers__container">
     <header class="santa-rita-best-sellers__header">
       <h2>{{ section.settings.heading }}</h2>
-      <p>{{ section.settings.text }}</p>
+      {% if section.settings.text != blank %}
+        <p>{{ section.settings.text }}</p>
+      {% endif %}
     </header>
 
     <div class="santa-rita-best-sellers__viewport" data-slider-viewport>
@@ -555,6 +557,263 @@
 
     .santa-rita-best-sellers__header h2{
       margin-bottom: 15px;
+    }
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-best-sellers {
+    background: #fbf8f1;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-best-sellers__container {
+    max-width: 1224px;
+    padding: 58px var(--page-margin) 74px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-best-sellers__header {
+    margin-bottom: 42px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-best-sellers__header h2 {
+    margin-bottom: 0;
+    font-size: clamp(30px, 3vw, 40px);
+    line-height: 1.05;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-product-card {
+    min-height: 428px;
+    border-radius: 8px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__badge {
+    min-width: 48px;
+    min-height: 20px;
+    padding: 0 10px;
+    font-size: 10px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__media {
+    min-height: 162px;
+    margin-bottom: 24px;
+    padding-top: 28px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__image {
+    height: 158px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__rating {
+    bottom: 0;
+    gap: 5px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__rating small,
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__eyebrow,
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__origin {
+    font-size: 10px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-product-card h3 {
+    font-size: 14px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__price strong {
+    font-size: 17px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__price s {
+    font-size: 11px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__details {
+    margin-bottom: 10px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__details span {
+    min-height: 46px;
+    font-size: 10px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__details strong {
+    font-size: 11px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__button {
+    min-height: 36px;
+    margin-bottom: 12px;
+    font-size: 12px;
+  }
+
+  .santa-rita-product-card__mobile-pack-options {
+    display: none;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-best-sellers__footer {
+    margin-top: 26px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-best-sellers__dots button {
+    width: 9px;
+    height: 9px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-best-sellers__arrows button {
+    width: 52px;
+    height: 52px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .content-for-layout[data-template='cart'] .santa-rita-best-sellers__container {
+      padding: 34px 16px 44px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-best-sellers__header {
+      margin-bottom: 18px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-best-sellers__header h2 {
+      font-size: 20px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-best-sellers__track {
+      grid-auto-columns: calc((100% - 10px) / 1.5);
+      gap: 10px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card {
+      min-height: 303px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__badges {
+      display: none;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__media {
+      min-height: 112px;
+      margin-bottom: 9px;
+      padding-top: 18px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__image {
+      height: 104px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__rating {
+      bottom: -4px;
+      padding-inline: 8px;
+      gap: 1px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita__star-group {
+      gap: 0;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita__star-group svg {
+      width: 7px;
+      height: 7px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__rating small,
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__eyebrow,
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__origin {
+      font-size: 8px;
+      padding-inline: 8px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__eyebrow {
+      margin-bottom: 2px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card h3 {
+      margin: 2px 0 2px;
+      padding-inline: 8px;
+      font-size: 10px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__origin {
+      padding-bottom: 7px;
+      border-bottom: 1px solid rgba(110, 90, 97, 0.25);
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__mobile-pack-options {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 8px 0;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__mobile-pack-options span {
+      display: inline-flex;
+      min-height: 20px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 7px;
+      border: 1px solid #21000f;
+      border-radius: 999px;
+      color: #21000f;
+      font-size: 9px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__mobile-pack-options .is-active {
+      border-color: #21000f;
+      background: #21000f;
+      color: #ffffff;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__price {
+      margin-top: 8px;
+      padding-inline: 8px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__price strong {
+      font-size: 13px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__price s {
+      font-size: 9px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__details {
+      display: block;
+      margin: 8px 8px;
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__details span {
+      min-height: 43px;
+      padding: 7px 8px;
+      font-size: 8px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__details span:first-child {
+      display: none;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__details strong {
+      font-size: 9px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-product-card__button {
+      width: calc(100% - 16px);
+      min-height: 28px;
+      margin: 0 8px 8px;
+      font-size: 9px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-best-sellers__footer {
+      justify-content: space-between;
+      margin-top: 12px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-best-sellers__arrows button {
+      width: 28px;
+      height: 28px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-best-sellers__arrows button svg {
+      width: 18px;
     }
   }
 {% endstylesheet %}

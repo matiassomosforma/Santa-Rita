@@ -158,6 +158,14 @@
                         echo item.image | image_url: width: 250 | image_tag: class: 'cart-items__media-image border-style', style: border_override
                       -%}
                     </a>
+                  {% else %}
+                    <a
+                      href="{{ item.url }}"
+                      class="cart-items__media-container"
+                      style="--ratio:0.8;"
+                    >
+                      {{ 'product-apparel-1' | placeholder_svg_tag: 'cart-items__media-image cart-items__media-image--placeholder border-style' }}
+                    </a>
                   {%- endif %}
                 </td>
                 <td
@@ -177,6 +185,21 @@
                         {{- item.product.title -}}
                       </a>
                     </p>
+                    {% if template.name == 'cart' %}
+                      {% liquid
+                        assign cart_item_location_metafield = item.product.metafields.custom.location
+                        assign cart_item_location = ''
+
+                        if cart_item_location_metafield != blank
+                          assign cart_item_location_value = cart_item_location_metafield.value
+                          assign cart_item_location = cart_item_location_value | default: cart_item_location_metafield
+                        endif
+                      %}
+
+                      {% if cart_item_location != blank %}
+                        <p class="cart-items__origin">{{ cart_item_location }}</p>
+                      {% endif %}
+                    {% endif %}
                     {% if item.product.vendor and block_settings.vendor %}
                       <p>
                         {{ item.product.vendor }}
@@ -360,12 +383,31 @@
                     assign price = item.final_line_price | money
                     assign unit_price = item.unit_price | money
                   endif
+
+                  assign compare_line_price = blank
+                  if item.original_line_price > item.final_line_price
+                    if settings.currency_code_enabled_cart_items
+                      assign compare_line_price = item.original_line_price | money_with_currency
+                    else
+                      assign compare_line_price = item.original_line_price | money
+                    endif
+                  elsif item.variant.compare_at_price > item.original_price
+                    assign compare_total = item.variant.compare_at_price | times: item.quantity
+                    if settings.currency_code_enabled_cart_items
+                      assign compare_line_price = compare_total | money_with_currency
+                    else
+                      assign compare_line_price = compare_total | money
+                    endif
+                  endif
                 -%}
                 <td
                   class="cart-items__price cart-secondary-typography"
                   role="cell"
                   headers="productTotal"
                 >
+                  {%- if compare_line_price != blank -%}
+                    <s class="cart-items__price-compare">{{ compare_line_price }}</s>
+                  {%- endif -%}
                   <text-component value="{{ price | strip_html }}">{{ price }}</text-component>
                   {%- if item.unit_price_measurement -%}
                     <div class="cart-items__price-unit cart-secondary-typography">
