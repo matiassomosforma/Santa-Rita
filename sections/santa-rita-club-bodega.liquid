@@ -3,11 +3,47 @@
   assign step_blocks = section.blocks | where: 'type', 'step'
   assign feature_blocks = section.blocks | where: 'type', 'plan_feature'
   assign faq_blocks = section.blocks | where: 'type', 'faq'
+  assign hero_video = section.settings.hero_video | default: section.settings.hero_mobile_video
+  assign hero_mobile_video = section.settings.hero_mobile_video | default: hero_video
 %}
 
 <section class="santa-rita-club-bodega" {{ section.shopify_attributes }}>
-  <div class="santa-rita-club-bodega__hero" aria-labelledby="santa-rita-club-bodega-title-{{ section.id }}">
-    {% if section.settings.hero_image != blank %}
+  <div
+    class="santa-rita-club-bodega__hero"
+    style="--hero-overlay-opacity: {{ section.settings.hero_overlay_opacity | divided_by: 100.0 }};"
+    {% if section.settings.hero_heading != blank %}
+      aria-labelledby="santa-rita-club-bodega-title-{{ section.id }}"
+    {% endif %}
+  >
+    {% if hero_video != blank %}
+      <div class="santa-rita-club-bodega__hero-video-wrapper{% if hero_mobile_video != blank and hero_mobile_video != hero_video %} santa-rita-club-bodega__hero-video-wrapper--has-mobile{% endif %}">
+        {% if hero_mobile_video != blank and hero_mobile_video != hero_video %}
+          {{
+            hero_mobile_video
+            | video_tag:
+              image_size: '1200x',
+              autoplay: true,
+              loop: true,
+              controls: false,
+              muted: true,
+              playsinline: true,
+              class: 'santa-rita-club-bodega__hero-video santa-rita-club-bodega__hero-video--mobile'
+          }}
+        {% endif %}
+
+        {{
+          hero_video
+          | video_tag:
+            image_size: '2200x',
+            autoplay: true,
+            loop: true,
+            controls: false,
+            muted: true,
+            playsinline: true,
+            class: 'santa-rita-club-bodega__hero-video santa-rita-club-bodega__hero-video--desktop'
+        }}
+      </div>
+    {% elsif section.settings.hero_image != blank %}
       {{
         section.settings.hero_image
         | image_url: width: 2200
@@ -32,7 +68,22 @@
         </nav>
       {% endif %}
 
-      <div class="santa-rita-club-bodega__hero-content">
+      <div
+        class="santa-rita-club-bodega__hero-content"
+        style="
+          --hero-content-horizontal: {{ section.settings.hero_content_horizontal }};
+          --hero-content-vertical: {{ section.settings.hero_content_vertical }};
+          --hero-text-align: {{ section.settings.hero_text_alignment }};
+          --hero-content-width: {{ section.settings.hero_content_width }}px;
+          --hero-content-offset-x: {{ section.settings.hero_content_offset_x }}px;
+          --hero-content-offset-y: {{ section.settings.hero_content_offset_y }}px;
+          --hero-mobile-content-horizontal: {{ section.settings.hero_mobile_content_horizontal }};
+          --hero-mobile-content-vertical: {{ section.settings.hero_mobile_content_vertical }};
+          --hero-mobile-text-align: {{ section.settings.hero_mobile_text_alignment }};
+          --hero-mobile-content-offset-x: {{ section.settings.hero_mobile_content_offset_x }}px;
+          --hero-mobile-content-offset-y: {{ section.settings.hero_mobile_content_offset_y }}px;
+        "
+      >
         {% if section.settings.hero_kicker != blank %}
           <p class="santa-rita-club-bodega__kicker">{{ section.settings.hero_kicker }}</p>
         {% endif %}
@@ -237,6 +288,8 @@
     color: #ffffff;
   }
 
+  .santa-rita-club-bodega__hero-video-wrapper,
+  .santa-rita-club-bodega__hero-video,
   .santa-rita-club-bodega__hero-image,
   .santa-rita-club-bodega__hero-image--placeholder {
     position: absolute;
@@ -245,6 +298,14 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .santa-rita-club-bodega__hero-video {
+    object-fit: cover;
+  }
+
+  .santa-rita-club-bodega__hero-video--mobile {
+    display: none;
   }
 
   .santa-rita-club-bodega__hero-image--placeholder {
@@ -256,8 +317,8 @@
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(90deg, rgba(33, 0, 15, 0.78) 0%, rgba(33, 0, 15, 0.3) 46%, rgba(33, 0, 15, 0.68) 100%),
-      linear-gradient(0deg, rgba(33, 0, 15, 0.38), rgba(33, 0, 15, 0.08));
+      linear-gradient(90deg, rgba(33, 0, 15, calc(var(--hero-overlay-opacity, 0.35) + 0.2)) 0%, rgba(33, 0, 15, var(--hero-overlay-opacity, 0.35)) 46%, rgba(33, 0, 15, calc(var(--hero-overlay-opacity, 0.35) + 0.12)) 100%),
+      linear-gradient(0deg, rgba(33, 0, 15, var(--hero-overlay-opacity, 0.35)), rgba(33, 0, 15, 0.04));
   }
 
   .santa-rita-club-bodega__hero-inner,
@@ -290,10 +351,11 @@
   }
 
   .santa-rita-club-bodega__hero-content {
-    align-self: center;
-    justify-self: center;
-    width: min(100%, 630px);
-    text-align: center;
+    align-self: var(--hero-content-vertical, center);
+    justify-self: var(--hero-content-horizontal, center);
+    width: min(100%, var(--hero-content-width, 630px));
+    text-align: var(--hero-text-align, center);
+    transform: translate(var(--hero-content-offset-x, 0), var(--hero-content-offset-y, 0));
   }
 
   .santa-rita-club-bodega__kicker {
@@ -318,10 +380,19 @@
 
   .santa-rita-club-bodega__hero-text {
     width: min(100%, 490px);
-    margin: 22px auto 0;
+    margin-block: 22px 0;
+    margin-inline: 0;
     color: #ffffff;
     font-size: 16px;
     line-height: 1.32;
+  }
+
+  .santa-rita-club-bodega__hero-content[style*='--hero-text-align: center'] .santa-rita-club-bodega__hero-text {
+    margin-inline: auto;
+  }
+
+  .santa-rita-club-bodega__hero-content[style*='--hero-text-align: right'] .santa-rita-club-bodega__hero-text {
+    margin-inline: auto 0;
   }
 
   .santa-rita-club-bodega__hero-text p,
@@ -706,6 +777,14 @@
       min-height: 420px;
     }
 
+    .santa-rita-club-bodega__hero-video-wrapper--has-mobile .santa-rita-club-bodega__hero-video--desktop {
+      display: none;
+    }
+
+    .santa-rita-club-bodega__hero-video-wrapper--has-mobile .santa-rita-club-bodega__hero-video--mobile {
+      display: block;
+    }
+
     .santa-rita-club-bodega__hero-inner,
     .santa-rita-club-bodega__inner,
     .santa-rita-club-bodega__inner--narrow {
@@ -720,12 +799,31 @@
       font-size: 10px;
     }
 
+    .santa-rita-club-bodega__hero-content {
+      align-self: var(--hero-mobile-content-vertical, var(--hero-content-vertical, center));
+      justify-self: var(--hero-mobile-content-horizontal, var(--hero-content-horizontal, center));
+      text-align: var(--hero-mobile-text-align, var(--hero-text-align, center));
+      transform: translate(
+        var(--hero-mobile-content-offset-x, var(--hero-content-offset-x, 0)),
+        var(--hero-mobile-content-offset-y, var(--hero-content-offset-y, 0))
+      );
+    }
+
     .santa-rita-club-bodega__hero-content h1 {
       font-size: clamp(48px, 17vw, 68px);
     }
 
     .santa-rita-club-bodega__hero-text {
       font-size: 13px;
+      margin-inline: 0;
+    }
+
+    .santa-rita-club-bodega__hero-content[style*='--hero-mobile-text-align: center'] .santa-rita-club-bodega__hero-text {
+      margin-inline: auto;
+    }
+
+    .santa-rita-club-bodega__hero-content[style*='--hero-mobile-text-align: right'] .santa-rita-club-bodega__hero-text {
+      margin-inline: auto 0;
     }
 
     .santa-rita-club-bodega__benefits .santa-rita-club-bodega__inner,
@@ -808,9 +906,32 @@
       "content": "Hero"
     },
     {
+      "type": "video",
+      "id": "hero_video",
+      "label": "Video hero desktop",
+      "info": "Se muestra antes que la imagen. Se reproduce automaticamente, en loop y sin sonido."
+    },
+    {
+      "type": "video",
+      "id": "hero_mobile_video",
+      "label": "Video hero mobile",
+      "info": "Opcional. Si queda vacio se usara el video desktop."
+    },
+    {
       "type": "image_picker",
       "id": "hero_image",
-      "label": "Imagen hero"
+      "label": "Imagen hero",
+      "info": "Se usa como respaldo cuando no hay video."
+    },
+    {
+      "type": "range",
+      "id": "hero_overlay_opacity",
+      "label": "Opacidad del overlay",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 35
     },
     {
       "type": "checkbox",
@@ -852,6 +973,130 @@
       "type": "url",
       "id": "hero_button_url",
       "label": "URL boton hero"
+    },
+    {
+      "type": "header",
+      "content": "Posicion contenido hero desktop"
+    },
+    {
+      "type": "select",
+      "id": "hero_content_horizontal",
+      "label": "Posicion horizontal",
+      "default": "center",
+      "options": [
+        { "value": "start", "label": "Izquierda" },
+        { "value": "center", "label": "Centro" },
+        { "value": "end", "label": "Derecha" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hero_content_vertical",
+      "label": "Posicion vertical",
+      "default": "center",
+      "options": [
+        { "value": "start", "label": "Arriba" },
+        { "value": "center", "label": "Centro" },
+        { "value": "end", "label": "Abajo" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hero_text_alignment",
+      "label": "Alineacion texto",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "Izquierda" },
+        { "value": "center", "label": "Centro" },
+        { "value": "right", "label": "Derecha" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "hero_content_width",
+      "label": "Ancho maximo contenido",
+      "min": 220,
+      "max": 760,
+      "step": 10,
+      "unit": "px",
+      "default": 630
+    },
+    {
+      "type": "range",
+      "id": "hero_content_offset_x",
+      "label": "Mover horizontal",
+      "min": -500,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "hero_content_offset_y",
+      "label": "Mover vertical",
+      "min": -300,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Posicion contenido hero mobile"
+    },
+    {
+      "type": "select",
+      "id": "hero_mobile_content_horizontal",
+      "label": "Posicion horizontal mobile",
+      "default": "center",
+      "options": [
+        { "value": "start", "label": "Izquierda" },
+        { "value": "center", "label": "Centro" },
+        { "value": "end", "label": "Derecha" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hero_mobile_content_vertical",
+      "label": "Posicion vertical mobile",
+      "default": "center",
+      "options": [
+        { "value": "start", "label": "Arriba" },
+        { "value": "center", "label": "Centro" },
+        { "value": "end", "label": "Abajo" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "hero_mobile_text_alignment",
+      "label": "Alineacion texto mobile",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "Izquierda" },
+        { "value": "center", "label": "Centro" },
+        { "value": "right", "label": "Derecha" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "hero_mobile_content_offset_x",
+      "label": "Mover horizontal mobile",
+      "min": -240,
+      "max": 240,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "hero_mobile_content_offset_y",
+      "label": "Mover vertical mobile",
+      "min": -240,
+      "max": 240,
+      "step": 5,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "header",
