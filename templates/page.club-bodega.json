@@ -1,0 +1,180 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "club_bodega": {
+      "type": "santa-rita-club-bodega",
+      "blocks": {
+        "benefit_shipping": {
+          "type": "benefit",
+          "settings": {
+            "icon": "truck",
+            "badge": "Gratis",
+            "title": "Despacho sin costo",
+            "text": "<p>En toda la Region Metropolitana, sin costo adicional en tus pedidos mensuales.</p>"
+          }
+        },
+        "benefit_wines": {
+          "type": "benefit",
+          "settings": {
+            "icon": "bottle",
+            "badge": "-35%",
+            "title": "Descuento en vinos",
+            "text": "<p>En vinos premium del mes utilizando tu codigo exclusivo para miembros.</p>"
+          }
+        },
+        "benefit_tours": {
+          "type": "benefit",
+          "settings": {
+            "icon": "star",
+            "badge": "-50%",
+            "title": "Tours en la viña",
+            "text": "<p>Conoce nuestra viña con un descuento increible.</p>"
+          }
+        },
+        "benefit_hotel": {
+          "type": "benefit",
+          "settings": {
+            "icon": "heart",
+            "badge": "-20%",
+            "title": "Hotel Casa Real",
+            "text": "<p>En estadias en el exclusivo Hotel Casa Real, ubicado en el corazon de nuestra viña.</p>"
+          }
+        },
+        "step_join": {
+          "type": "step",
+          "settings": {
+            "title": "Unete al club",
+            "text": "<p>Elige el plan Club Bodega y completa tu suscripcion en minutos.</p>"
+          }
+        },
+        "step_receive": {
+          "type": "step",
+          "settings": {
+            "title": "Recibe seleccion de vinos",
+            "text": "<p>Con productos premium enviados tanto en mercado nacional como en el extranjero.</p>"
+          }
+        },
+        "step_enjoy": {
+          "type": "step",
+          "settings": {
+            "title": "Disfruta los beneficios",
+            "text": "<p>Accede a todos los beneficios del club: descuentos, despacho gratis, tours y estadias exclusivas.</p>"
+          }
+        },
+        "plan_feature_wines": {
+          "type": "plan_feature",
+          "settings": {
+            "text": "3 vinos premium seleccionados por nuestros expertos cada mes"
+          }
+        },
+        "plan_feature_shipping": {
+          "type": "plan_feature",
+          "settings": {
+            "text": "Despacho gratuito en toda la Region Metropolitana"
+          }
+        },
+        "plan_feature_discount": {
+          "type": "plan_feature",
+          "settings": {
+            "text": "Codigo de 35% de descuento en vinos premium del mes en santaritaonline.com"
+          }
+        },
+        "plan_feature_access": {
+          "type": "plan_feature",
+          "settings": {
+            "text": "Acceso exclusivo a beneficios en tours y estadias en la viña"
+          }
+        },
+        "faq_about": {
+          "type": "faq",
+          "settings": {
+            "question": "¿Qué es el Club Bodega de Santa Rita Online?",
+            "answer": "<p>Es una suscripcion mensual con vinos seleccionados y beneficios exclusivos para socios.</p>"
+          }
+        },
+        "faq_subscribe": {
+          "type": "faq",
+          "settings": {
+            "question": "¿Cómo me suscribo al Club Bodega?",
+            "answer": "<p>Puedes suscribirte desde esta pagina completando el proceso de compra del plan.</p>"
+          }
+        },
+        "faq_monthly": {
+          "type": "faq",
+          "settings": {
+            "question": "¿Qué vino recibo cada mes?",
+            "answer": "<p>La seleccion cambia mes a mes y es definida por expertos de Santa Rita.</p>"
+          }
+        },
+        "faq_cancel": {
+          "type": "faq",
+          "settings": {
+            "question": "¿Puedo cancelar mi suscripcion en cualquier momento?",
+            "answer": "<p>Si, puedes solicitar la cancelacion segun las condiciones vigentes del club.</p>"
+          }
+        },
+        "faq_store": {
+          "type": "faq",
+          "settings": {
+            "question": "¿Cuánto tiempo se puede guardar un vino chileno?",
+            "answer": "<p>Depende del tipo de vino y sus condiciones de guarda. Recomendamos mantenerlo en un lugar fresco, oscuro y estable.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "benefit_shipping",
+        "benefit_wines",
+        "benefit_tours",
+        "benefit_hotel",
+        "step_join",
+        "step_receive",
+        "step_enjoy",
+        "plan_feature_wines",
+        "plan_feature_shipping",
+        "plan_feature_discount",
+        "plan_feature_access",
+        "faq_about",
+        "faq_subscribe",
+        "faq_monthly",
+        "faq_cancel",
+        "faq_store"
+      ],
+      "name": "Club Bodega",
+      "settings": {
+        "show_breadcrumbs": true,
+        "breadcrumb_label": "Club Bodega",
+        "hero_kicker": "Club",
+        "hero_heading": "Bodega 695",
+        "hero_text": "<p>Vinos exclusivos seleccionados por nuestros expertos, directo de la cava a la puerta de tu casa.</p>",
+        "hero_button_label": "Quiero unirme",
+        "hero_button_url": "#unete",
+        "benefits_heading": "Beneficios exclusivos del Club Bodega",
+        "benefits_text": "Accede a grandes beneficios pensados para los verdaderos amantes del vino.",
+        "steps_heading": "¿Cómo funciona?",
+        "steps_text": "Tu Club Bodega en tres pasos.",
+        "join_heading": "Únete al Club Bodega",
+        "join_text": "Todo lo que necesitas para vivir la experiencia Santa Rita al máximo.",
+        "plan_title": "Club Bodega Santa Rita",
+        "plan_icon": "heart",
+        "plan_price": "$ 34.990 /mes",
+        "plan_note": "Precio mensual cargo seguro. Sin permanencia minima.",
+        "plan_button_label": "Unirme al Club Bodega",
+        "plan_button_url": "#",
+        "plan_disclaimer": "*El valor de la caja y despacho sera informado al cliente antes de cada cobro mensual.",
+        "faq_heading": "Preguntas frecuentes",
+        "faq_text": "Todo lo que necesitas saber sobre el Club Bodega."
+      }
+    }
+  },
+  "order": [
+    "club_bodega"
+  ]
+}

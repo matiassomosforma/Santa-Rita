@@ -1,0 +1,1189 @@
+{% liquid
+  assign benefit_blocks = section.blocks | where: 'type', 'benefit'
+  assign step_blocks = section.blocks | where: 'type', 'step'
+  assign feature_blocks = section.blocks | where: 'type', 'plan_feature'
+  assign faq_blocks = section.blocks | where: 'type', 'faq'
+%}
+
+<section class="santa-rita-club-bodega" {{ section.shopify_attributes }}>
+  <div class="santa-rita-club-bodega__hero" aria-labelledby="santa-rita-club-bodega-title-{{ section.id }}">
+    {% if section.settings.hero_image != blank %}
+      {{
+        section.settings.hero_image
+        | image_url: width: 2200
+        | image_tag:
+          widths: '375, 550, 750, 990, 1440, 1800, 2200',
+          sizes: '100vw',
+          loading: 'eager',
+          class: 'santa-rita-club-bodega__hero-image'
+      }}
+    {% else %}
+      {{ 'image' | placeholder_svg_tag: 'santa-rita-club-bodega__hero-image santa-rita-club-bodega__hero-image--placeholder' }}
+    {% endif %}
+
+    <div class="santa-rita-club-bodega__hero-overlay"></div>
+
+    <div class="santa-rita-club-bodega__hero-inner">
+      {% if section.settings.show_breadcrumbs %}
+        <nav class="santa-rita-club-bodega__breadcrumbs" aria-label="Breadcrumb">
+          <a href="{{ routes.root_url }}">Inicio</a>
+          <span aria-hidden="true">&gt;</span>
+          <span>{{ section.settings.breadcrumb_label }}</span>
+        </nav>
+      {% endif %}
+
+      <div class="santa-rita-club-bodega__hero-content">
+        {% if section.settings.hero_kicker != blank %}
+          <p class="santa-rita-club-bodega__kicker">{{ section.settings.hero_kicker }}</p>
+        {% endif %}
+
+        {% if section.settings.hero_heading != blank %}
+          <h1 id="santa-rita-club-bodega-title-{{ section.id }}">{{ section.settings.hero_heading }}</h1>
+        {% endif %}
+
+        {% if section.settings.hero_text != blank %}
+          <div class="santa-rita-club-bodega__hero-text">{{ section.settings.hero_text }}</div>
+        {% endif %}
+
+        {% if section.settings.hero_button_label != blank and section.settings.hero_button_url != blank %}
+          <a class="santa-rita-club-bodega__button" href="{{ section.settings.hero_button_url }}">
+            {{ section.settings.hero_button_label }}
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="santa-rita-club-bodega__benefits">
+    <div class="santa-rita-club-bodega__inner">
+      <div class="santa-rita-club-bodega__section-heading">
+        {% if section.settings.benefits_heading != blank %}
+          <h2>{{ section.settings.benefits_heading }}</h2>
+        {% endif %}
+
+        {% if section.settings.benefits_text != blank %}
+          <p>{{ section.settings.benefits_text }}</p>
+        {% endif %}
+      </div>
+
+      {% if benefit_blocks.size > 0 %}
+        <div class="santa-rita-club-bodega__benefit-grid">
+          {% for block in benefit_blocks %}
+            <article class="santa-rita-club-bodega__benefit-card" {{ block.shopify_attributes }}>
+              <div class="santa-rita-club-bodega__benefit-top">
+                <span class="santa-rita-club-bodega__benefit-icon" aria-hidden="true">
+                  {% render 'icon-or-image',
+                    icon: block.settings.icon,
+                    image_upload: block.settings.icon_image,
+                    width: 18,
+                    class_name: 'santa-rita-club-bodega__benefit-svg'
+                  %}
+                </span>
+
+                {% if block.settings.badge != blank %}
+                  <span class="santa-rita-club-bodega__badge">{{ block.settings.badge }}</span>
+                {% endif %}
+              </div>
+
+              {% if block.settings.title != blank %}
+                <h3>{{ block.settings.title }}</h3>
+              {% endif %}
+
+              {% if block.settings.text != blank %}
+                <div class="santa-rita-club-bodega__benefit-text">{{ block.settings.text }}</div>
+              {% endif %}
+            </article>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="santa-rita-club-bodega__steps">
+    <div class="santa-rita-club-bodega__inner">
+      <div class="santa-rita-club-bodega__section-heading santa-rita-club-bodega__section-heading--center">
+        {% if section.settings.steps_heading != blank %}
+          <h2>{{ section.settings.steps_heading }}</h2>
+        {% endif %}
+
+        {% if section.settings.steps_text != blank %}
+          <p>{{ section.settings.steps_text }}</p>
+        {% endif %}
+      </div>
+
+      {% if step_blocks.size > 0 %}
+        <div class="santa-rita-club-bodega__step-grid">
+          {% for block in step_blocks %}
+            <article class="santa-rita-club-bodega__step" {{ block.shopify_attributes }}>
+              <span class="santa-rita-club-bodega__step-number">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+
+              {% if block.settings.title != blank %}
+                <h3>{{ block.settings.title }}</h3>
+              {% endif %}
+
+              {% if block.settings.text != blank %}
+                <div class="santa-rita-club-bodega__step-text">{{ block.settings.text }}</div>
+              {% endif %}
+            </article>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="santa-rita-club-bodega__join" id="unete">
+    <div class="santa-rita-club-bodega__inner santa-rita-club-bodega__inner--narrow">
+      <div class="santa-rita-club-bodega__section-heading santa-rita-club-bodega__section-heading--center">
+        {% if section.settings.join_heading != blank %}
+          <h2>{{ section.settings.join_heading }}</h2>
+        {% endif %}
+
+        {% if section.settings.join_text != blank %}
+          <p>{{ section.settings.join_text }}</p>
+        {% endif %}
+      </div>
+
+      <article class="santa-rita-club-bodega__plan">
+        <header class="santa-rita-club-bodega__plan-header">
+          <h3>{{ section.settings.plan_title }}</h3>
+          <span aria-hidden="true">
+            {% render 'icon-or-image',
+              icon: section.settings.plan_icon,
+              image_upload: section.settings.plan_icon_image,
+              width: 18,
+              class_name: 'santa-rita-club-bodega__plan-icon'
+            %}
+          </span>
+        </header>
+
+        <div class="santa-rita-club-bodega__plan-body">
+          {% if feature_blocks.size > 0 %}
+            <ul class="santa-rita-club-bodega__plan-features">
+              {% for block in feature_blocks %}
+                <li {{ block.shopify_attributes }}>
+                  <span aria-hidden="true">+</span>
+                  <span>{{ block.settings.text }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+          <div class="santa-rita-club-bodega__plan-price">
+            <strong>{{ section.settings.plan_price }}</strong>
+
+            {% if section.settings.plan_note != blank %}
+              <p>{{ section.settings.plan_note }}</p>
+            {% endif %}
+
+            {% if section.settings.plan_button_label != blank and section.settings.plan_button_url != blank %}
+              <a class="santa-rita-club-bodega__button" href="{{ section.settings.plan_button_url }}">
+                {{ section.settings.plan_button_label }}
+              </a>
+            {% endif %}
+
+            {% if section.settings.plan_disclaimer != blank %}
+              <small>{{ section.settings.plan_disclaimer }}</small>
+            {% endif %}
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div class="santa-rita-club-bodega__faq">
+    <div class="santa-rita-club-bodega__inner">
+      <div class="santa-rita-club-bodega__section-heading">
+        {% if section.settings.faq_heading != blank %}
+          <h2>{{ section.settings.faq_heading }}</h2>
+        {% endif %}
+
+        {% if section.settings.faq_text != blank %}
+          <p>{{ section.settings.faq_text }}</p>
+        {% endif %}
+      </div>
+
+      {% if faq_blocks.size > 0 %}
+        <div class="santa-rita-club-bodega__faq-list">
+          {% for block in faq_blocks %}
+            <details class="santa-rita-club-bodega__faq-item" {{ block.shopify_attributes }}>
+              <summary>
+                <span>{{ block.settings.question }}</span>
+                <span aria-hidden="true">+</span>
+              </summary>
+
+              {% if block.settings.answer != blank %}
+                <div class="santa-rita-club-bodega__faq-answer">{{ block.settings.answer }}</div>
+              {% endif %}
+            </details>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+  .santa-rita-club-bodega {
+    display: block;
+    background: #fffcf7;
+    color: #21000f;
+  }
+
+  .santa-rita-club-bodega__hero {
+    position: relative;
+    min-height: clamp(430px, 49vw, 640px);
+    overflow: hidden;
+    background: #21000f;
+    color: #ffffff;
+  }
+
+  .santa-rita-club-bodega__hero-image,
+  .santa-rita-club-bodega__hero-image--placeholder {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .santa-rita-club-bodega__hero-image--placeholder {
+    background: #3a1624;
+    fill: rgba(255, 252, 247, 0.28);
+  }
+
+  .santa-rita-club-bodega__hero-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(33, 0, 15, 0.78) 0%, rgba(33, 0, 15, 0.3) 46%, rgba(33, 0, 15, 0.68) 100%),
+      linear-gradient(0deg, rgba(33, 0, 15, 0.38), rgba(33, 0, 15, 0.08));
+  }
+
+  .santa-rita-club-bodega__hero-inner,
+  .santa-rita-club-bodega__inner {
+    width: min(100% - 48px, 1224px);
+    margin-inline: auto;
+  }
+
+  .santa-rita-club-bodega__hero-inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    min-height: inherit;
+    grid-template-rows: auto 1fr;
+    padding-block: 22px 54px;
+  }
+
+  .santa-rita-club-bodega__breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #ffffff;
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .santa-rita-club-bodega__breadcrumbs a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .santa-rita-club-bodega__hero-content {
+    align-self: center;
+    justify-self: center;
+    width: min(100%, 630px);
+    text-align: center;
+  }
+
+  .santa-rita-club-bodega__kicker {
+    margin: 0 0 6px;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 15px;
+    letter-spacing: 0.16em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .santa-rita-club-bodega__hero-content h1 {
+    margin: 0;
+    color: #ffffff;
+    font-family: var(--font-heading--family);
+    font-size: clamp(54px, 8vw, 112px);
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 0.86;
+    text-transform: uppercase;
+  }
+
+  .santa-rita-club-bodega__hero-text {
+    width: min(100%, 490px);
+    margin: 22px auto 0;
+    color: #ffffff;
+    font-size: 16px;
+    line-height: 1.32;
+  }
+
+  .santa-rita-club-bodega__hero-text p,
+  .santa-rita-club-bodega__benefit-text p,
+  .santa-rita-club-bodega__step-text p {
+    margin: 0;
+  }
+
+  .santa-rita-club-bodega__button {
+    display: inline-flex;
+    min-height: 34px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background: #9b1742;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    padding-inline: 18px;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+
+  .santa-rita-club-bodega__button:hover {
+    background: #72102f;
+  }
+
+  .santa-rita-club-bodega__hero-content .santa-rita-club-bodega__button {
+    margin-top: 20px;
+  }
+
+  .santa-rita-club-bodega__benefits,
+  .santa-rita-club-bodega__join {
+    background: #fffcf7;
+  }
+
+  .santa-rita-club-bodega__benefits .santa-rita-club-bodega__inner {
+    padding-block: 42px 54px;
+  }
+
+  .santa-rita-club-bodega__section-heading {
+    margin-bottom: 28px;
+  }
+
+  .santa-rita-club-bodega__section-heading--center {
+    text-align: center;
+  }
+
+  .santa-rita-club-bodega__section-heading h2 {
+    margin: 0 0 8px;
+    color: inherit;
+    font-family: var(--font-heading--family);
+    font-size: clamp(28px, 3vw, 38px);
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.05;
+  }
+
+  .santa-rita-club-bodega__section-heading p {
+    margin: 0;
+    color: #4b333b;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .santa-rita-club-bodega__benefit-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .santa-rita-club-bodega__benefit-card {
+    min-height: 170px;
+    border: 1px solid rgba(140, 26, 62, 0.08);
+    border-radius: 4px;
+    background: #fff8ef;
+    padding: 20px;
+    box-shadow: 0 12px 20px rgba(140, 26, 62, 0.04);
+  }
+
+  .santa-rita-club-bodega__benefit-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .santa-rita-club-bodega__benefit-icon {
+    display: inline-grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 50%;
+    background: #f4e4dc;
+    color: #9b1742;
+  }
+
+  .santa-rita-club-bodega__benefit-svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+  }
+
+  .santa-rita-club-bodega__badge {
+    display: inline-flex;
+    min-height: 18px;
+    align-items: center;
+    border-radius: 999px;
+    background: #21000f;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    padding-inline: 9px;
+  }
+
+  .santa-rita-club-bodega__benefit-card h3 {
+    margin: 0 0 7px;
+    color: #21000f;
+    font-family: var(--font-heading--family);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.12;
+  }
+
+  .santa-rita-club-bodega__benefit-text {
+    color: #4b333b;
+    font-size: 13px;
+    line-height: 1.34;
+  }
+
+  .santa-rita-club-bodega__steps,
+  .santa-rita-club-bodega__faq {
+    background: #21000f;
+    color: #ffffff;
+  }
+
+  .santa-rita-club-bodega__steps .santa-rita-club-bodega__inner {
+    padding-block: 56px 66px;
+  }
+
+  .santa-rita-club-bodega__steps .santa-rita-club-bodega__section-heading p,
+  .santa-rita-club-bodega__faq .santa-rita-club-bodega__section-heading p {
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .santa-rita-club-bodega__step-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(48px, 9vw, 126px);
+    margin-top: 44px;
+  }
+
+  .santa-rita-club-bodega__step-number {
+    display: inline-grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    margin-bottom: 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+    font-family: var(--font-heading--family);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .santa-rita-club-bodega__step h3 {
+    margin: 0 0 8px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .santa-rita-club-bodega__step-text {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+    line-height: 1.34;
+  }
+
+  .santa-rita-club-bodega__join .santa-rita-club-bodega__inner {
+    padding-block: 48px 62px;
+  }
+
+  .santa-rita-club-bodega__inner--narrow {
+    width: min(100% - 48px, 690px);
+  }
+
+  .santa-rita-club-bodega__plan {
+    overflow: hidden;
+    border: 1px solid #9b1742;
+    border-radius: 4px;
+    background: #ffffff;
+    color: #21000f;
+  }
+
+  .santa-rita-club-bodega__plan-header {
+    display: flex;
+    min-height: 56px;
+    align-items: center;
+    justify-content: space-between;
+    background: #9b1742;
+    color: #ffffff;
+    padding-inline: 24px;
+  }
+
+  .santa-rita-club-bodega__plan-header h3 {
+    margin: 0;
+    color: inherit;
+    font-family: var(--font-heading--family);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .santa-rita-club-bodega__plan-header span {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .santa-rita-club-bodega__plan-icon {
+    display: block;
+    width: 18px;
+    height: 18px;
+  }
+
+  .santa-rita-club-bodega__plan-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 28px;
+    padding: 24px;
+  }
+
+  .santa-rita-club-bodega__plan-features {
+    display: grid;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .santa-rita-club-bodega__plan-features li {
+    display: grid;
+    grid-template-columns: 14px minmax(0, 1fr);
+    gap: 9px;
+    align-items: start;
+    color: #3c2530;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .santa-rita-club-bodega__plan-features li span:first-child {
+    color: #9b1742;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .santa-rita-club-bodega__plan-price {
+    border-left: 1px solid rgba(140, 26, 62, 0.18);
+    padding-left: 28px;
+  }
+
+  .santa-rita-club-bodega__plan-price strong {
+    display: block;
+    color: #21000f;
+    font-size: 26px;
+    line-height: 1.05;
+  }
+
+  .santa-rita-club-bodega__plan-price p {
+    margin: 8px 0 18px;
+    color: #6e5a61;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .santa-rita-club-bodega__plan-price .santa-rita-club-bodega__button {
+    width: 100%;
+  }
+
+  .santa-rita-club-bodega__plan-price small {
+    display: block;
+    margin-top: 12px;
+    color: #6e5a61;
+    font-size: 10px;
+    line-height: 1.35;
+  }
+
+  .santa-rita-club-bodega__faq .santa-rita-club-bodega__inner {
+    padding-block: 56px 70px;
+  }
+
+  .santa-rita-club-bodega__faq-list {
+    margin-top: 26px;
+  }
+
+  .santa-rita-club-bodega__faq-item {
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .santa-rita-club-bodega__faq-item:last-child {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .santa-rita-club-bodega__faq-item summary {
+    display: flex;
+    min-height: 64px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+    list-style: none;
+  }
+
+  .santa-rita-club-bodega__faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .santa-rita-club-bodega__faq-item summary span:last-child {
+    font-size: 20px;
+    line-height: 1;
+    transition: transform 0.2s ease;
+  }
+
+  .santa-rita-club-bodega__faq-item[open] summary span:last-child {
+    transform: rotate(45deg);
+  }
+
+  .santa-rita-club-bodega__faq-answer {
+    max-width: 760px;
+    padding-bottom: 22px;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .santa-rita-club-bodega__faq-answer p {
+    margin: 0;
+  }
+
+  .santa-rita-club-bodega__faq-answer p + p {
+    margin-top: 8px;
+  }
+
+  @media screen and (max-width: 989px) {
+    .santa-rita-club-bodega__benefit-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .santa-rita-club-bodega__step-grid {
+      gap: 28px;
+    }
+
+    .santa-rita-club-bodega__plan-body {
+      grid-template-columns: 1fr;
+    }
+
+    .santa-rita-club-bodega__plan-price {
+      border-top: 1px solid rgba(140, 26, 62, 0.18);
+      border-left: 0;
+      padding-top: 22px;
+      padding-left: 0;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-club-bodega__hero {
+      min-height: 420px;
+    }
+
+    .santa-rita-club-bodega__hero-inner,
+    .santa-rita-club-bodega__inner,
+    .santa-rita-club-bodega__inner--narrow {
+      width: calc(100% - 30px);
+    }
+
+    .santa-rita-club-bodega__hero-inner {
+      padding-block: 14px 32px;
+    }
+
+    .santa-rita-club-bodega__breadcrumbs {
+      font-size: 10px;
+    }
+
+    .santa-rita-club-bodega__hero-content h1 {
+      font-size: clamp(48px, 17vw, 68px);
+    }
+
+    .santa-rita-club-bodega__hero-text {
+      font-size: 13px;
+    }
+
+    .santa-rita-club-bodega__benefits .santa-rita-club-bodega__inner,
+    .santa-rita-club-bodega__steps .santa-rita-club-bodega__inner,
+    .santa-rita-club-bodega__join .santa-rita-club-bodega__inner,
+    .santa-rita-club-bodega__faq .santa-rita-club-bodega__inner {
+      padding-block: 36px;
+    }
+
+    .santa-rita-club-bodega__section-heading {
+      margin-bottom: 22px;
+    }
+
+    .santa-rita-club-bodega__section-heading h2 {
+      font-size: 24px;
+    }
+
+    .santa-rita-club-bodega__section-heading p {
+      font-size: 13px;
+    }
+
+    .santa-rita-club-bodega__benefit-grid,
+    .santa-rita-club-bodega__step-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .santa-rita-club-bodega__benefit-card {
+      min-height: auto;
+      padding: 18px;
+    }
+
+    .santa-rita-club-bodega__step-grid {
+      margin-top: 28px;
+      gap: 0;
+    }
+
+    .santa-rita-club-bodega__step {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      column-gap: 12px;
+      padding-block: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .santa-rita-club-bodega__step-number {
+      width: 34px;
+      height: 34px;
+      margin: 0;
+      font-size: 13px;
+      grid-row: span 2;
+    }
+
+    .santa-rita-club-bodega__step h3 {
+      font-size: 14px;
+    }
+
+    .santa-rita-club-bodega__plan-header,
+    .santa-rita-club-bodega__plan-body {
+      padding-inline: 18px;
+    }
+
+    .santa-rita-club-bodega__plan-body {
+      gap: 20px;
+      padding-block: 20px;
+    }
+
+    .santa-rita-club-bodega__faq-item summary {
+      min-height: 56px;
+      font-size: 13px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Club Bodega",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Hero"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Imagen hero"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumbs",
+      "label": "Mostrar breadcrumb",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "breadcrumb_label",
+      "label": "Texto breadcrumb",
+      "default": "Club Bodega"
+    },
+    {
+      "type": "text",
+      "id": "hero_kicker",
+      "label": "Texto sobre el titulo",
+      "default": "Club"
+    },
+    {
+      "type": "text",
+      "id": "hero_heading",
+      "label": "Titulo hero",
+      "default": "Bodega 695"
+    },
+    {
+      "type": "richtext",
+      "id": "hero_text",
+      "label": "Bajada hero",
+      "default": "<p>Vinos exclusivos seleccionados por nuestros expertos, directo de la cava a la puerta de tu casa.</p>"
+    },
+    {
+      "type": "text",
+      "id": "hero_button_label",
+      "label": "Texto boton hero",
+      "default": "Quiero unirme"
+    },
+    {
+      "type": "url",
+      "id": "hero_button_url",
+      "label": "URL boton hero"
+    },
+    {
+      "type": "header",
+      "content": "Beneficios"
+    },
+    {
+      "type": "text",
+      "id": "benefits_heading",
+      "label": "Titulo beneficios",
+      "default": "Beneficios exclusivos del Club Bodega"
+    },
+    {
+      "type": "text",
+      "id": "benefits_text",
+      "label": "Texto beneficios",
+      "default": "Accede a grandes beneficios pensados para los verdaderos amantes del vino."
+    },
+    {
+      "type": "header",
+      "content": "Pasos"
+    },
+    {
+      "type": "text",
+      "id": "steps_heading",
+      "label": "Titulo pasos",
+      "default": "¿Cómo funciona?"
+    },
+    {
+      "type": "text",
+      "id": "steps_text",
+      "label": "Texto pasos",
+      "default": "Tu Club Bodega en tres pasos."
+    },
+    {
+      "type": "header",
+      "content": "Plan"
+    },
+    {
+      "type": "text",
+      "id": "join_heading",
+      "label": "Titulo seccion plan",
+      "default": "Únete al Club Bodega"
+    },
+    {
+      "type": "text",
+      "id": "join_text",
+      "label": "Texto seccion plan",
+      "default": "Todo lo que necesitas para vivir la experiencia Santa Rita al máximo."
+    },
+    {
+      "type": "text",
+      "id": "plan_title",
+      "label": "Titulo plan",
+      "default": "Club Bodega Santa Rita"
+    },
+    {
+      "type": "select",
+      "id": "plan_icon",
+      "label": "Icono plan",
+      "default": "heart",
+      "options": [
+        { "value": "heart", "label": "Corazon" },
+        { "value": "bottle", "label": "Botella" },
+        { "value": "box", "label": "Caja" },
+        { "value": "star", "label": "Estrella" }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "plan_icon_image",
+      "label": "Imagen icono plan"
+    },
+    {
+      "type": "text",
+      "id": "plan_price",
+      "label": "Precio",
+      "default": "$ 34.990 /mes"
+    },
+    {
+      "type": "text",
+      "id": "plan_note",
+      "label": "Nota precio",
+      "default": "Precio mensual cargo seguro. Sin permanencia minima."
+    },
+    {
+      "type": "text",
+      "id": "plan_button_label",
+      "label": "Texto boton plan",
+      "default": "Unirme al Club Bodega"
+    },
+    {
+      "type": "url",
+      "id": "plan_button_url",
+      "label": "URL boton plan"
+    },
+    {
+      "type": "text",
+      "id": "plan_disclaimer",
+      "label": "Bajada plan",
+      "default": "*El valor de la caja y despacho sera informado al cliente antes de cada cobro mensual."
+    },
+    {
+      "type": "header",
+      "content": "FAQ"
+    },
+    {
+      "type": "text",
+      "id": "faq_heading",
+      "label": "Titulo FAQ",
+      "default": "Preguntas frecuentes"
+    },
+    {
+      "type": "text",
+      "id": "faq_text",
+      "label": "Texto FAQ",
+      "default": "Todo lo que necesitas saber sobre el Club Bodega."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Beneficio",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icono",
+          "default": "truck",
+          "options": [
+            { "value": "truck", "label": "Despacho" },
+            { "value": "bottle", "label": "Botella" },
+            { "value": "box", "label": "Caja" },
+            { "value": "heart", "label": "Corazon" },
+            { "value": "star", "label": "Estrella" }
+          ]
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Imagen icono"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Etiqueta",
+          "default": "Gratis"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titulo",
+          "default": "Despacho sin costo"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "<p>En toda la Region Metropolitana, sin costo adicional en tus pedidos mensuales.</p>"
+        }
+      ]
+    },
+    {
+      "type": "step",
+      "name": "Paso",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titulo",
+          "default": "Unete al club"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Texto",
+          "default": "<p>Elige el plan Club Bodega y completa tu suscripcion en minutos.</p>"
+        }
+      ]
+    },
+    {
+      "type": "plan_feature",
+      "name": "Caracteristica plan",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Texto",
+          "default": "3 vinos premium seleccionados por nuestros expertos cada mes"
+        }
+      ]
+    },
+    {
+      "type": "faq",
+      "name": "Pregunta frecuente",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Pregunta",
+          "default": "¿Qué es el Club Bodega de Santa Rita Online?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Respuesta",
+          "default": "<p>Es una suscripcion mensual con vinos seleccionados y beneficios exclusivos para socios.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Club Bodega",
+      "blocks": [
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "truck",
+            "badge": "Gratis",
+            "title": "Despacho sin costo",
+            "text": "<p>En toda la Region Metropolitana, sin costo adicional en tus pedidos mensuales.</p>"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "bottle",
+            "badge": "-35%",
+            "title": "Descuento en vinos",
+            "text": "<p>En vinos premium del mes utilizando tu codigo exclusivo para miembros.</p>"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "star",
+            "badge": "-50%",
+            "title": "Tours en la viña",
+            "text": "<p>Conoce nuestra viña con un descuento increible.</p>"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "icon": "heart",
+            "badge": "-20%",
+            "title": "Hotel Casa Real",
+            "text": "<p>En estadias en el exclusivo Hotel Casa Real, ubicado en el corazon de nuestra viña.</p>"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Unete al club",
+            "text": "<p>Elige el plan Club Bodega y completa tu suscripcion en minutos.</p>"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Recibe seleccion de vinos",
+            "text": "<p>Con productos premium enviados tanto en mercado nacional como en el extranjero.</p>"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Disfruta los beneficios",
+            "text": "<p>Accede a todos los beneficios del club: descuentos, despacho gratis, tours y estadias exclusivas.</p>"
+          }
+        },
+        {
+          "type": "plan_feature",
+          "settings": {
+            "text": "3 vinos premium seleccionados por nuestros expertos cada mes"
+          }
+        },
+        {
+          "type": "plan_feature",
+          "settings": {
+            "text": "Despacho gratuito en toda la Region Metropolitana"
+          }
+        },
+        {
+          "type": "plan_feature",
+          "settings": {
+            "text": "Codigo de 35% de descuento en vinos premium del mes en santaritaonline.com"
+          }
+        },
+        {
+          "type": "plan_feature",
+          "settings": {
+            "text": "Acceso exclusivo a beneficios en tours y estadias en la viña"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "¿Qué es el Club Bodega de Santa Rita Online?",
+            "answer": "<p>Es una suscripcion mensual con vinos seleccionados y beneficios exclusivos para socios.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "¿Cómo me suscribo al Club Bodega?",
+            "answer": "<p>Puedes suscribirte desde esta pagina completando el proceso de compra del plan.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "¿Qué vino recibo cada mes?",
+            "answer": "<p>La seleccion cambia mes a mes y es definida por expertos de Santa Rita.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "¿Puedo cancelar mi suscripcion en cualquier momento?",
+            "answer": "<p>Si, puedes solicitar la cancelacion segun las condiciones vigentes del club.</p>"
+          }
+        },
+        {
+          "type": "faq",
+          "settings": {
+            "question": "¿Cuánto tiempo se puede guardar un vino chileno?",
+            "answer": "<p>Depende del tipo de vino y sus condiciones de guarda. Recomendamos mantenerlo en un lugar fresco, oscuro y estable.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
