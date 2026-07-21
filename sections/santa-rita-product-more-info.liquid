@@ -23,53 +23,55 @@
   if pairing_recommendation_metafield == blank
     assign pairing_recommendation_metafield = product.metafields.custom['recommended_pairing']
   endif
+
+  assign recognitions_metafield = product.metafields.custom['reconocimientos']
 %}
 
-{% if more_info_items_metafield != blank or expert_comment_metafield != blank or technical_data_metafield != blank or pairing_recommendation_metafield != blank or request.design_mode %}
+{% if more_info_items_metafield != blank or expert_comment_metafield != blank or technical_data_metafield != blank or pairing_recommendation_metafield != blank or recognitions_metafield != blank or request.design_mode %}
   <section class="santa-rita-product-more-info" aria-labelledby="santa-rita-product-more-info-title" data-santa-rita-product-more-info>
     <div class="santa-rita-product-more-info__inner">
       <h2 id="santa-rita-product-more-info-title" class="santa-rita-product-more-info__title">
         {{ section.settings.heading }}
       </h2>
 
-      {% if more_info_items_metafield != blank %}
+      {% if more_info_items_metafield != blank or expert_comment_metafield != blank or technical_data_metafield != blank or pairing_recommendation_metafield != blank or recognitions_metafield != blank %}
         <div class="santa-rita-product-more-info__items">
-          {% for info_item in more_info_items_metafield.value %}
-            {% liquid
-              assign info_title = info_item.titulo.value | default: info_item.title.value | default: info_item.nombre.value | default: info_item.name.value | default: info_item.system.name
-              assign info_content = info_item.contenido.value | default: info_item.content.value | default: info_item.texto.value | default: info_item.descripcion.value | default: info_item.description.value
-            %}
+          {% if more_info_items_metafield != blank %}
+            {% for info_item in more_info_items_metafield.value %}
+              {% liquid
+                assign info_title = info_item.titulo.value | default: info_item.title.value | default: info_item.nombre.value | default: info_item.name.value | default: info_item.system.name
+                assign info_content = info_item.contenido.value | default: info_item.content.value | default: info_item.texto.value | default: info_item.descripcion.value | default: info_item.description.value
+              %}
 
-            {% if info_title != blank %}
-              <details class="santa-rita-product-more-info__item">
-                <summary class="santa-rita-product-more-info__summary">
-                  <span>{{ info_title }}</span>
-                  <span class="santa-rita-product-more-info__icon" aria-hidden="true"></span>
-                </summary>
+              {% if info_title != blank %}
+                <details class="santa-rita-product-more-info__item">
+                  <summary class="santa-rita-product-more-info__summary">
+                    <span>{{ info_title }}</span>
+                    <span class="santa-rita-product-more-info__icon" aria-hidden="true"></span>
+                  </summary>
 
-                {% if info_content != blank %}
-                  <div class="santa-rita-product-more-info__answer">
-                    {% if info_item.contenido != blank %}
-                      {{ info_item.contenido | metafield_tag }}
-                    {% elsif info_item.content != blank %}
-                      {{ info_item.content | metafield_tag }}
-                    {% elsif info_item.texto != blank %}
-                      {{ info_item.texto | metafield_tag }}
-                    {% elsif info_item.descripcion != blank %}
-                      {{ info_item.descripcion | metafield_tag }}
-                    {% elsif info_item.description != blank %}
-                      {{ info_item.description | metafield_tag }}
-                    {% else %}
-                      <p>{{ info_content }}</p>
-                    {% endif %}
-                  </div>
-                {% endif %}
-              </details>
-            {% endif %}
-          {% endfor %}
-        </div>
-      {% elsif expert_comment_metafield != blank or technical_data_metafield != blank or pairing_recommendation_metafield != blank %}
-        <div class="santa-rita-product-more-info__items">
+                  {% if info_content != blank %}
+                    <div class="santa-rita-product-more-info__answer">
+                      {% if info_item.contenido != blank %}
+                        {{ info_item.contenido | metafield_tag }}
+                      {% elsif info_item.content != blank %}
+                        {{ info_item.content | metafield_tag }}
+                      {% elsif info_item.texto != blank %}
+                        {{ info_item.texto | metafield_tag }}
+                      {% elsif info_item.descripcion != blank %}
+                        {{ info_item.descripcion | metafield_tag }}
+                      {% elsif info_item.description != blank %}
+                        {{ info_item.description | metafield_tag }}
+                      {% else %}
+                        <p>{{ info_content }}</p>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                </details>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
           {% if expert_comment_metafield != blank %}
             <details class="santa-rita-product-more-info__item">
               <summary class="santa-rita-product-more-info__summary">
@@ -105,6 +107,60 @@
 
               <div class="santa-rita-product-more-info__answer">
                 {{ pairing_recommendation_metafield | metafield_tag }}
+              </div>
+            </details>
+          {% endif %}
+
+          {% if recognitions_metafield != blank %}
+            <details class="santa-rita-product-more-info__item">
+              <summary class="santa-rita-product-more-info__summary">
+                <span>Reconocimientos</span>
+                <span class="santa-rita-product-more-info__icon" aria-hidden="true"></span>
+              </summary>
+
+              <div class="santa-rita-product-more-info__answer santa-rita-product-more-info__answer--wide">
+                <div class="santa-rita-product-more-info__recognitions" role="list">
+                  {% for recognition in recognitions_metafield.value %}
+                    {% liquid
+                      assign recognition_image = recognition.medalla.value | default: recognition.imagen.value | default: recognition.image.value
+                      assign recognition_contest = recognition.concurso.value | default: recognition.nombre.value | default: recognition.name.value | default: recognition.system.name
+                      assign recognition_points = recognition.puntos.value | default: recognition.points.value
+                      assign recognition_vintage = recognition.cosecha.value | default: recognition.vintage.value | default: recognition.ano.value | default: recognition.year.value
+                    %}
+
+                    {% if recognition_image != blank or recognition_contest != blank or recognition_points != blank or recognition_vintage != blank %}
+                      <div class="santa-rita-product-more-info__recognition" role="listitem">
+                        <div class="santa-rita-product-more-info__recognition-medal">
+                          {% if recognition_image != blank %}
+                            {{
+                              recognition_image
+                              | image_url: width: 120
+                              | image_tag:
+                                class: 'santa-rita-product-more-info__recognition-image',
+                                widths: '60, 90, 120',
+                                sizes: '60px',
+                                loading: 'lazy'
+                            }}
+                          {% endif %}
+                        </div>
+
+                        <div class="santa-rita-product-more-info__recognition-contest">
+                          {{ recognition_contest }}
+                        </div>
+
+                        <div class="santa-rita-product-more-info__recognition-points">
+                          {% if recognition_points != blank %}
+                            <strong>{{ recognition_points }}</strong><span> pts.</span>
+                          {% endif %}
+                        </div>
+
+                        <div class="santa-rita-product-more-info__recognition-vintage">
+                          {{ recognition_vintage }}
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
               </div>
             </details>
           {% endif %}
@@ -187,12 +243,65 @@
     line-height: 1.5;
   }
 
+  .santa-rita-product-more-info__answer--wide {
+    max-width: none;
+  }
+
   .santa-rita-product-more-info__answer > * {
     margin-top: 0;
   }
 
   .santa-rita-product-more-info__answer > *:last-child {
     margin-bottom: 0;
+  }
+
+  .santa-rita-product-more-info__recognitions {
+    display: grid;
+  }
+
+  .santa-rita-product-more-info__recognition {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 86px minmax(0, 1.35fr) minmax(96px, 0.65fr) minmax(76px, 0.45fr);
+    gap: 28px;
+    padding: 16px 0;
+    border-bottom: 1px dashed rgba(37, 23, 27, 0.42);
+  }
+
+  .santa-rita-product-more-info__recognition:last-child {
+    border-bottom: 0;
+  }
+
+  .santa-rita-product-more-info__recognition-medal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+  }
+
+  .santa-rita-product-more-info__recognition-image {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+  }
+
+  .santa-rita-product-more-info__recognition-contest,
+  .santa-rita-product-more-info__recognition-vintage {
+    font-size: 24px;
+    line-height: 1.25;
+  }
+
+  .santa-rita-product-more-info__recognition-points {
+    color: #000;
+    font-size: 23px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .santa-rita-product-more-info__recognition-points strong {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: 0;
   }
 
   .santa-rita-product-more-info__empty {
@@ -221,6 +330,40 @@
     .santa-rita-product-more-info__answer {
       margin: -2px 0 18px;
       font-size: 14px;
+    }
+
+    .santa-rita-product-more-info__recognition {
+      grid-template-columns: 56px minmax(0, 1fr) auto;
+      gap: 12px;
+      padding: 14px 0;
+    }
+
+    .santa-rita-product-more-info__recognition-medal {
+      min-height: 46px;
+    }
+
+    .santa-rita-product-more-info__recognition-image {
+      width: 46px;
+      height: 46px;
+    }
+
+    .santa-rita-product-more-info__recognition-contest {
+      font-size: 16px;
+    }
+
+    .santa-rita-product-more-info__recognition-points {
+      font-size: 13px;
+      text-align: right;
+    }
+
+    .santa-rita-product-more-info__recognition-points strong {
+      font-size: 24px;
+    }
+
+    .santa-rita-product-more-info__recognition-vintage {
+      grid-column: 2 / -1;
+      font-size: 14px;
+      color: rgba(37, 23, 27, 0.72);
     }
   }
 </style>
@@ -325,7 +468,7 @@
     },
     {
       "type": "paragraph",
-      "content": "Usa el metacampo de producto custom.informacion_producto_items como lista de metaobjetos. Cada metaobjeto debe tener titulo y contenido."
+      "content": "Usa custom.informacion_producto_items como lista de metaobjetos con titulo y contenido. Si el producto tiene custom.reconocimientos, se agrega una seccion con medalla, concurso, puntos y cosecha."
     }
   ],
   "presets": [

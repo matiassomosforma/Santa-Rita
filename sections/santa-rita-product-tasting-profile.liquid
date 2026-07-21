@@ -26,7 +26,42 @@
     assign mouthfeel_metafield = product.metafields.custom['presencia_en_boca']
   endif
 
-  assign mouthfeel = mouthfeel_metafield.value | default: mouthfeel_metafield | default: section.settings.default_mouthfeel
+  assign has_aromas = false
+  assign has_pairings = false
+  assign has_mouthfeel = false
+  assign has_temperature = false
+
+  if aroma_items_metafield != blank or aromas_metafield != blank
+    assign has_aromas = true
+  endif
+
+  if pairing_items_metafield != blank or pairings_metafield != blank
+    assign has_pairings = true
+  endif
+
+  if mouthfeel_metafield != blank or chips_metafield != blank
+    assign has_mouthfeel = true
+  endif
+
+  if temperature_metafield != blank
+    assign has_temperature = true
+  endif
+
+  assign profile_slide_count = 0
+
+  if has_aromas
+    assign profile_slide_count = profile_slide_count | plus: 1
+  endif
+
+  if has_mouthfeel or has_temperature
+    assign profile_slide_count = profile_slide_count | plus: 1
+  endif
+
+  if has_pairings
+    assign profile_slide_count = profile_slide_count | plus: 1
+  endif
+
+  assign mouthfeel = mouthfeel_metafield.value | default: mouthfeel_metafield
   assign mouthfeel_handle = mouthfeel | handleize
   assign mouthfeel_progress = '25%'
 
@@ -39,21 +74,26 @@
       assign mouthfeel_handle = 'seco'
   endcase
 
-  assign temperature = temperature_metafield.value | default: temperature_metafield | default: section.settings.default_temperature
+  assign temperature = temperature_metafield.value | default: temperature_metafield
 %}
 
-{% if section.settings.enable_section %}
+{% if section.settings.enable_section and profile_slide_count > 0 %}
   <section class="santa-rita-tasting-profile color-{{ section.settings.color_scheme }}" data-santa-rita-tasting-profile="{{ section.id }}">
     <div class="santa-rita-tasting-profile__inner">
       {% if section.settings.heading != blank %}
         <h2 class="santa-rita-tasting-profile__heading">{{ section.settings.heading }}</h2>
       {% endif %}
 
-      <div class="santa-rita-tasting-profile__grid" data-tasting-profile-slider>
-        <div class="santa-rita-tasting-profile__panel">
-          <h3 class="santa-rita-tasting-profile__title">Aromas</h3>
-          <div class="santa-rita-tasting-profile__items">
-            {% if aroma_items_metafield != blank %}
+      <div
+        class="santa-rita-tasting-profile__grid"
+        style="--tasting-profile-columns: {{ profile_slide_count }};"
+        data-tasting-profile-slider
+      >
+        {% if has_aromas %}
+          <div class="santa-rita-tasting-profile__panel">
+            <h3 class="santa-rita-tasting-profile__title">Aromas</h3>
+            <div class="santa-rita-tasting-profile__items">
+              {% if aroma_items_metafield != blank %}
               {% for aroma_item in aroma_items_metafield.value %}
                 {% liquid
                   assign item_label = aroma_item.nombre.value | default: aroma_item.name.value | default: aroma_item.titulo.value | default: aroma_item.title.value | default: aroma_item.texto.value | default: aroma_item.system.name
@@ -80,7 +120,7 @@
                   </div>
                 {% endif %}
               {% endfor %}
-            {% elsif aromas_metafield != blank %}
+              {% elsif aromas_metafield != blank %}
               {% for aroma in aromas_metafield.value %}
                 {% liquid
                   assign item_label = aroma | strip
@@ -129,243 +169,167 @@
                   </div>
                 {% endif %}
               {% endfor %}
-            {% else %}
-              {% assign default_aromas = section.settings.default_aromas | split: ',' %}
-              {% for aroma in default_aromas %}
-                {% liquid
-                  assign item_label = aroma | strip
-                  assign item_handle = item_label | handleize
-                  assign item_image = blank
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
 
-                  case item_handle
-                    when 'citrico'
-                      assign item_image = section.settings.image_aroma_citrico
-                    when 'frutas-verdes'
-                      assign item_image = section.settings.image_aroma_frutas_verdes
-                    when 'tropical'
-                      assign item_image = section.settings.image_aroma_tropical
-                    when 'toques-herbales'
-                      assign item_image = section.settings.image_aroma_toques_herbales
-                  endcase
-                %}
-                {% if item_label != blank %}
-                  <div class="santa-rita-tasting-profile__item">
-                    <span class="santa-rita-tasting-profile__thumb">
-                      {% if item_image != blank %}
-                        {{
-                          item_image
-                          | image_url: width: 160
-                          | image_tag:
-                            class: 'santa-rita-tasting-profile__image',
-                            widths: '80, 120, 160',
-                            sizes: '80px',
-                            loading: 'lazy'
-                        }}
-                      {% else %}
-                        <span class="santa-rita-tasting-profile__fallback">{{ item_label | slice: 0, 1 }}</span>
-                      {% endif %}
-                    </span>
-                    <span class="santa-rita-tasting-profile__label">{{ item_label }}</span>
+        {% if has_mouthfeel or has_temperature %}
+          <div class="santa-rita-tasting-profile__center">
+            {% if has_mouthfeel %}
+              <div class="santa-rita-tasting-profile__panel">
+                <h3 class="santa-rita-tasting-profile__title">Presencia en boca</h3>
+                {% if mouthfeel_metafield != blank %}
+                  <div class="santa-rita-tasting-profile__mouthfeel" style="--mouthfeel-progress: {{ mouthfeel_progress }};">
+                    {% assign mouthfeel_options = 'Seco,Semidulce,Dulce' | split: ',' %}
+                    {% for option in mouthfeel_options %}
+                      {% assign option_handle = option | handleize %}
+                      <div class="santa-rita-tasting-profile__mouthfeel-option{% if mouthfeel_handle == option_handle %} is-active{% endif %}">
+                        <span class="santa-rita-tasting-profile__drop" aria-hidden="true">
+                          {% case option_handle %}
+                            {% when 'semidulce' %}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="19" height="14" viewBox="0 0 19 14" fill="none">
+                                <path d="M9.40298 13.7101C6.90916 13.7101 4.51747 12.7194 2.75407 10.956C0.990669 9.19262 0 6.80093 0 4.3071C0 -1.96156 12.4028 0.460034 12.4028 0.460034C12.4028 0.460034 18.4028 -1.38767 18.4028 3.95947C18.4028 6.4533 17.8153 9.19262 16.0519 10.956C14.2885 12.7194 11.8968 13.7101 9.40298 13.7101Z" fill="white"/>
+                              </svg>
+                            {% when 'dulce' %}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="19" height="27" viewBox="0 0 19 27" fill="none">
+                                <path d="M9.40298 26.25C6.90916 26.25 4.51747 25.2593 2.75407 23.4959C0.990669 21.7325 0 19.3408 0 16.847C0 10.5784 9.40298 0 9.40298 0C9.40298 0 18.806 10.5784 18.806 16.847C18.806 19.3408 17.8153 21.7325 16.0519 23.4959C14.2885 25.2593 11.8968 26.25 9.40298 26.25Z" fill="white"/>
+                              </svg>
+                            {% else %}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="19" height="27" viewBox="0 0 19 27" fill="none">
+                                <path d="M10.1689 1.66602V1.66699L10.1699 1.66797C10.1708 1.66895 10.1721 1.67081 10.1738 1.67285C10.1774 1.67703 10.1832 1.68301 10.1904 1.69141C10.2051 1.70848 10.2271 1.73464 10.2559 1.76855C10.3134 1.83636 10.3977 1.93724 10.5059 2.06738C10.7225 2.32821 11.0332 2.70789 11.4062 3.18066C12.1527 4.12663 13.1488 5.44327 14.1475 6.92871C15.1522 8.4232 16.1811 10.0441 16.959 11.71C17.7377 13.3777 18.25 15.0606 18.25 16.6816C18.2499 19.0899 17.3128 21.3978 15.6475 23.0977C13.9823 24.7973 11.7255 25.75 9.375 25.75C7.02454 25.75 4.76775 24.7973 3.10254 23.0977C1.43715 21.3978 0.500076 19.0899 0.5 16.6816C0.5 15.0606 1.0123 13.3777 1.79102 11.71C2.56887 10.0441 3.59782 8.4232 4.60254 6.92871C5.6012 5.44327 6.59726 4.12663 7.34375 3.18066C7.71683 2.70789 8.02748 2.32821 8.24414 2.06738C8.35225 1.93724 8.43661 1.83636 8.49414 1.76855C8.52292 1.73464 8.54494 1.70848 8.55957 1.69141C8.56677 1.68301 8.57257 1.67703 8.57617 1.67285C8.57793 1.67081 8.57923 1.66895 8.58008 1.66797L8.58105 1.66699C8.58103 1.66697 8.58093 1.66675 8.58008 1.66602L9.375 0.758789L10.1689 1.66602ZM8.99023 4.67285C8.30371 5.50095 7.66391 6.20429 6.33594 8.17285H6.33496C5.37599 9.59654 4.45607 11.2156 3.77344 12.7188C3.10034 14.2009 2.625 15.6414 2.625 16.6816C2.62515 20.4884 5.62062 23.5605 9.375 23.5605C13.1294 23.5605 16.1248 20.4884 16.125 16.6816C16.125 15.6414 15.6497 14.2009 14.9766 12.7188C14.2939 11.2156 13.374 9.59654 12.415 8.17285H12.4141C11.0861 6.20429 10.4463 5.50095 9.75977 4.67285L9.375 4.20801L8.99023 4.67285Z" fill="white" stroke="#8C1A3E"/>
+                              </svg>
+                          {% endcase %}
+                        </span>
+                        <span>{{ option }}</span>
+                      </div>
+                    {% endfor %}
+                    <span class="santa-rita-tasting-profile__mouthfeel-track" aria-hidden="true"></span>
                   </div>
                 {% endif %}
-              {% endfor %}
+
+                {% if chips_metafield != blank %}
+                  <div class="santa-rita-tasting-profile__chips">
+                    {% for chip in chips_metafield.value %}
+                      {% liquid
+                        assign chip_label = chip.nombre.value | default: chip.name.value | default: chip.titulo.value | default: chip.title.value | default: chip.texto.value | default: chip.system.name | default: chip
+                        assign chip_label = chip_label | strip
+                      %}
+                      {% if chip_label != blank %}
+                        <span>{{ chip_label }}</span>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            {% if has_temperature %}
+              <div class="santa-rita-tasting-profile__panel santa-rita-tasting-profile__service">
+                <h3 class="santa-rita-tasting-profile__title">Cómo servirlo</h3>
+                {% if temperature != blank %}
+                  <div class="santa-rita-tasting-profile__temperature">
+                    <span aria-hidden="true">
+                      <svg viewBox="0 0 24 24" role="presentation" focusable="false">
+                        <path d="M10 4a2 2 0 0 1 4 0v8.35a4.5 4.5 0 1 1-4 0V4Zm2 10.3a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Zm0-10.8a.5.5 0 0 0-.5.5v10.03l-.75.43a3 3 0 1 0 2.5 0l-.75-.43V4a.5.5 0 0 0-.5-.5Z" />
+                      </svg>
+                    </span>
+                    <p>{{ temperature }}</p>
+                  </div>
+                {% endif %}
+              </div>
             {% endif %}
           </div>
-        </div>
+        {% endif %}
 
-        <div class="santa-rita-tasting-profile__center">
+        {% if has_pairings %}
           <div class="santa-rita-tasting-profile__panel">
-            <h3 class="santa-rita-tasting-profile__title">Presencia en boca</h3>
-            <div class="santa-rita-tasting-profile__mouthfeel" style="--mouthfeel-progress: {{ mouthfeel_progress }};">
-              {% assign mouthfeel_options = 'Seco,Semidulce,Dulce' | split: ',' %}
-              {% for option in mouthfeel_options %}
-                {% assign option_handle = option | handleize %}
-                <div class="santa-rita-tasting-profile__mouthfeel-option{% if mouthfeel_handle == option_handle %} is-active{% endif %}">
-                  <span class="santa-rita-tasting-profile__drop" aria-hidden="true">
-                    {% case option_handle %}
-                      {% when 'semidulce' %}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="14" viewBox="0 0 19 14" fill="none">
-                          <path d="M9.40298 13.7101C6.90916 13.7101 4.51747 12.7194 2.75407 10.956C0.990669 9.19262 0 6.80093 0 4.3071C0 -1.96156 12.4028 0.460034 12.4028 0.460034C12.4028 0.460034 18.4028 -1.38767 18.4028 3.95947C18.4028 6.4533 17.8153 9.19262 16.0519 10.956C14.2885 12.7194 11.8968 13.7101 9.40298 13.7101Z" fill="white"/>
-                        </svg>
-                      {% when 'dulce' %}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="27" viewBox="0 0 19 27" fill="none">
-                          <path d="M9.40298 26.25C6.90916 26.25 4.51747 25.2593 2.75407 23.4959C0.990669 21.7325 0 19.3408 0 16.847C0 10.5784 9.40298 0 9.40298 0C9.40298 0 18.806 10.5784 18.806 16.847C18.806 19.3408 17.8153 21.7325 16.0519 23.4959C14.2885 25.2593 11.8968 26.25 9.40298 26.25Z" fill="white"/>
-                        </svg>
-                      {% else %}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="27" viewBox="0 0 19 27" fill="none">
-                          <path d="M10.1689 1.66602V1.66699L10.1699 1.66797C10.1708 1.66895 10.1721 1.67081 10.1738 1.67285C10.1774 1.67703 10.1832 1.68301 10.1904 1.69141C10.2051 1.70848 10.2271 1.73464 10.2559 1.76855C10.3134 1.83636 10.3977 1.93724 10.5059 2.06738C10.7225 2.32821 11.0332 2.70789 11.4062 3.18066C12.1527 4.12663 13.1488 5.44327 14.1475 6.92871C15.1522 8.4232 16.1811 10.0441 16.959 11.71C17.7377 13.3777 18.25 15.0606 18.25 16.6816C18.2499 19.0899 17.3128 21.3978 15.6475 23.0977C13.9823 24.7973 11.7255 25.75 9.375 25.75C7.02454 25.75 4.76775 24.7973 3.10254 23.0977C1.43715 21.3978 0.500076 19.0899 0.5 16.6816C0.5 15.0606 1.0123 13.3777 1.79102 11.71C2.56887 10.0441 3.59782 8.4232 4.60254 6.92871C5.6012 5.44327 6.59726 4.12663 7.34375 3.18066C7.71683 2.70789 8.02748 2.32821 8.24414 2.06738C8.35225 1.93724 8.43661 1.83636 8.49414 1.76855C8.52292 1.73464 8.54494 1.70848 8.55957 1.69141C8.56677 1.68301 8.57257 1.67703 8.57617 1.67285C8.57793 1.67081 8.57923 1.66895 8.58008 1.66797L8.58105 1.66699C8.58103 1.66697 8.58093 1.66675 8.58008 1.66602L9.375 0.758789L10.1689 1.66602ZM8.99023 4.67285C8.30371 5.50095 7.66391 6.20429 6.33594 8.17285H6.33496C5.37599 9.59654 4.45607 11.2156 3.77344 12.7188C3.10034 14.2009 2.625 15.6414 2.625 16.6816C2.62515 20.4884 5.62062 23.5605 9.375 23.5605C13.1294 23.5605 16.1248 20.4884 16.125 16.6816C16.125 15.6414 15.6497 14.2009 14.9766 12.7188C14.2939 11.2156 13.374 9.59654 12.415 8.17285H12.4141C11.0861 6.20429 10.4463 5.50095 9.75977 4.67285L9.375 4.20801L8.99023 4.67285Z" fill="white" stroke="#8C1A3E"/>
-                        </svg>
-                    {% endcase %}
-                  </span>
-                  <span>{{ option }}</span>
-                </div>
-              {% endfor %}
-              <span class="santa-rita-tasting-profile__mouthfeel-track" aria-hidden="true"></span>
-            </div>
-
-            <div class="santa-rita-tasting-profile__chips">
-              {% if chips_metafield != blank %}
-                {% for chip in chips_metafield.value %}
+            <h3 class="santa-rita-tasting-profile__title">Con qué disfrutarlo</h3>
+            <div class="santa-rita-tasting-profile__items">
+              {% if pairing_items_metafield != blank %}
+                {% for pairing_item in pairing_items_metafield.value %}
                   {% liquid
-                    assign chip_label = chip.nombre.value | default: chip.name.value | default: chip.titulo.value | default: chip.title.value | default: chip.texto.value | default: chip.system.name | default: chip
-                    assign chip_label = chip_label | strip
+                    assign item_label = pairing_item.nombre.value | default: pairing_item.name.value | default: pairing_item.titulo.value | default: pairing_item.title.value | default: pairing_item.texto.value | default: pairing_item.system.name
+                    assign item_image = pairing_item.imagen.value | default: pairing_item.image.value | default: pairing_item.foto.value | default: pairing_item.photo.value
                   %}
-                  {% if chip_label != blank %}
-                    <span>{{ chip_label }}</span>
+                  {% if item_label != blank %}
+                    <div class="santa-rita-tasting-profile__item">
+                      <span class="santa-rita-tasting-profile__thumb">
+                        {% if item_image != blank %}
+                          {{
+                            item_image
+                            | image_url: width: 160
+                            | image_tag:
+                              class: 'santa-rita-tasting-profile__image',
+                              widths: '80, 120, 160',
+                              sizes: '80px',
+                              loading: 'lazy'
+                          }}
+                        {% else %}
+                          <span class="santa-rita-tasting-profile__fallback">{{ item_label | slice: 0, 1 }}</span>
+                        {% endif %}
+                      </span>
+                      <span class="santa-rita-tasting-profile__label">{{ item_label }}</span>
+                    </div>
                   {% endif %}
                 {% endfor %}
-              {% else %}
-                {% assign default_chips = section.settings.default_chips | split: ',' %}
-                {% for chip in default_chips %}
-                  {% assign chip_label = chip | strip %}
-                  {% if chip_label != blank %}
-                    <span>{{ chip_label }}</span>
+              {% elsif pairings_metafield != blank %}
+                {% for pairing in pairings_metafield.value %}
+                  {% liquid
+                    assign item_label = pairing | strip
+                    assign item_handle = item_label | handleize
+                    assign item_image = blank
+                    assign item_index = forloop.index0
+
+                    case item_handle
+                      when 'pescado'
+                        assign item_image = section.settings.image_pairing_pescado
+                      when 'aceitunas'
+                        assign item_image = section.settings.image_pairing_aceitunas
+                      when 'quesos'
+                        assign item_image = section.settings.image_pairing_quesos
+                      when 'ensaladas'
+                        assign item_image = section.settings.image_pairing_ensaladas
+                    endcase
+
+                    if pairings_images_metafield != blank
+                      for metafield_image in pairings_images_metafield.value
+                        if forloop.index0 == item_index and metafield_image != blank
+                          assign item_image = metafield_image
+                          break
+                        endif
+                      endfor
+                    endif
+                  %}
+                  {% if item_label != blank %}
+                    <div class="santa-rita-tasting-profile__item">
+                      <span class="santa-rita-tasting-profile__thumb">
+                        {% if item_image != blank %}
+                          {{
+                            item_image
+                            | image_url: width: 160
+                            | image_tag:
+                              class: 'santa-rita-tasting-profile__image',
+                              widths: '80, 120, 160',
+                              sizes: '80px',
+                              loading: 'lazy'
+                          }}
+                        {% else %}
+                          <span class="santa-rita-tasting-profile__fallback">{{ item_label | slice: 0, 1 }}</span>
+                        {% endif %}
+                      </span>
+                      <span class="santa-rita-tasting-profile__label">{{ item_label }}</span>
+                    </div>
                   {% endif %}
                 {% endfor %}
               {% endif %}
             </div>
           </div>
-
-          <div class="santa-rita-tasting-profile__panel santa-rita-tasting-profile__service">
-            <h3 class="santa-rita-tasting-profile__title">Cómo servirlo</h3>
-            {% if temperature != blank %}
-              <div class="santa-rita-tasting-profile__temperature">
-                <span aria-hidden="true">
-                  <svg viewBox="0 0 24 24" role="presentation" focusable="false">
-                    <path d="M10 4a2 2 0 0 1 4 0v8.35a4.5 4.5 0 1 1-4 0V4Zm2 10.3a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Zm0-10.8a.5.5 0 0 0-.5.5v10.03l-.75.43a3 3 0 1 0 2.5 0l-.75-.43V4a.5.5 0 0 0-.5-.5Z" />
-                  </svg>
-                </span>
-                <p>{{ temperature }}</p>
-              </div>
-            {% endif %}
-          </div>
-        </div>
-
-        <div class="santa-rita-tasting-profile__panel">
-          <h3 class="santa-rita-tasting-profile__title">Con qué disfrutarlo</h3>
-          <div class="santa-rita-tasting-profile__items">
-            {% if pairing_items_metafield != blank %}
-              {% for pairing_item in pairing_items_metafield.value %}
-                {% liquid
-                  assign item_label = pairing_item.nombre.value | default: pairing_item.name.value | default: pairing_item.titulo.value | default: pairing_item.title.value | default: pairing_item.texto.value | default: pairing_item.system.name
-                  assign item_image = pairing_item.imagen.value | default: pairing_item.image.value | default: pairing_item.foto.value | default: pairing_item.photo.value
-                %}
-                {% if item_label != blank %}
-                  <div class="santa-rita-tasting-profile__item">
-                    <span class="santa-rita-tasting-profile__thumb">
-                      {% if item_image != blank %}
-                        {{
-                          item_image
-                          | image_url: width: 160
-                          | image_tag:
-                            class: 'santa-rita-tasting-profile__image',
-                            widths: '80, 120, 160',
-                            sizes: '80px',
-                            loading: 'lazy'
-                        }}
-                      {% else %}
-                        <span class="santa-rita-tasting-profile__fallback">{{ item_label | slice: 0, 1 }}</span>
-                      {% endif %}
-                    </span>
-                    <span class="santa-rita-tasting-profile__label">{{ item_label }}</span>
-                  </div>
-                {% endif %}
-              {% endfor %}
-            {% elsif pairings_metafield != blank %}
-              {% for pairing in pairings_metafield.value %}
-                {% liquid
-                  assign item_label = pairing | strip
-                  assign item_handle = item_label | handleize
-                  assign item_image = blank
-                  assign item_index = forloop.index0
-
-                  case item_handle
-                    when 'pescado'
-                      assign item_image = section.settings.image_pairing_pescado
-                    when 'aceitunas'
-                      assign item_image = section.settings.image_pairing_aceitunas
-                    when 'quesos'
-                      assign item_image = section.settings.image_pairing_quesos
-                    when 'ensaladas'
-                      assign item_image = section.settings.image_pairing_ensaladas
-                  endcase
-
-                  if pairings_images_metafield != blank
-                    for metafield_image in pairings_images_metafield.value
-                      if forloop.index0 == item_index and metafield_image != blank
-                        assign item_image = metafield_image
-                        break
-                      endif
-                    endfor
-                  endif
-                %}
-                {% if item_label != blank %}
-                  <div class="santa-rita-tasting-profile__item">
-                    <span class="santa-rita-tasting-profile__thumb">
-                      {% if item_image != blank %}
-                        {{
-                          item_image
-                          | image_url: width: 160
-                          | image_tag:
-                            class: 'santa-rita-tasting-profile__image',
-                            widths: '80, 120, 160',
-                            sizes: '80px',
-                            loading: 'lazy'
-                        }}
-                      {% else %}
-                        <span class="santa-rita-tasting-profile__fallback">{{ item_label | slice: 0, 1 }}</span>
-                      {% endif %}
-                    </span>
-                    <span class="santa-rita-tasting-profile__label">{{ item_label }}</span>
-                  </div>
-                {% endif %}
-              {% endfor %}
-            {% else %}
-              {% assign default_pairings = section.settings.default_pairings | split: ',' %}
-              {% for pairing in default_pairings %}
-                {% liquid
-                  assign item_label = pairing | strip
-                  assign item_handle = item_label | handleize
-                  assign item_image = blank
-
-                  case item_handle
-                    when 'pescado'
-                      assign item_image = section.settings.image_pairing_pescado
-                    when 'aceitunas'
-                      assign item_image = section.settings.image_pairing_aceitunas
-                    when 'quesos'
-                      assign item_image = section.settings.image_pairing_quesos
-                    when 'ensaladas'
-                      assign item_image = section.settings.image_pairing_ensaladas
-                  endcase
-                %}
-                {% if item_label != blank %}
-                  <div class="santa-rita-tasting-profile__item">
-                    <span class="santa-rita-tasting-profile__thumb">
-                      {% if item_image != blank %}
-                        {{
-                          item_image
-                          | image_url: width: 160
-                          | image_tag:
-                            class: 'santa-rita-tasting-profile__image',
-                            widths: '80, 120, 160',
-                            sizes: '80px',
-                            loading: 'lazy'
-                        }}
-                      {% else %}
-                        <span class="santa-rita-tasting-profile__fallback">{{ item_label | slice: 0, 1 }}</span>
-                      {% endif %}
-                    </span>
-                    <span class="santa-rita-tasting-profile__label">{{ item_label }}</span>
-                  </div>
-                {% endif %}
-              {% endfor %}
-            {% endif %}
-          </div>
-        </div>
+        {% endif %}
       </div>
 
-      <div class="santa-rita-tasting-profile__slider-controls" aria-hidden="false">
+      {% if profile_slide_count > 1 %}
+        <div class="santa-rita-tasting-profile__slider-controls" aria-hidden="false">
         <div class="santa-rita-tasting-profile__slider-arrows">
           <button
             class="santa-rita-tasting-profile__slider-button"
@@ -390,27 +354,51 @@
         </div>
 
         <div class="santa-rita-tasting-profile__slider-dots" role="tablist" aria-label="Secciones del perfil">
-          <button
-            class="santa-rita-tasting-profile__slider-dot is-active"
-            type="button"
-            aria-label="Ver Aromas"
-            aria-current="true"
-            data-tasting-profile-dot="0"
-          ></button>
-          <button
-            class="santa-rita-tasting-profile__slider-dot"
-            type="button"
-            aria-label="Ver Presencia en boca"
-            data-tasting-profile-dot="1"
-          ></button>
-          <button
-            class="santa-rita-tasting-profile__slider-dot"
-            type="button"
-            aria-label="Ver Con qué disfrutarlo"
-            data-tasting-profile-dot="2"
-          ></button>
+          {% assign tasting_dot_index = 0 %}
+          {% if has_aromas %}
+            <button
+              class="santa-rita-tasting-profile__slider-dot is-active"
+              type="button"
+              aria-label="Ver Aromas"
+              aria-current="true"
+              data-tasting-profile-dot="{{ tasting_dot_index }}"
+            ></button>
+            {% assign tasting_dot_index = tasting_dot_index | plus: 1 %}
+          {% endif %}
+          {% if has_mouthfeel or has_temperature %}
+            {% liquid
+              assign center_dot_label = 'Ver Presencia en boca'
+              if has_mouthfeel and has_temperature
+                assign center_dot_label = 'Ver Presencia en boca y como servirlo'
+              elsif has_temperature
+                assign center_dot_label = 'Ver Como servirlo'
+              endif
+            %}
+            <button
+              class="santa-rita-tasting-profile__slider-dot{% if tasting_dot_index == 0 %} is-active{% endif %}"
+              type="button"
+              aria-label="{{ center_dot_label }}"
+              {% if tasting_dot_index == 0 %}
+                aria-current="true"
+              {% endif %}
+              data-tasting-profile-dot="{{ tasting_dot_index }}"
+            ></button>
+            {% assign tasting_dot_index = tasting_dot_index | plus: 1 %}
+          {% endif %}
+          {% if has_pairings %}
+            <button
+              class="santa-rita-tasting-profile__slider-dot{% if tasting_dot_index == 0 %} is-active{% endif %}"
+              type="button"
+              aria-label="Ver Con qué disfrutarlo"
+              {% if tasting_dot_index == 0 %}
+                aria-current="true"
+              {% endif %}
+              data-tasting-profile-dot="{{ tasting_dot_index }}"
+            ></button>
+          {% endif %}
         </div>
       </div>
+      {% endif %}
     </div>
   </section>
 {% endif %}
@@ -438,8 +426,8 @@
 
   .santa-rita-tasting-profile__grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 1.15fr) minmax(0, 1fr);
-    gap: 125px;
+    grid-template-columns: repeat(var(--tasting-profile-columns, 3), minmax(0, 1fr));
+    gap: clamp(42px, 8vw, 125px);
     align-items: start;
   }
 
