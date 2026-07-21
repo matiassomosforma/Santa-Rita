@@ -7,7 +7,7 @@
   endif
 
   assign variant = product.selected_or_first_available_variant
-  assign pack_label = product.metafields.custom.pack_label | default: section_settings.pack_label
+  assign pack_label = product.metafields.custom.pack_label.value | default: product.metafields.custom.pack_label | default: section_settings.pack_label
   assign unit_price_label = product.metafields.custom.unit_price_label | default: section_settings.unit_price_label
   assign liter_price_label = product.metafields.custom.liter_price_label | default: section_settings.liter_price_label
   assign rating_count = product.metafields.custom.rating_count | default: section_settings.rating_count
@@ -19,12 +19,40 @@
     assign location = location_value | default: location_metafield
   endif
 
-  assign cepa = product.metafields.custom.cepa
-  assign cc = product.metafields.custom.cc
-  assign eyebrow = cepa | default: product.metafields.custom.card_eyebrow | default: product.type
+  assign cepa_metafield = product.metafields.custom.cepa
+  assign cc_metafield = product.metafields.custom.cc
+  assign card_eyebrow = product.metafields.custom.card_eyebrow.value | default: product.metafields.custom.card_eyebrow
+  assign cc_value = cc_metafield.value | default: cc_metafield
+  assign cc_text = cc_value | append: '' | strip
+  assign cc_text_downcase = cc_text | downcase
 
-  if cepa != blank and cc != blank
-    assign eyebrow = cepa | append: ' - ' | append: cc
+  if cc_text != blank and cc_text_downcase contains 'cc'
+    assign cc_label = cc_text
+  elsif cc_text != blank
+    assign cc_label = cc_text | append: 'cc.'
+  endif
+
+  capture cepa_label
+    if cepa_metafield.type contains 'list.'
+      assign cepa_separator = ''
+      for cepa_item in cepa_metafield.value
+        assign cepa_item_label = cepa_item.title.value | default: cepa_item.title | default: cepa_item.name.value | default: cepa_item.name | default: cepa_item.label.value | default: cepa_item.label | default: cepa_item
+        if cepa_item_label != blank
+          echo cepa_separator
+          echo cepa_item_label
+          assign cepa_separator = ', '
+        endif
+      endfor
+    elsif cepa_metafield != blank
+      echo cepa_metafield.value | default: cepa_metafield
+    endif
+  endcapture
+
+  assign cepa_label = cepa_label | strip
+  assign eyebrow = cepa_label | default: card_eyebrow | default: product.type
+
+  if cepa_label != blank and cc_label != blank
+    assign eyebrow = cepa_label | append: ' - ' | append: cc_label
   endif
 
   assign discount_percent = 0

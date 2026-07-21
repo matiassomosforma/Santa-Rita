@@ -16,6 +16,7 @@
           "type": "benefit",
           "settings": {
             "icon": "truck",
+            "icon_image": "shopify://shop_images/Vector.svg",
             "badge": "Gratis",
             "title": "Despacho sin costo",
             "text": "<p>En toda la Region Metropolitana, sin costo adicional en tus pedidos mensuales.</p>"
@@ -25,6 +26,7 @@
           "type": "benefit",
           "settings": {
             "icon": "bottle",
+            "icon_image": "shopify://shop_images/Group.svg",
             "badge": "-35%",
             "title": "Descuento en vinos",
             "text": "<p>En vinos premium del mes utilizando tu codigo exclusivo para miembros.</p>"
@@ -34,6 +36,7 @@
           "type": "benefit",
           "settings": {
             "icon": "star",
+            "icon_image": "shopify://shop_images/Group_1.svg",
             "badge": "-50%",
             "title": "Tours en la viña",
             "text": "<p>Conoce nuestra viña con un descuento increible.</p>"
@@ -43,6 +46,7 @@
           "type": "benefit",
           "settings": {
             "icon": "heart",
+            "icon_image": "shopify://shop_images/mingcute_coupon-line.svg",
             "badge": "-20%",
             "title": "Hotel Casa Real",
             "text": "<p>En estadias en el exclusivo Hotel Casa Real, ubicado en el corazon de nuestra viña.</p>"
@@ -149,16 +153,17 @@
       ],
       "name": "Club Bodega",
       "settings": {
+        "hero_video": "shopify://files/videos/BannerClubBodega_1920x700 (1) (1).mp4",
+        "hero_overlay_opacity": 35,
         "show_breadcrumbs": true,
         "breadcrumb_label": "Club Bodega",
-        "hero_overlay_opacity": 35,
-        "hero_kicker": "Club",
-        "hero_heading": "Bodega 695",
+        "hero_kicker": "",
+        "hero_heading": "",
         "hero_text": "<p>Vinos exclusivos seleccionados por nuestros expertos, directo de la cava a la puerta de tu casa.</p>",
         "hero_button_label": "Quiero unirme",
         "hero_button_url": "#unete",
         "hero_content_horizontal": "center",
-        "hero_content_vertical": "center",
+        "hero_content_vertical": "end",
         "hero_text_alignment": "center",
         "hero_content_width": 630,
         "hero_content_offset_x": 0,
