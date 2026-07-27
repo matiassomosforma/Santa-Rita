@@ -21,14 +21,10 @@
         <dt>Total</dt>
         <dd data-tour-result-total></dd>
       </div>
-      <div data-tour-result-code-row hidden>
-        <dt>Codigo de reserva</dt>
-        <dd data-tour-result-code></dd>
-      </div>
     </dl>
 
     {% if section.settings.tours_page != blank %}
-      <a class="santa-rita-tour-thank-you__button" href="{{ section.settings.tours_page.url }}">
+      <a class="santa-rita-tour-thank-you__button" href="{{ section.settings.tours_page.url }}" data-tour-result-action>
         {{ section.settings.button_label }}
       </a>
     {% endif %}
@@ -48,8 +44,7 @@
           this.dateElement = this.querySelector('[data-tour-result-date]');
           this.peopleElement = this.querySelector('[data-tour-result-people]');
           this.totalElement = this.querySelector('[data-tour-result-total]');
-          this.codeRow = this.querySelector('[data-tour-result-code-row]');
-          this.codeElement = this.querySelector('[data-tour-result-code]');
+          this.actionButton = this.querySelector('[data-tour-result-action]');
           this.apiBase = '/apps/santa-rita/tours';
           this.pollCount = 0;
           this.maxPolls = 40;
@@ -97,9 +92,15 @@
           } else if (data.paidStatus === 'failed') {
             this.setText(this.titleElement, '{{ section.settings.failed_title | escape }}');
             this.setText(this.messageElement, '{{ section.settings.failed_text | escape }}');
+            this.setActionButton('Intentar nuevamente', this.getRetryUrl());
           } else {
             this.setText(this.titleElement, '{{ section.settings.pending_title | escape }}');
             this.setText(this.messageElement, '{{ section.settings.pending_text | escape }}');
+            this.setActionButton('{{ section.settings.button_label | escape }}', this.defaultToursUrl);
+          }
+
+          if (data.paidStatus === 'paid') {
+            this.setActionButton('{{ section.settings.button_label | escape }}', this.defaultToursUrl);
           }
 
           this.renderSummary(data);
@@ -118,26 +119,51 @@
           this.setText(this.peopleElement, people);
           this.setText(this.totalElement, this.formatMoney(data.total || 0));
 
-          if (data.reservationCode) {
-            this.setText(this.codeElement, data.reservationCode);
-            if (this.codeRow) this.codeRow.hidden = false;
-          }
-
           this.summaryElement.hidden = false;
         }
 
         renderNotFound() {
           this.setText(this.titleElement, '{{ section.settings.not_found_title | escape }}');
           this.setText(this.messageElement, '{{ section.settings.not_found_text | escape }}');
+          this.setActionButton('{{ section.settings.button_label | escape }}', this.defaultToursUrl);
         }
 
         renderError(message) {
           this.setText(this.titleElement, '{{ section.settings.error_title | escape }}');
           this.setText(this.messageElement, message || '{{ section.settings.error_text | escape }}');
+          this.setActionButton('{{ section.settings.button_label | escape }}', this.defaultToursUrl);
         }
 
         setText(element, value) {
           if (element) element.textContent = value;
+        }
+
+        setActionButton(label, href) {
+          if (!this.actionButton) return;
+
+          this.actionButton.textContent = label;
+          this.actionButton.href = href;
+        }
+
+        get defaultToursUrl() {
+          return this.actionButton?.getAttribute('href') || '/pages/tours';
+        }
+
+        getRetryUrl() {
+          if (!document.referrer) return this.defaultToursUrl;
+
+          try {
+            const referrer = new URL(document.referrer);
+            const current = new URL(window.location.href);
+
+            if (referrer.origin !== current.origin || referrer.pathname === current.pathname) {
+              return this.defaultToursUrl;
+            }
+
+            return `${referrer.pathname}${referrer.search}${referrer.hash}`;
+          } catch (error) {
+            return this.defaultToursUrl;
+          }
         }
 
         formatMoney(value) {
@@ -305,7 +331,7 @@
       "type": "textarea",
       "id": "paid_text",
       "label": "Texto pago exitoso",
-      "default": "Tu pago fue recibido correctamente. Te mostraremos el codigo de reserva apenas este disponible."
+      "default": "Tu pago fue recibido correctamente. Recibiras la confirmacion de tu reserva por correo."
     },
     {
       "type": "text",

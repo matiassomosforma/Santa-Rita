@@ -21,13 +21,9 @@
         <dt>Total</dt>
         <dd data-tour-result-total></dd>
       </div>
-      <div data-tour-result-code-row hidden>
-        <dt>Codigo de reserva</dt>
-        <dd data-tour-result-code></dd>
-      </div>
     </dl>
 
-    <a class="santa-rita-tour-thank-you__button" href="/pages/tours">
+    <a class="santa-rita-tour-thank-you__button" href="/pages/tours" data-tour-result-action>
       Volver a tours
     </a>
   </div>
@@ -46,8 +42,7 @@
           this.dateElement = this.querySelector('[data-tour-result-date]');
           this.peopleElement = this.querySelector('[data-tour-result-people]');
           this.totalElement = this.querySelector('[data-tour-result-total]');
-          this.codeRow = this.querySelector('[data-tour-result-code-row]');
-          this.codeElement = this.querySelector('[data-tour-result-code]');
+          this.actionButton = this.querySelector('[data-tour-result-action]');
           this.apiBase = '/apps/santa-rita/tours';
           this.pollCount = 0;
           this.maxPolls = 40;
@@ -91,13 +86,19 @@
         renderResult(data) {
           if (data.paidStatus === 'paid') {
             this.setText(this.titleElement, 'Reserva confirmada');
-            this.setText(this.messageElement, 'Tu pago fue recibido correctamente. Te mostraremos el codigo de reserva apenas este disponible.');
+            this.setText(this.messageElement, 'Tu pago fue recibido correctamente. Recibiras la confirmacion de tu reserva por correo.');
           } else if (data.paidStatus === 'failed') {
             this.setText(this.titleElement, 'No pudimos completar el pago');
             this.setText(this.messageElement, 'El pago no fue concretado. Puedes volver a intentar tu reserva seleccionando un horario disponible.');
+            this.setActionButton('Intentar nuevamente', this.getRetryUrl());
           } else {
             this.setText(this.titleElement, 'Estamos confirmando tu pago');
             this.setText(this.messageElement, 'Esto puede tardar unos segundos. No cierres esta pagina mientras consultamos el estado de tu reserva.');
+            this.setActionButton('Volver a tours', '/pages/tours');
+          }
+
+          if (data.paidStatus === 'paid') {
+            this.setActionButton('Volver a tours', '/pages/tours');
           }
 
           this.renderSummary(data);
@@ -116,26 +117,47 @@
           this.setText(this.peopleElement, people);
           this.setText(this.totalElement, this.formatMoney(data.total || 0));
 
-          if (data.reservationCode) {
-            this.setText(this.codeElement, data.reservationCode);
-            if (this.codeRow) this.codeRow.hidden = false;
-          }
-
           this.summaryElement.hidden = false;
         }
 
         renderNotFound() {
           this.setText(this.titleElement, 'No encontramos tu reserva');
           this.setText(this.messageElement, 'No recibimos un token valido para consultar el estado de la reserva.');
+          this.setActionButton('Volver a tours', '/pages/tours');
         }
 
         renderError(message) {
           this.setText(this.titleElement, 'No pudimos consultar tu reserva');
           this.setText(this.messageElement, message || 'Intenta recargar la pagina en unos segundos.');
+          this.setActionButton('Volver a tours', '/pages/tours');
         }
 
         setText(element, value) {
           if (element) element.textContent = value;
+        }
+
+        setActionButton(label, href) {
+          if (!this.actionButton) return;
+
+          this.actionButton.textContent = label;
+          this.actionButton.href = href;
+        }
+
+        getRetryUrl() {
+          if (!document.referrer) return '/pages/tours';
+
+          try {
+            const referrer = new URL(document.referrer);
+            const current = new URL(window.location.href);
+
+            if (referrer.origin !== current.origin || referrer.pathname === current.pathname) {
+              return '/pages/tours';
+            }
+
+            return `${referrer.pathname}${referrer.search}${referrer.hash}`;
+          } catch (error) {
+            return '/pages/tours';
+          }
         }
 
         formatMoney(value) {
