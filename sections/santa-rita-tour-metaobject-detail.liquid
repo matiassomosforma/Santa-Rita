@@ -299,48 +299,23 @@
           <form class="santa-rita-tour-detail__form" data-tour-booking-form>
             <div class="santa-rita-tour-detail__field">
               <label for="TourLanguage-{{ section.id }}">{{ section.settings.language_label }}</label>
-              <select id="TourLanguage-{{ section.id }}" name="idioma" required data-tour-language>
-                {% if has_language_tour_ids %}
-                  {% if spanish_tour_id != blank %}
-                    <option value="Espanol" data-tour-id="{{ spanish_tour_id | escape }}">Espanol</option>
-                  {% endif %}
-                  {% if english_tour_id != blank %}
-                    <option value="Ingles" data-tour-id="{{ english_tour_id | escape }}">Ingles</option>
-                  {% endif %}
-                  {% if french_tour_id != blank %}
-                    <option value="Frances" data-tour-id="{{ french_tour_id | escape }}">Frances</option>
-                  {% endif %}
-                  {% if portuguese_tour_id != blank %}
-                    <option value="Portugues" data-tour-id="{{ portuguese_tour_id | escape }}">Portugues</option>
-                  {% endif %}
-                {% else %}
-                  {% for option in language_options %}
-                    {% assign option_value = option | strip %}
-                    {% if option_value != blank %}
-                      <option value="{{ option_value | escape }}">{{ option_value }}</option>
-                    {% endif %}
-                  {% endfor %}
-                {% endif %}
+              <select id="TourLanguage-{{ section.id }}" name="language" required data-tour-language>
+                <option value="">Cargando...</option>
               </select>
             </div>
-            <input type="hidden" name="id_tipo_tour" value="" data-tour-language-id>
 
             <div class="santa-rita-tour-detail__fields">
               <div class="santa-rita-tour-detail__field">
                 <label for="TourAdults-{{ section.id }}">{{ section.settings.adults_label }}</label>
                 <select id="TourAdults-{{ section.id }}" name="adultos" required data-tour-adults>
-                  {% for adult_count in (1..max_people) %}
-                    <option value="{{ adult_count }}">{{ adult_count }}</option>
-                  {% endfor %}
+                  <option value="">--</option>
                 </select>
               </div>
 
               <div class="santa-rita-tour-detail__field">
                 <label for="TourChildren-{{ section.id }}">{{ section.settings.children_label }}</label>
                 <select id="TourChildren-{{ section.id }}" name="ninos" data-tour-children>
-                  {% for child_count in (0..max_people) %}
-                    <option value="{{ child_count }}">{{ child_count }}</option>
-                  {% endfor %}
+                  <option value="">--</option>
                 </select>
               </div>
             </div>
@@ -360,12 +335,7 @@
             <div class="santa-rita-tour-detail__field">
               <label for="TourTime-{{ section.id }}">{{ section.settings.time_label }}</label>
               <select id="TourTime-{{ section.id }}" name="horario" required data-tour-time>
-                {% for option in time_options %}
-                  {% assign option_value = option | strip %}
-                  {% if option_value != blank %}
-                    <option value="{{ option_value | escape }}">{{ option_value }}</option>
-                  {% endif %}
-                {% endfor %}
+                <option value="">Selecciona fecha</option>
               </select>
             </div>
 
@@ -373,20 +343,67 @@
               <p class="santa-rita-tour-detail__reserve-note">{{ section.settings.reserve_note }}</p>
             {% endif %}
 
+            <p class="santa-rita-tour-detail__message" data-tour-message hidden></p>
+
             <div class="santa-rita-tour-detail__total">
               <span>{{ section.settings.total_label }}</span>
               <strong data-tour-total>{{ price_cents | money }}</strong>
             </div>
 
             <button
-              type="submit"
+              type="button"
               class="santa-rita-tour-detail__submit"
-              {% if booking_url == blank %}
-                disabled
-              {% endif %}
+              data-tour-submit
+              disabled
             >
               {{ section.settings.reserve_button_label }}
             </button>
+
+            <div class="santa-rita-tour-detail__modal" data-tour-modal hidden>
+              <button type="button" class="santa-rita-tour-detail__modal-backdrop" aria-label="Cerrar" data-tour-modal-close></button>
+              <div
+                class="santa-rita-tour-detail__modal-dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="TourCustomerTitle-{{ section.id }}"
+              >
+                <button type="button" class="santa-rita-tour-detail__modal-close" aria-label="Cerrar" data-tour-modal-close>
+                  &times;
+                </button>
+
+                <h3 id="TourCustomerTitle-{{ section.id }}">Datos de la reserva</h3>
+
+                <div class="santa-rita-tour-detail__field">
+                  <label for="TourPaxName-{{ section.id }}">Nombre</label>
+                  <input id="TourPaxName-{{ section.id }}" type="text" name="name" required autocomplete="name" data-tour-name>
+                </div>
+
+                <div class="santa-rita-tour-detail__fields">
+                  <div class="santa-rita-tour-detail__field">
+                    <label for="TourPhone-{{ section.id }}">Telefono</label>
+                    <input id="TourPhone-{{ section.id }}" type="tel" name="phone" required autocomplete="tel" data-tour-phone>
+                  </div>
+
+                  <div class="santa-rita-tour-detail__field">
+                    <label for="TourEmail-{{ section.id }}">Correo</label>
+                    <input id="TourEmail-{{ section.id }}" type="email" name="email" required autocomplete="email" data-tour-email>
+                  </div>
+                </div>
+
+                <div class="santa-rita-tour-detail__field">
+                  <label for="TourNationality-{{ section.id }}">Nacionalidad</label>
+                  <select id="TourNationality-{{ section.id }}" name="nationalityId" data-tour-nationality>
+                    <option value="">Cargando...</option>
+                  </select>
+                </div>
+
+                <p class="santa-rita-tour-detail__message" data-tour-modal-message hidden></p>
+
+                <button type="submit" class="santa-rita-tour-detail__submit santa-rita-tour-detail__modal-submit" data-tour-modal-submit>
+                  Continuar al pago
+                </button>
+              </div>
+            </div>
           </form>
         </div>
       </aside>
@@ -403,43 +420,182 @@
           this.form = this.querySelector('[data-tour-booking-form]');
           this.calendarInput = this.querySelector('[data-tour-calendar]');
           this.languageInput = this.querySelector('[data-tour-language]');
-          this.languageIdInput = this.querySelector('[data-tour-language-id]');
           this.timeInput = this.querySelector('[data-tour-time]');
           this.adultsInput = this.querySelector('[data-tour-adults]');
           this.childrenInput = this.querySelector('[data-tour-children]');
+          this.nameInput = this.querySelector('[data-tour-name]');
+          this.phoneInput = this.querySelector('[data-tour-phone]');
+          this.emailInput = this.querySelector('[data-tour-email]');
+          this.nationalityInput = this.querySelector('[data-tour-nationality]');
           this.totalElement = this.querySelector('[data-tour-total]');
+          this.messageElement = this.querySelector('[data-tour-message]');
+          this.modalMessageElement = this.querySelector('[data-tour-modal-message]');
+          this.submitButton = this.querySelector('[data-tour-submit]');
+          this.modal = this.querySelector('[data-tour-modal]');
+          this.modalDialog = this.querySelector('.santa-rita-tour-detail__modal-dialog');
+          this.modalSubmitButton = this.querySelector('[data-tour-modal-submit]');
+          this.modalCloseButtons = Array.from(this.querySelectorAll('[data-tour-modal-close]'));
           this.priceCents = Number(this.dataset.priceCents || 0);
           this.currency = this.dataset.priceCurrency || 'CLP';
+          this.apiBase = '/apps/santa-rita/tours';
+          this.availabilityTimer = null;
+          this.availabilityRequestId = 0;
+          this.nonce = '';
+          this.nonceExpiresAt = '';
+          this.rules = null;
+          this.quote = null;
 
-          [this.adultsInput, this.childrenInput].forEach((input) => {
-            input?.addEventListener('change', () => this.updateTotal());
+          [this.languageInput, this.adultsInput, this.childrenInput].forEach((input) => {
+            input?.addEventListener('change', () => this.scheduleAvailability());
           });
 
-          this.languageInput?.addEventListener('change', () => this.syncLanguageTourId());
+          this.submitButton?.addEventListener('click', () => this.openModal());
+          this.modalCloseButtons.forEach((button) => {
+            button.addEventListener('click', () => this.closeModal());
+          });
           this.form?.addEventListener('submit', (event) => this.handleSubmit(event));
-          this.syncLanguageTourId();
-          this.updateTotal();
+          this.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') this.closeModal();
+          });
+          this.setSubmitEnabled(false);
+          this.setTimeOptions([], 'Selecciona fecha');
+          this.updateTotal(0);
+          this.boot();
           this.initCalendarWhenReady();
         }
 
-        syncLanguageTourId() {
-          if (!this.languageInput || !this.languageIdInput) return;
+        async boot() {
+          try {
+            const [meta, config, nonce] = await Promise.all([
+              this.callTours('meta'),
+              this.callTours(`config?tour=${encodeURIComponent(this.tourHandle)}`),
+              this.callTours('nonce')
+            ]);
 
-          const selectedOption = this.languageInput.options[this.languageInput.selectedIndex];
-          this.languageIdInput.value = selectedOption?.dataset.tourId || '';
+            this.meta = meta;
+            this.config = config;
+            this.rules = config.rules || {};
+            this.currency = config.currency || this.currency;
+            this.nonce = nonce.nonce || '';
+            this.nonceExpiresAt = nonce.expiresAt || '';
+
+            this.populateLanguages(config.languages || []);
+            this.populatePeopleSelects(this.rules);
+            this.populateNationalities(meta);
+            this.applyFieldLimits(meta.fieldLimits || {});
+
+            if (config.reservationsDisabled) {
+              this.showMessage('Las reservas para este tour no estan disponibles.');
+              this.setSubmitEnabled(false);
+              return;
+            }
+
+            this.showMessage('');
+            this.scheduleAvailability();
+          } catch (error) {
+            this.showMessage(error.message || 'No pudimos cargar la reserva. Intentalo nuevamente.');
+            this.setSubmitEnabled(false);
+          }
+        }
+
+        get tourHandle() {
+          return this.dataset.tourHandle || '';
+        }
+
+        async callTours(path, options = {}) {
+          const response = await fetch(`${this.apiBase}/${path}`, options);
+          const body = await response.json();
+
+          if (!body.success) {
+            const error = new Error(body.message || 'Ocurrio un error inesperado. Intentalo nuevamente.');
+            error.code = body.code;
+            throw error;
+          }
+
+          return body.data;
+        }
+
+        populateLanguages(languages) {
+          if (!this.languageInput) return;
+
+          this.languageInput.innerHTML = '';
+
+          if (languages.length === 0) {
+            this.addOption(this.languageInput, '', 'Sin idiomas disponibles');
+            this.languageInput.disabled = true;
+            return;
+          }
+
+          languages.forEach((language) => {
+            this.addOption(this.languageInput, language.code, language.label);
+          });
+
+          this.languageInput.disabled = false;
+        }
+
+        populatePeopleSelects(rules) {
+          const maxPeople = this.normalizeMax(rules.maxPeople, 30);
+          const maxAdults = this.normalizeMax(rules.maxAdults, maxPeople);
+          const maxChildren = this.normalizeMax(rules.maxChildren, maxPeople);
+          const minAdults = Math.max(0, Number(rules.minAdults || 0));
+          const minChildren = Math.max(0, Number(rules.minChildren || 0));
+
+          this.populateNumberSelect(this.adultsInput, minAdults, maxAdults, Math.max(1, minAdults));
+          this.populateNumberSelect(this.childrenInput, minChildren, maxChildren, minChildren);
+        }
+
+        populateNumberSelect(select, min, max, selectedValue) {
+          if (!select) return;
+
+          select.innerHTML = '';
+
+          for (let value = min; value <= max; value += 1) {
+            this.addOption(select, String(value), String(value));
+          }
+
+          select.value = String(selectedValue);
+        }
+
+        populateNationalities(meta) {
+          if (!this.nationalityInput) return;
+
+          const nationalities = meta.nationalities || [];
+          this.nationalityInput.innerHTML = '';
+
+          nationalities.forEach((nationality) => {
+            this.addOption(this.nationalityInput, String(nationality.id), nationality.name);
+          });
+
+          this.nationalityInput.value = String(meta.defaultNationalityId || 1);
+        }
+
+        applyFieldLimits(limits) {
+          if (this.nameInput && limits.paxName) this.nameInput.maxLength = Number(limits.paxName);
+          if (this.phoneInput && limits.phone) this.phoneInput.maxLength = Number(limits.phone);
+          if (this.emailInput && limits.email) this.emailInput.maxLength = Number(limits.email);
+        }
+
+        normalizeMax(value, fallback) {
+          if (value === null || value === undefined || value === '') return fallback;
+          return Math.max(0, Number(value));
+        }
+
+        addOption(select, value, label) {
+          const option = document.createElement('option');
+          option.value = value;
+          option.textContent = label;
+          select.appendChild(option);
         }
 
         getPeopleCount() {
-          const adults = Math.max(1, Number(this.adultsInput?.value || 1));
+          const adults = Math.max(0, Number(this.adultsInput?.value || 0));
           const children = Math.max(0, Number(this.childrenInput?.value || 0));
 
           return adults + children;
         }
 
-        updateTotal() {
+        updateTotal(total = this.quote?.total || 0) {
           if (!this.totalElement) return;
-
-          const total = this.priceCents * this.getPeopleCount() / 100;
 
           this.totalElement.textContent = new Intl.NumberFormat('es-CL', {
             style: 'currency',
@@ -448,33 +604,221 @@
           }).format(total);
         }
 
-        handleSubmit(event) {
+        scheduleAvailability() {
+          window.clearTimeout(this.availabilityTimer);
+          this.setSubmitEnabled(false);
+
+          this.availabilityTimer = window.setTimeout(() => this.loadAvailability(), 250);
+        }
+
+        async loadAvailability() {
+          const date = this.calendarInput?.value || '';
+          const language = this.languageInput?.value || '';
+          const adults = this.adultsInput?.value || '0';
+          const children = this.childrenInput?.value || '0';
+
+          if (!this.tourHandle || !language || !date) {
+            this.setTimeOptions([], 'Selecciona fecha');
+            this.updateTotal(0);
+            return;
+          }
+
+          const requestId = ++this.availabilityRequestId;
+
+          try {
+            this.setTimeOptions([], 'Cargando...');
+
+            const params = new URLSearchParams({
+              tour: this.tourHandle,
+              language,
+              date,
+              adults,
+              children
+            });
+            const data = await this.callTours(`availability?${params.toString()}`);
+
+            if (requestId !== this.availabilityRequestId) return;
+
+            this.quote = data.quote || null;
+            this.updateTotal(this.quote?.total || 0);
+
+            if (data.party && data.party.ok === false) {
+              this.setTimeOptions([], 'Sin horarios');
+              this.showMessage(this.getPartyMessage(data.party.reason));
+              this.setSubmitEnabled(false);
+              return;
+            }
+
+            this.setTimeOptions(data.hours || [], 'Sin horarios');
+            this.showMessage((data.hours || []).length > 0 ? '' : 'No hay horarios disponibles para esta fecha.');
+            this.setSubmitEnabled((data.hours || []).length > 0);
+          } catch (error) {
+            if (requestId !== this.availabilityRequestId) return;
+
+            this.setTimeOptions([], 'Sin horarios');
+            this.updateTotal(0);
+            this.showMessage(error.message);
+            this.setSubmitEnabled(false);
+          }
+        }
+
+        setTimeOptions(hours, emptyLabel) {
+          if (!this.timeInput) return;
+
+          this.timeInput.innerHTML = '';
+
+          if (hours.length === 0) {
+            this.addOption(this.timeInput, '', emptyLabel);
+            this.timeInput.disabled = true;
+            return;
+          }
+
+          hours.forEach((hour) => this.addOption(this.timeInput, hour, hour));
+          this.timeInput.disabled = false;
+        }
+
+        getPartyMessage(reason) {
+          const messages = {
+            empty: 'Selecciona al menos una persona para reservar.',
+            people_range: 'La cantidad total de personas esta fuera del rango permitido para este tour.',
+            adults_range: 'La cantidad de adultos esta fuera del rango permitido para este tour.',
+            children_range: 'La cantidad de ninos esta fuera del rango permitido para este tour.'
+          };
+
+          return messages[reason] || 'La cantidad de personas no cumple las reglas del tour.';
+        }
+
+        async handleSubmit(event) {
           event.preventDefault();
 
+          if (this.modal?.hidden) {
+            this.openModal();
+            return;
+          }
+
           if (!this.form?.reportValidity()) return;
+          if (!this.timeInput?.value) {
+            this.showMessage('Selecciona un horario disponible.');
+            return;
+          }
 
-          const bookingUrl = this.dataset.bookingUrl;
-          if (!bookingUrl) return;
+          try {
+            this.setSubmitEnabled(false);
+            this.setModalSubmitEnabled(false);
+            this.showModalMessage('Preparando pago...');
+            await this.refreshNonceIfNeeded();
 
-          const url = new URL(bookingUrl, window.location.origin);
-          const people = this.getPeopleCount();
-          const price = this.priceCents / 100;
-          const total = price * people;
+            const data = await this.callTours('create', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                tour: this.tourHandle,
+                language: this.languageInput?.value || '',
+                date: this.calendarInput?.value || '',
+                hour: this.timeInput?.value || '',
+                adults: Number(this.adultsInput?.value || 0),
+                children: Number(this.childrenInput?.value || 0),
+                name: this.nameInput?.value || '',
+                phone: this.phoneInput?.value || '',
+                email: this.emailInput?.value || '',
+                nationalityId: Number(this.nationalityInput?.value || 1),
+                nonce: this.nonce
+              })
+            });
 
-          url.searchParams.set('tour', this.dataset.tourHandle || '');
-          url.searchParams.set('tour_title', this.dataset.tourTitle || '');
-          url.searchParams.set('idioma', this.languageInput?.value || '');
-          url.searchParams.set('id_tipo_tour', this.languageIdInput?.value || '');
-          url.searchParams.set('adultos', this.adultsInput?.value || '1');
-          url.searchParams.set('ninos', this.childrenInput?.value || '0');
-          url.searchParams.set('personas', String(people));
-          url.searchParams.set('fecha', this.calendarInput?.value || '');
-          url.searchParams.set('horario', this.timeInput?.value || '');
-          url.searchParams.set('precio', String(price));
-          url.searchParams.set('total', String(total));
-          url.searchParams.set('currency', this.currency);
+            this.redirectToWebpay(data);
+          } catch (error) {
+            if (error.code === 'invalid_nonce' || error.code === 'request_expired' || error.code === 'payment_error') {
+              await this.refreshNonce();
+            }
 
-          window.location.href = url.toString();
+            this.showModalMessage(error.message || 'No pudimos iniciar el pago. Intentalo nuevamente.');
+            this.setSubmitEnabled(!this.timeInput?.disabled && Boolean(this.timeInput?.value));
+            this.setModalSubmitEnabled(true);
+          }
+        }
+
+        async refreshNonceIfNeeded() {
+          if (!this.nonce || (this.nonceExpiresAt && Date.now() > Date.parse(this.nonceExpiresAt))) {
+            await this.refreshNonce();
+          }
+        }
+
+        async refreshNonce() {
+          const data = await this.callTours('nonce');
+          this.nonce = data.nonce || '';
+          this.nonceExpiresAt = data.expiresAt || '';
+        }
+
+        redirectToWebpay(data) {
+          const form = document.createElement('form');
+          form.method = 'post';
+          form.action = data.redirectUrl;
+
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = 'token_ws';
+          input.value = data.token;
+
+          form.appendChild(input);
+          document.body.appendChild(form);
+          form.submit();
+        }
+
+        setSubmitEnabled(enabled) {
+          if (!this.submitButton) return;
+
+          this.submitButton.disabled = !enabled;
+        }
+
+        setModalSubmitEnabled(enabled) {
+          if (!this.modalSubmitButton) return;
+
+          this.modalSubmitButton.disabled = !enabled;
+        }
+
+        openModal() {
+          if (!this.modal) return;
+
+          if (!this.timeInput?.value) {
+            this.showMessage('Selecciona un horario disponible.');
+            return;
+          }
+
+          this.showMessage('');
+          this.showModalMessage('');
+          this.modal.hidden = false;
+          document.documentElement.classList.add('santa-rita-tour-modal-open');
+          window.requestAnimationFrame(() => {
+            this.modal.classList.add('is-open');
+            this.nameInput?.focus();
+          });
+        }
+
+        closeModal() {
+          if (!this.modal || this.modal.hidden) return;
+
+          this.modal.classList.remove('is-open');
+          document.documentElement.classList.remove('santa-rita-tour-modal-open');
+          window.setTimeout(() => {
+            this.modal.hidden = true;
+          }, 180);
+        }
+
+        showMessage(message) {
+          if (!this.messageElement) return;
+
+          this.messageElement.textContent = message || '';
+          this.messageElement.hidden = !message;
+        }
+
+        showModalMessage(message) {
+          if (!this.modalMessageElement) return;
+
+          this.modalMessageElement.textContent = message || '';
+          this.modalMessageElement.hidden = !message;
         }
 
         initCalendarWhenReady() {
@@ -521,6 +865,7 @@
             locale: window.flatpickr.l10ns?.es || {
               firstDayOfWeek: 1
             },
+            onChange: () => this.scheduleAvailability(),
             disable
           };
 
@@ -1087,6 +1432,99 @@ box-shadow: 0px 2px 2px 0px #8C1A3E0D;
     color: #6e5a61;
     font-size: 11px;
     line-height: 1.35;
+  }
+
+  .santa-rita-tour-detail__message {
+    margin: 0;
+    color: #8c1a3e;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .santa-rita-tour-detail__message[hidden] {
+    display: none;
+  }
+
+  .santa-rita-tour-detail__modal[hidden] {
+    display: none;
+  }
+
+  .santa-rita-tour-detail__modal {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+
+  .santa-rita-tour-detail__modal.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .santa-rita-tour-detail__modal-backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: rgba(33, 0, 15, 0.48);
+    cursor: pointer;
+  }
+
+  .santa-rita-tour-detail__modal-dialog {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: min(440px, 100%);
+    gap: 12px;
+    border: 1px solid rgba(140, 26, 62, 0.22);
+    border-radius: 8px;
+    background: #fffbf6;
+    padding: 24px;
+    box-shadow: 0 22px 60px rgba(33, 0, 15, 0.24);
+    transform: translateY(10px);
+    transition: transform 180ms ease;
+  }
+
+  .santa-rita-tour-detail__modal.is-open .santa-rita-tour-detail__modal-dialog {
+    transform: translateY(0);
+  }
+
+  .santa-rita-tour-detail__modal-dialog h3 {
+    margin: 0;
+    padding-right: 30px;
+    color: #21000f;
+    font-family: var(--font-heading--family);
+    font-size: 22px;
+    line-height: 1.15;
+  }
+
+  .santa-rita-tour-detail__modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #21000f;
+    cursor: pointer;
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  .santa-rita-tour-detail__modal-submit {
+    margin-top: 4px;
+  }
+
+  .santa-rita-tour-modal-open {
+    overflow: hidden;
   }
 
   .santa-rita-tour-detail__total {
