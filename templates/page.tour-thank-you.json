@@ -10,21 +10,13 @@
 {
   "sections": {
     "santa_rita_tour_thank_you": {
-      "type": "santa-rita-tour-thank-you",
+      "type": "custom-liquid",
       "settings": {
-        "tours_page": "tours",
-        "eyebrow": "Reserva de tour",
-        "pending_title": "Estamos confirmando tu pago",
-        "pending_text": "Esto puede tardar unos segundos. No cierres esta pagina mientras consultamos el estado de tu reserva.",
-        "paid_title": "Reserva confirmada",
-        "paid_text": "Tu pago fue recibido correctamente. Te mostraremos el codigo de reserva apenas este disponible.",
-        "failed_title": "No pudimos completar el pago",
-        "failed_text": "El pago no fue concretado. Puedes volver a intentar tu reserva seleccionando un horario disponible.",
-        "not_found_title": "No encontramos tu reserva",
-        "not_found_text": "No recibimos un token valido para consultar el estado de la reserva.",
-        "error_title": "No pudimos consultar tu reserva",
-        "error_text": "Intenta recargar la pagina en unos segundos.",
-        "button_label": "Volver a tours"
+        "custom_liquid": "{% render 'santa-rita-tour-thank-you' %}",
+        "color_scheme": "",
+        "section_width": "full-width",
+        "padding-block-start": 0,
+        "padding-block-end": 0
       }
     }
   },

@@ -1,0 +1,267 @@
+<santa-rita-tour-thank-you class="santa-rita-tour-thank-you">
+  <div class="santa-rita-tour-thank-you__inner">
+    <p class="santa-rita-tour-thank-you__eyebrow">Reserva de tour</p>
+    <h1 data-tour-result-title>Estamos confirmando tu pago</h1>
+    <p data-tour-result-message>Esto puede tardar unos segundos. No cierres esta pagina mientras consultamos el estado de tu reserva.</p>
+
+    <dl class="santa-rita-tour-thank-you__summary" data-tour-result-summary hidden>
+      <div>
+        <dt>Tour</dt>
+        <dd data-tour-result-name></dd>
+      </div>
+      <div>
+        <dt>Fecha</dt>
+        <dd data-tour-result-date></dd>
+      </div>
+      <div>
+        <dt>Personas</dt>
+        <dd data-tour-result-people></dd>
+      </div>
+      <div>
+        <dt>Total</dt>
+        <dd data-tour-result-total></dd>
+      </div>
+      <div data-tour-result-code-row hidden>
+        <dt>Codigo de reserva</dt>
+        <dd data-tour-result-code></dd>
+      </div>
+    </dl>
+
+    <a class="santa-rita-tour-thank-you__button" href="/pages/tours">
+      Volver a tours
+    </a>
+  </div>
+</santa-rita-tour-thank-you>
+
+<script>
+  if (!customElements.get('santa-rita-tour-thank-you')) {
+    customElements.define(
+      'santa-rita-tour-thank-you',
+      class SantaRitaTourThankYou extends HTMLElement {
+        connectedCallback() {
+          this.titleElement = this.querySelector('[data-tour-result-title]');
+          this.messageElement = this.querySelector('[data-tour-result-message]');
+          this.summaryElement = this.querySelector('[data-tour-result-summary]');
+          this.nameElement = this.querySelector('[data-tour-result-name]');
+          this.dateElement = this.querySelector('[data-tour-result-date]');
+          this.peopleElement = this.querySelector('[data-tour-result-people]');
+          this.totalElement = this.querySelector('[data-tour-result-total]');
+          this.codeRow = this.querySelector('[data-tour-result-code-row]');
+          this.codeElement = this.querySelector('[data-tour-result-code]');
+          this.apiBase = '/apps/santa-rita/tours';
+          this.pollCount = 0;
+          this.maxPolls = 40;
+
+          this.loadResult();
+        }
+
+        async loadResult() {
+          const params = new URLSearchParams(window.location.search);
+          const token = params.get('token');
+
+          if (!token) {
+            this.renderNotFound();
+            return;
+          }
+
+          try {
+            const data = await this.callTours(`result?token=${encodeURIComponent(token)}`);
+            this.renderResult(data);
+
+            if (data.paidStatus === 'pending' && this.pollCount < this.maxPolls) {
+              this.pollCount += 1;
+              window.setTimeout(() => this.loadResult(), 2500);
+            }
+          } catch (error) {
+            this.renderError(error.message);
+          }
+        }
+
+        async callTours(path) {
+          const response = await fetch(`${this.apiBase}/${path}`);
+          const body = await response.json();
+
+          if (!body.success) {
+            throw new Error(body.message || 'No pudimos consultar tu reserva.');
+          }
+
+          return body.data;
+        }
+
+        renderResult(data) {
+          if (data.paidStatus === 'paid') {
+            this.setText(this.titleElement, 'Reserva confirmada');
+            this.setText(this.messageElement, 'Tu pago fue recibido correctamente. Te mostraremos el codigo de reserva apenas este disponible.');
+          } else if (data.paidStatus === 'failed') {
+            this.setText(this.titleElement, 'No pudimos completar el pago');
+            this.setText(this.messageElement, 'El pago no fue concretado. Puedes volver a intentar tu reserva seleccionando un horario disponible.');
+          } else {
+            this.setText(this.titleElement, 'Estamos confirmando tu pago');
+            this.setText(this.messageElement, 'Esto puede tardar unos segundos. No cierres esta pagina mientras consultamos el estado de tu reserva.');
+          }
+
+          this.renderSummary(data);
+        }
+
+        renderSummary(data) {
+          if (!this.summaryElement) return;
+
+          const tour = data.tour || {};
+          const adults = Number(tour.adults || 0);
+          const children = Number(tour.children || 0);
+          const people = `${adults} adulto${adults === 1 ? '' : 's'} / ${children} nino${children === 1 ? '' : 's'}`;
+
+          this.setText(this.nameElement, tour.name || '-');
+          this.setText(this.dateElement, this.formatDate(tour.date));
+          this.setText(this.peopleElement, people);
+          this.setText(this.totalElement, this.formatMoney(data.total || 0));
+
+          if (data.reservationCode) {
+            this.setText(this.codeElement, data.reservationCode);
+            if (this.codeRow) this.codeRow.hidden = false;
+          }
+
+          this.summaryElement.hidden = false;
+        }
+
+        renderNotFound() {
+          this.setText(this.titleElement, 'No encontramos tu reserva');
+          this.setText(this.messageElement, 'No recibimos un token valido para consultar el estado de la reserva.');
+        }
+
+        renderError(message) {
+          this.setText(this.titleElement, 'No pudimos consultar tu reserva');
+          this.setText(this.messageElement, message || 'Intenta recargar la pagina en unos segundos.');
+        }
+
+        setText(element, value) {
+          if (element) element.textContent = value;
+        }
+
+        formatMoney(value) {
+          return new Intl.NumberFormat('es-CL', {
+            style: 'currency',
+            currency: 'CLP',
+            maximumFractionDigits: 0
+          }).format(value);
+        }
+
+        formatDate(value) {
+          if (!value) return '-';
+
+          const date = new Date(value);
+          if (Number.isNaN(date.getTime())) return value;
+
+          return new Intl.DateTimeFormat('es-CL', {
+            dateStyle: 'medium',
+            timeStyle: 'short'
+          }).format(date);
+        }
+      }
+    );
+  }
+</script>
+
+<style>
+  .santa-rita-tour-thank-you {
+    display: block;
+    min-height: 60vh;
+    background: #fffbf6;
+    color: #21000f;
+    padding: clamp(56px, 8vw, 104px) 20px;
+  }
+
+  .santa-rita-tour-thank-you__inner {
+    width: min(720px, 100%);
+    margin: 0 auto;
+  }
+
+  .santa-rita-tour-thank-you__eyebrow {
+    margin: 0 0 10px;
+    color: #8c1a3e;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .santa-rita-tour-thank-you h1 {
+    margin: 0 0 16px;
+    color: #21000f;
+    font-family: var(--font-heading--family);
+    font-size: clamp(34px, 5vw, 58px);
+    line-height: 1.05;
+  }
+
+  .santa-rita-tour-thank-you p {
+    max-width: 620px;
+    margin: 0;
+    color: #5c4850;
+    font-size: 17px;
+    line-height: 1.55;
+  }
+
+  .santa-rita-tour-thank-you__summary {
+    display: grid;
+    gap: 0;
+    margin: 34px 0 0;
+    border: 1px solid rgba(33, 0, 15, 0.12);
+    border-radius: 8px;
+    background: #ffffff;
+    overflow: hidden;
+  }
+
+  .santa-rita-tour-thank-you__summary[hidden] {
+    display: none;
+  }
+
+  .santa-rita-tour-thank-you__summary div {
+    display: grid;
+    grid-template-columns: minmax(120px, 0.35fr) 1fr;
+    gap: 18px;
+    padding: 15px 18px;
+    border-bottom: 1px solid rgba(33, 0, 15, 0.08);
+  }
+
+  .santa-rita-tour-thank-you__summary div:last-child {
+    border-bottom: 0;
+  }
+
+  .santa-rita-tour-thank-you__summary dt,
+  .santa-rita-tour-thank-you__summary dd {
+    margin: 0;
+  }
+
+  .santa-rita-tour-thank-you__summary dt {
+    color: #806b73;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .santa-rita-tour-thank-you__summary dd {
+    color: #21000f;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .santa-rita-tour-thank-you__button {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 28px;
+    border-radius: 4px;
+    background: #8c1a3e;
+    color: #ffffff;
+    padding: 0 22px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  @media screen and (max-width: 640px) {
+    .santa-rita-tour-thank-you__summary div {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+  }
+</style>
