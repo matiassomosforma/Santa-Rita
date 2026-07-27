@@ -24,9 +24,14 @@
     </dl>
 
     {% if section.settings.tours_page != blank %}
-      <a class="santa-rita-tour-thank-you__button" href="{{ section.settings.tours_page.url }}" data-tour-result-action>
-        {{ section.settings.button_label }}
-      </a>
+      <div class="santa-rita-tour-thank-you__actions">
+        <a class="santa-rita-tour-thank-you__button" href="{{ section.settings.tours_page.url }}" data-tour-result-action>
+          {{ section.settings.button_label }}
+        </a>
+        <a class="santa-rita-tour-thank-you__button santa-rita-tour-thank-you__button--secondary" href="{{ section.settings.tours_page.url }}" data-tour-result-secondary-action hidden>
+          {{ section.settings.button_label }}
+        </a>
+      </div>
     {% endif %}
   </div>
 </santa-rita-tour-thank-you>
@@ -45,6 +50,7 @@
           this.peopleElement = this.querySelector('[data-tour-result-people]');
           this.totalElement = this.querySelector('[data-tour-result-total]');
           this.actionButton = this.querySelector('[data-tour-result-action]');
+          this.secondaryActionButton = this.querySelector('[data-tour-result-secondary-action]');
           this.apiBase = '/apps/santa-rita/tours';
           this.pollCount = 0;
           this.maxPolls = 40;
@@ -89,18 +95,18 @@
           if (data.paidStatus === 'paid') {
             this.setText(this.titleElement, '{{ section.settings.paid_title | escape }}');
             this.setText(this.messageElement, '{{ section.settings.paid_text | escape }}');
+            this.setActionButton('{{ section.settings.button_label | escape }}', this.defaultToursUrl);
+            this.setSecondaryActionButton('', '', true);
           } else if (data.paidStatus === 'failed') {
             this.setText(this.titleElement, '{{ section.settings.failed_title | escape }}');
             this.setText(this.messageElement, '{{ section.settings.failed_text | escape }}');
             this.setActionButton('Intentar nuevamente', this.getRetryUrl());
+            this.setSecondaryActionButton('{{ section.settings.button_label | escape }}', this.defaultToursUrl, false);
           } else {
             this.setText(this.titleElement, '{{ section.settings.pending_title | escape }}');
             this.setText(this.messageElement, '{{ section.settings.pending_text | escape }}');
             this.setActionButton('{{ section.settings.button_label | escape }}', this.defaultToursUrl);
-          }
-
-          if (data.paidStatus === 'paid') {
-            this.setActionButton('{{ section.settings.button_label | escape }}', this.defaultToursUrl);
+            this.setSecondaryActionButton('', '', true);
           }
 
           this.renderSummary(data);
@@ -112,7 +118,7 @@
           const tour = data.tour || {};
           const adults = Number(tour.adults || 0);
           const children = Number(tour.children || 0);
-          const people = `${adults} adulto${adults === 1 ? '' : 's'} / ${children} nino${children === 1 ? '' : 's'}`;
+          const people = `${adults} adulto${adults === 1 ? '' : 's'} / ${children} niño${children === 1 ? '' : 's'}`;
 
           this.setText(this.nameElement, tour.name || '-');
           this.setText(this.dateElement, this.formatDate(tour.date));
@@ -126,12 +132,14 @@
           this.setText(this.titleElement, '{{ section.settings.not_found_title | escape }}');
           this.setText(this.messageElement, '{{ section.settings.not_found_text | escape }}');
           this.setActionButton('{{ section.settings.button_label | escape }}', this.defaultToursUrl);
+          this.setSecondaryActionButton('', '', true);
         }
 
         renderError(message) {
           this.setText(this.titleElement, '{{ section.settings.error_title | escape }}');
           this.setText(this.messageElement, message || '{{ section.settings.error_text | escape }}');
           this.setActionButton('{{ section.settings.button_label | escape }}', this.defaultToursUrl);
+          this.setSecondaryActionButton('', '', true);
         }
 
         setText(element, value) {
@@ -143,6 +151,14 @@
 
           this.actionButton.textContent = label;
           this.actionButton.href = href;
+        }
+
+        setSecondaryActionButton(label, href, hidden) {
+          if (!this.secondaryActionButton) return;
+
+          this.secondaryActionButton.textContent = label;
+          this.secondaryActionButton.href = href || this.defaultToursUrl;
+          this.secondaryActionButton.hidden = hidden;
         }
 
         get defaultToursUrl() {
@@ -271,12 +287,18 @@
     font-weight: 600;
   }
 
+  .santa-rita-tour-thank-you__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
   .santa-rita-tour-thank-you__button {
     display: inline-flex;
     min-height: 44px;
     align-items: center;
     justify-content: center;
-    margin-top: 28px;
     border-radius: 4px;
     background: #8c1a3e;
     color: #ffffff;
@@ -284,6 +306,16 @@
     font-size: 14px;
     font-weight: 700;
     text-decoration: none;
+  }
+
+  .santa-rita-tour-thank-you__button--secondary {
+    border: 1px solid #8c1a3e;
+    background: transparent;
+    color: #8c1a3e;
+  }
+
+  .santa-rita-tour-thank-you__button[hidden] {
+    display: none;
   }
 
   @media screen and (max-width: 640px) {

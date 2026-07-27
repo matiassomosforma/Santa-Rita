@@ -23,9 +23,14 @@
       </div>
     </dl>
 
-    <a class="santa-rita-tour-thank-you__button" href="/pages/tours" data-tour-result-action>
-      Volver a tours
-    </a>
+    <div class="santa-rita-tour-thank-you__actions">
+      <a class="santa-rita-tour-thank-you__button" href="/pages/tours" data-tour-result-action>
+        Volver a tours
+      </a>
+      <a class="santa-rita-tour-thank-you__button santa-rita-tour-thank-you__button--secondary" href="/pages/tours" data-tour-result-secondary-action hidden>
+        Volver a tours
+      </a>
+    </div>
   </div>
 </santa-rita-tour-thank-you>
 
@@ -43,6 +48,7 @@
           this.peopleElement = this.querySelector('[data-tour-result-people]');
           this.totalElement = this.querySelector('[data-tour-result-total]');
           this.actionButton = this.querySelector('[data-tour-result-action]');
+          this.secondaryActionButton = this.querySelector('[data-tour-result-secondary-action]');
           this.apiBase = '/apps/santa-rita/tours';
           this.pollCount = 0;
           this.maxPolls = 40;
@@ -87,18 +93,18 @@
           if (data.paidStatus === 'paid') {
             this.setText(this.titleElement, 'Reserva confirmada');
             this.setText(this.messageElement, 'Tu pago fue recibido correctamente. Recibiras la confirmacion de tu reserva por correo.');
+            this.setActionButton('Volver a tours', '/pages/tours');
+            this.setSecondaryActionButton('', '', true);
           } else if (data.paidStatus === 'failed') {
             this.setText(this.titleElement, 'No pudimos completar el pago');
             this.setText(this.messageElement, 'El pago no fue concretado. Puedes volver a intentar tu reserva seleccionando un horario disponible.');
             this.setActionButton('Intentar nuevamente', this.getRetryUrl());
+            this.setSecondaryActionButton('Volver a tours', '/pages/tours', false);
           } else {
             this.setText(this.titleElement, 'Estamos confirmando tu pago');
             this.setText(this.messageElement, 'Esto puede tardar unos segundos. No cierres esta pagina mientras consultamos el estado de tu reserva.');
             this.setActionButton('Volver a tours', '/pages/tours');
-          }
-
-          if (data.paidStatus === 'paid') {
-            this.setActionButton('Volver a tours', '/pages/tours');
+            this.setSecondaryActionButton('', '', true);
           }
 
           this.renderSummary(data);
@@ -110,7 +116,7 @@
           const tour = data.tour || {};
           const adults = Number(tour.adults || 0);
           const children = Number(tour.children || 0);
-          const people = `${adults} adulto${adults === 1 ? '' : 's'} / ${children} nino${children === 1 ? '' : 's'}`;
+          const people = `${adults} adulto${adults === 1 ? '' : 's'} / ${children} niño${children === 1 ? '' : 's'}`;
 
           this.setText(this.nameElement, tour.name || '-');
           this.setText(this.dateElement, this.formatDate(tour.date));
@@ -124,12 +130,14 @@
           this.setText(this.titleElement, 'No encontramos tu reserva');
           this.setText(this.messageElement, 'No recibimos un token valido para consultar el estado de la reserva.');
           this.setActionButton('Volver a tours', '/pages/tours');
+          this.setSecondaryActionButton('', '', true);
         }
 
         renderError(message) {
           this.setText(this.titleElement, 'No pudimos consultar tu reserva');
           this.setText(this.messageElement, message || 'Intenta recargar la pagina en unos segundos.');
           this.setActionButton('Volver a tours', '/pages/tours');
+          this.setSecondaryActionButton('', '', true);
         }
 
         setText(element, value) {
@@ -141,6 +149,14 @@
 
           this.actionButton.textContent = label;
           this.actionButton.href = href;
+        }
+
+        setSecondaryActionButton(label, href, hidden) {
+          if (!this.secondaryActionButton) return;
+
+          this.secondaryActionButton.textContent = label;
+          this.secondaryActionButton.href = href || '/pages/tours';
+          this.secondaryActionButton.hidden = hidden;
         }
 
         getRetryUrl() {
@@ -265,12 +281,18 @@
     font-weight: 600;
   }
 
+  .santa-rita-tour-thank-you__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
   .santa-rita-tour-thank-you__button {
     display: inline-flex;
     min-height: 44px;
     align-items: center;
     justify-content: center;
-    margin-top: 28px;
     border-radius: 4px;
     background: #8c1a3e;
     color: #ffffff;
@@ -278,6 +300,16 @@
     font-size: 14px;
     font-weight: 700;
     text-decoration: none;
+  }
+
+  .santa-rita-tour-thank-you__button--secondary {
+    border: 1px solid #8c1a3e;
+    background: transparent;
+    color: #8c1a3e;
+  }
+
+  .santa-rita-tour-thank-you__button[hidden] {
+    display: none;
   }
 
   @media screen and (max-width: 640px) {
