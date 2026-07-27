@@ -99,7 +99,7 @@
             this.setText(this.titleElement, 'No pudimos completar el pago');
             this.setText(this.messageElement, 'El pago no fue concretado. Puedes volver a intentar tu reserva seleccionando un horario disponible.');
             this.setActionButton('Intentar nuevamente', this.getRetryUrl());
-            this.setSecondaryActionButton('Volver a tours', '/pages/tours', false);
+            this.setSecondaryActionButton('', '', true);
           } else {
             this.setText(this.titleElement, 'Estamos confirmando tu pago');
             this.setText(this.messageElement, 'Esto puede tardar unos segundos. No cierres esta pagina mientras consultamos el estado de tu reserva.');

@@ -101,7 +101,7 @@
             this.setText(this.titleElement, '{{ section.settings.failed_title | escape }}');
             this.setText(this.messageElement, '{{ section.settings.failed_text | escape }}');
             this.setActionButton('Intentar nuevamente', this.getRetryUrl());
-            this.setSecondaryActionButton('{{ section.settings.button_label | escape }}', this.defaultToursUrl, false);
+            this.setSecondaryActionButton('', '', true);
           } else {
             this.setText(this.titleElement, '{{ section.settings.pending_title | escape }}');
             this.setText(this.messageElement, '{{ section.settings.pending_text | escape }}');
