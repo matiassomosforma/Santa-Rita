@@ -98,7 +98,7 @@
           } else if (data.paidStatus === 'failed') {
             this.setText(this.titleElement, 'No pudimos completar el pago');
             this.setText(this.messageElement, 'El pago no fue concretado. Puedes volver a intentar tu reserva seleccionando un horario disponible.');
-            this.setActionButton('Intentar nuevamente', this.getRetryUrl());
+            this.setActionButton('Intentar nuevamente', this.getRetryUrl(data.tour));
             this.setSecondaryActionButton('', '', true);
           } else {
             this.setText(this.titleElement, 'Estamos confirmando tu pago');
@@ -159,7 +159,13 @@
           this.secondaryActionButton.hidden = hidden;
         }
 
-        getRetryUrl() {
+        getRetryUrl(tour) {
+          const storedRetryUrl = this.getStoredRetryUrl();
+          if (storedRetryUrl) return storedRetryUrl;
+
+          const tourUrl = this.getTourUrl(tour);
+          if (tourUrl) return tourUrl;
+
           if (!document.referrer) return '/pages/tours';
 
           try {
@@ -173,6 +179,52 @@
             return `${referrer.pathname}${referrer.search}${referrer.hash}`;
           } catch (error) {
             return '/pages/tours';
+          }
+        }
+
+        getTourUrl(tour) {
+          if (!tour) return '';
+
+          const directUrl = tour.url || tour.path;
+          if (this.isSafeRetryUrl(directUrl)) return directUrl;
+
+          const handle = tour.handle || tour.slug || tour.tour || tour.tourHandle || this.slugifyTourName(tour.name);
+          if (!handle) return '';
+
+          const normalizedHandle = handle.startsWith('tour-') ? handle : `tour-${handle}`;
+          return `/pages/tour/${normalizedHandle}`;
+        }
+
+        slugifyTourName(value) {
+          return String(value || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .replace(/\b(espanol|ingles|frances|portugues|english|spanish|french|portuguese)\b/g, '')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        }
+
+        getStoredRetryUrl() {
+          try {
+            const token = new URLSearchParams(window.location.search).get('token');
+            const tokenRetryUrl = token ? window.sessionStorage.getItem(`santa-rita-tour-retry-url:${token}`) : '';
+            const retryUrl = tokenRetryUrl || window.sessionStorage.getItem('santa-rita-tour-retry-url') || '';
+
+            return this.isSafeRetryUrl(retryUrl) ? retryUrl : '';
+          } catch (error) {
+            return '';
+          }
+        }
+
+        isSafeRetryUrl(value) {
+          if (!value || !value.startsWith('/')) return false;
+
+          try {
+            const url = new URL(value, window.location.origin);
+            return url.origin === window.location.origin && url.pathname !== window.location.pathname;
+          } catch (error) {
+            return false;
           }
         }
 

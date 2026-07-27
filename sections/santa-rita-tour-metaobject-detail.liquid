@@ -766,6 +766,8 @@
         }
 
         redirectToWebpay(data) {
+          this.storeRetryUrl(data);
+
           const form = document.createElement('form');
           form.method = 'post';
           form.action = data.redirectUrl;
@@ -778,6 +780,19 @@
           form.appendChild(input);
           document.body.appendChild(form);
           form.submit();
+        }
+
+        storeRetryUrl(data) {
+          try {
+            const retryUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+            window.sessionStorage.setItem('santa-rita-tour-retry-url', retryUrl);
+
+            if (data.purchaseToken) {
+              window.sessionStorage.setItem(`santa-rita-tour-retry-url:${data.purchaseToken}`, retryUrl);
+            }
+          } catch (error) {
+            this.debugError('retry url storage failed', error);
+          }
         }
 
         setSubmitEnabled(enabled) {
