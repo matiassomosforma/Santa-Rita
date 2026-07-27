@@ -31,6 +31,7 @@
         "time_options": "09:45, 11:30, 13:00, 15:30",
         "language_label": "Idioma",
         "language_options": "Espanol, Ingles, Frances, Portugues",
+        "thank_you_path": "/pages/gracias-reserva-tour",
         "total_label": "Total",
         "reserve_button_label": "Reservar Tour",
         "reserve_note": "La reserva queda sujeta a confirmacion de disponibilidad."

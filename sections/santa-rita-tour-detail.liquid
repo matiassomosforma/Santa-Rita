@@ -25,14 +25,6 @@
   assign disabled_weekdays = current_product.metafields.custom.tour_disabled_weekdays.value | default: current_product.metafields.custom.tour_disabled_weekdays | default: section.settings.disabled_weekdays
   assign blocked_dates = current_product.metafields.custom.tour_blocked_dates.value | default: current_product.metafields.custom.tour_blocked_dates | default: section.settings.blocked_dates
   assign enabled_dates = current_product.metafields.custom.tour_enabled_dates.value | default: current_product.metafields.custom.tour_enabled_dates | default: section.settings.enabled_dates
-  assign spanish_tour_id = current_product.metafields.custom.id_tipo_tour_espanol.value | default: current_product.metafields.custom.id_tipo_tour_espanol | default: current_product.metafields.custom.tour_id_tipo_espanol.value | default: current_product.metafields.custom.tour_id_tipo_espanol | default: section.settings.id_tipo_tour_espanol
-  assign english_tour_id = current_product.metafields.custom.id_tipo_tour_ingles.value | default: current_product.metafields.custom.id_tipo_tour_ingles | default: current_product.metafields.custom.tour_id_tipo_ingles.value | default: current_product.metafields.custom.tour_id_tipo_ingles | default: section.settings.id_tipo_tour_ingles
-  assign french_tour_id = current_product.metafields.custom.id_tipo_tour_frances.value | default: current_product.metafields.custom.id_tipo_tour_frances | default: current_product.metafields.custom.tour_id_tipo_frances.value | default: current_product.metafields.custom.tour_id_tipo_frances | default: section.settings.id_tipo_tour_frances
-  assign portuguese_tour_id = current_product.metafields.custom.id_tipo_tour_portugues.value | default: current_product.metafields.custom.id_tipo_tour_portugues | default: current_product.metafields.custom.tour_id_tipo_portugues.value | default: current_product.metafields.custom.tour_id_tipo_portugues | default: section.settings.id_tipo_tour_portugues
-  assign has_language_tour_ids = false
-  if spanish_tour_id != blank or english_tour_id != blank or french_tour_id != blank or portuguese_tour_id != blank
-    assign has_language_tour_ids = true
-  endif
   assign time_options = time_options_source | split: ','
   assign language_options = language_options_source | split: ','
 %}
@@ -282,30 +274,14 @@
               <div class="santa-rita-tour-detail__field">
                 <label for="TourLanguage-{{ section.id }}">{{ section.settings.language_label }}</label>
                 <select id="TourLanguage-{{ section.id }}" name="properties[Idioma]" required data-tour-language>
-                  {% if has_language_tour_ids %}
-                    {% if spanish_tour_id != blank %}
-                      <option value="Espanol" data-tour-id="{{ spanish_tour_id | escape }}">Espanol</option>
+                  {% for option in language_options %}
+                    {% assign option_value = option | strip %}
+                    {% if option_value != blank %}
+                      <option value="{{ option_value | escape }}">{{ option_value }}</option>
                     {% endif %}
-                    {% if english_tour_id != blank %}
-                      <option value="Ingles" data-tour-id="{{ english_tour_id | escape }}">Ingles</option>
-                    {% endif %}
-                    {% if french_tour_id != blank %}
-                      <option value="Frances" data-tour-id="{{ french_tour_id | escape }}">Frances</option>
-                    {% endif %}
-                    {% if portuguese_tour_id != blank %}
-                      <option value="Portugues" data-tour-id="{{ portuguese_tour_id | escape }}">Portugues</option>
-                    {% endif %}
-                  {% else %}
-                    {% for option in language_options %}
-                      {% assign option_value = option | strip %}
-                      {% if option_value != blank %}
-                        <option value="{{ option_value | escape }}">{{ option_value }}</option>
-                      {% endif %}
-                    {% endfor %}
-                  {% endif %}
+                  {% endfor %}
                 </select>
               </div>
-              <input type="hidden" name="properties[ID Tipo Tour]" value="" data-tour-language-id>
 
               <div class="santa-rita-tour-detail__fields">
                 <div class="santa-rita-tour-detail__field">
@@ -393,7 +369,6 @@
         connectedCallback() {
           this.calendarInput = this.querySelector('[data-tour-calendar]');
           this.languageInput = this.querySelector('[data-tour-language]');
-          this.languageIdInput = this.querySelector('[data-tour-language-id]');
           this.adultsInput = this.querySelector('[data-tour-adults]');
           this.childrenInput = this.querySelector('[data-tour-children]');
           this.quantityInput = this.querySelector('[data-tour-quantity]');
@@ -406,19 +381,9 @@
               this.updateTotal();
             });
           });
-          this.languageInput?.addEventListener('change', () => this.syncLanguageTourId());
-
-          this.syncLanguageTourId();
           this.syncQuantity();
           this.updateTotal();
           this.initCalendarWhenReady();
-        }
-
-        syncLanguageTourId() {
-          if (!this.languageInput || !this.languageIdInput) return;
-
-          const selectedOption = this.languageInput.options[this.languageInput.selectedIndex];
-          this.languageIdInput.value = selectedOption?.dataset.tourId || '';
         }
 
         getPeopleCount() {
@@ -1514,30 +1479,6 @@
       "label": "Idiomas disponibles",
       "default": "Espanol, Ingles, Frances, Portugues",
       "info": "Separados por coma."
-    },
-    {
-      "type": "text",
-      "id": "id_tipo_tour_espanol",
-      "label": "ID Tipo Tour Espanol",
-      "info": "Si se completa, Espanol aparecera como opcion y se enviara este ID en la reserva."
-    },
-    {
-      "type": "text",
-      "id": "id_tipo_tour_ingles",
-      "label": "ID Tipo Tour Ingles",
-      "info": "Si se completa, Ingles aparecera como opcion y se enviara este ID en la reserva."
-    },
-    {
-      "type": "text",
-      "id": "id_tipo_tour_frances",
-      "label": "ID Tipo Tour Frances",
-      "info": "Si se completa, Frances aparecera como opcion y se enviara este ID en la reserva."
-    },
-    {
-      "type": "text",
-      "id": "id_tipo_tour_portugues",
-      "label": "ID Tipo Tour Portugues",
-      "info": "Si se completa, Portugues aparecera como opcion y se enviara este ID en la reserva."
     },
     {
       "type": "text",

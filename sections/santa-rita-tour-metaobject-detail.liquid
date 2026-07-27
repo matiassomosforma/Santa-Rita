@@ -25,14 +25,6 @@
   assign blocked_dates = current_tour.blocked_dates.value | default: current_tour.blocked_dates | default: section.settings.blocked_dates
   assign enabled_dates = current_tour.enabled_dates.value | default: current_tour.enabled_dates | default: section.settings.enabled_dates
   assign booking_url = current_tour.booking_url.value | default: current_tour.booking_url | default: section.settings.booking_url
-  assign spanish_tour_id = current_tour.id_tipo_tour_espanol.value | default: current_tour.id_tipo_tour_espanol | default: current_tour.tour_id_tipo_espanol.value | default: current_tour.tour_id_tipo_espanol | default: section.settings.id_tipo_tour_espanol
-  assign english_tour_id = current_tour.id_tipo_tour_ingles.value | default: current_tour.id_tipo_tour_ingles | default: current_tour.tour_id_tipo_ingles.value | default: current_tour.tour_id_tipo_ingles | default: section.settings.id_tipo_tour_ingles
-  assign french_tour_id = current_tour.id_tipo_tour_frances.value | default: current_tour.id_tipo_tour_frances | default: current_tour.tour_id_tipo_frances.value | default: current_tour.tour_id_tipo_frances | default: section.settings.id_tipo_tour_frances
-  assign portuguese_tour_id = current_tour.id_tipo_tour_portugues.value | default: current_tour.id_tipo_tour_portugues | default: current_tour.tour_id_tipo_portugues.value | default: current_tour.tour_id_tipo_portugues | default: section.settings.id_tipo_tour_portugues
-  assign has_language_tour_ids = false
-  if spanish_tour_id != blank or english_tour_id != blank or french_tour_id != blank or portuguese_tour_id != blank
-    assign has_language_tour_ids = true
-  endif
   assign tour_price = current_tour.price.value | default: current_tour.price
   assign price_amount = tour_price.amount | default: tour_price | default: 0
   assign price_cents = price_amount | round
@@ -54,6 +46,7 @@
   data-price-cents="{{ price_cents }}"
   data-price-currency="{{ price_currency | escape }}"
   data-booking-url="{{ booking_url_string | escape }}"
+  data-thank-you-path="{{ section.settings.thank_you_path | default: '/pages/gracias-reserva-tour' | escape }}"
   data-disabled-weekdays="{{ disabled_weekdays | escape }}"
   data-blocked-dates="{{ blocked_dates | escape }}"
   data-enabled-dates="{{ enabled_dates | escape }}"
@@ -724,7 +717,8 @@
                 phone: this.phoneInput?.value || '',
                 email: this.emailInput?.value || '',
                 nationalityId: Number(this.nationalityInput?.value || 1),
-                nonce: this.nonce
+                nonce: this.nonce,
+                thankYouPath: this.dataset.thankYouPath || '/pages/gracias-reserva-tour'
               })
             });
 
@@ -2034,27 +2028,10 @@ box-shadow: 0px 2px 2px 0px #8C1A3E0D;
     },
     {
       "type": "text",
-      "id": "id_tipo_tour_espanol",
-      "label": "ID Tipo Tour Espanol",
-      "info": "Si se completa, Espanol aparecera como opcion y se enviara este ID en la reserva."
-    },
-    {
-      "type": "text",
-      "id": "id_tipo_tour_ingles",
-      "label": "ID Tipo Tour Ingles",
-      "info": "Si se completa, Ingles aparecera como opcion y se enviara este ID en la reserva."
-    },
-    {
-      "type": "text",
-      "id": "id_tipo_tour_frances",
-      "label": "ID Tipo Tour Frances",
-      "info": "Si se completa, Frances aparecera como opcion y se enviara este ID en la reserva."
-    },
-    {
-      "type": "text",
-      "id": "id_tipo_tour_portugues",
-      "label": "ID Tipo Tour Portugues",
-      "info": "Si se completa, Portugues aparecera como opcion y se enviara este ID en la reserva."
+      "id": "thank_you_path",
+      "label": "Pagina de agradecimiento",
+      "default": "/pages/gracias-reserva-tour",
+      "info": "Path relativo usado al volver desde Webpay. Ejemplo: /pages/gracias-reserva-tour."
     },
     {
       "type": "text",
