@@ -38,7 +38,7 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js" defer></script>
 
-<santa-rita-tour-metaobject-detail
+<santa-rita-tour-metaobject-detail-v2
   class="santa-rita-tour-detail"
   data-section-id="{{ section.id }}"
   data-tour-title="{{ tour_title | escape }}"
@@ -46,7 +46,6 @@
   data-price-cents="{{ price_cents }}"
   data-price-currency="{{ price_currency | escape }}"
   data-booking-url="{{ booking_url_string | escape }}"
-  data-thank-you-path="{{ section.settings.thank_you_path | default: '/pages/gracias-reserva-tour' | escape }}"
   data-disabled-weekdays="{{ disabled_weekdays | escape }}"
   data-blocked-dates="{{ blocked_dates | escape }}"
   data-enabled-dates="{{ enabled_dates | escape }}"
@@ -402,12 +401,12 @@
       </aside>
     </div>
   </div>
-</santa-rita-tour-metaobject-detail>
+</santa-rita-tour-metaobject-detail-v2>
 
 <script>
-  if (!customElements.get('santa-rita-tour-metaobject-detail')) {
+  if (!customElements.get('santa-rita-tour-metaobject-detail-v2')) {
     customElements.define(
-      'santa-rita-tour-metaobject-detail',
+      'santa-rita-tour-metaobject-detail-v2',
       class SantaRitaTourMetaobjectDetail extends HTMLElement {
         connectedCallback() {
           this.form = this.querySelector('[data-tour-booking-form]');
@@ -437,6 +436,11 @@
           this.nonceExpiresAt = '';
           this.rules = null;
           this.quote = null;
+          this.debug = new URLSearchParams(window.location.search).has('tourDebug');
+          this.debugLog('ready', {
+            tour: this.tourHandle,
+            apiBase: this.apiBase
+          });
 
           [this.languageInput, this.adultsInput, this.childrenInput].forEach((input) => {
             input?.addEventListener('change', () => this.scheduleAvailability());
@@ -496,8 +500,16 @@
         }
 
         async callTours(path, options = {}) {
-          const response = await fetch(`${this.apiBase}/${path}`, options);
+          const url = `${this.apiBase}/${path}`;
+          const response = await fetch(url, options);
           const body = await response.json();
+
+          this.debugLog('response', {
+            url,
+            ok: response.ok,
+            status: response.status,
+            body
+          });
 
           if (!body.success) {
             const error = new Error(body.message || 'Ocurrio un error inesperado. Intentalo nuevamente.');
@@ -700,30 +712,37 @@
             this.setModalSubmitEnabled(false);
             this.showModalMessage('Preparando pago...');
             await this.refreshNonceIfNeeded();
+            const payload = {
+              tour: this.tourHandle,
+              language: this.languageInput?.value || '',
+              date: this.calendarInput?.value || '',
+              hour: this.timeInput?.value || '',
+              adults: Number(this.adultsInput?.value || 0),
+              children: Number(this.childrenInput?.value || 0),
+              name: this.nameInput?.value || '',
+              phone: this.phoneInput?.value || '',
+              email: this.emailInput?.value || '',
+              nationalityId: Number(this.nationalityInput?.value || 1),
+              nonce: this.nonce
+            };
+
+            this.debugLog('create payload', {
+              ...payload,
+              nonce: payload.nonce ? `${payload.nonce.slice(0, 8)}...` : ''
+            });
 
             const data = await this.callTours('create', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify({
-                tour: this.tourHandle,
-                language: this.languageInput?.value || '',
-                date: this.calendarInput?.value || '',
-                hour: this.timeInput?.value || '',
-                adults: Number(this.adultsInput?.value || 0),
-                children: Number(this.childrenInput?.value || 0),
-                name: this.nameInput?.value || '',
-                phone: this.phoneInput?.value || '',
-                email: this.emailInput?.value || '',
-                nationalityId: Number(this.nationalityInput?.value || 1),
-                nonce: this.nonce,
-                thankYouPath: this.dataset.thankYouPath || '/pages/gracias-reserva-tour'
-              })
+              body: JSON.stringify(payload)
             });
 
             this.redirectToWebpay(data);
           } catch (error) {
+            this.debugError('create failed', error);
+
             if (error.code === 'invalid_nonce' || error.code === 'request_expired' || error.code === 'payment_error') {
               await this.refreshNonce();
             }
@@ -880,6 +899,23 @@
             .split(',')
             .map((item) => item.trim())
             .filter(Boolean);
+        }
+
+        debugLog(label, value) {
+          if (!this.debug) return;
+
+          console.log(`[Santa Rita Tours] ${label}`, value);
+        }
+
+        debugError(label, error) {
+          if (!this.debug) return;
+
+          console.error(`[Santa Rita Tours] ${label}`, {
+            code: error?.code,
+            message: error?.message,
+            stack: error?.stack,
+            error
+          });
         }
 
         formatDateKey(date) {
@@ -2025,13 +2061,6 @@ box-shadow: 0px 2px 2px 0px #8C1A3E0D;
       "label": "Idiomas por defecto",
       "default": "Espanol, Ingles, Frances, Portugues",
       "info": "Separados por coma."
-    },
-    {
-      "type": "text",
-      "id": "thank_you_path",
-      "label": "Pagina de agradecimiento",
-      "default": "/pages/gracias-reserva-tour",
-      "info": "Path relativo usado al volver desde Webpay. Ejemplo: /pages/gracias-reserva-tour."
     },
     {
       "type": "text",
