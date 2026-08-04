@@ -1,0 +1,129 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner": {
+      "type": "santa-rita-page-banner",
+      "name": "Banner de pagina",
+      "settings": {
+        "banner_style": "background",
+        "heading": "Arma tu caja de vinos",
+        "subheading": "Elige tu propia combinacion con tus vinos preferidos.",
+        "show_breadcrumbs": true,
+        "breadcrumb_top": 28,
+        "desktop_padding_top": 150,
+        "desktop_padding_bottom": 150,
+        "text_alignment": "center",
+        "mobile_padding_top": 90,
+        "mobile_padding_bottom": 90,
+        "mobile_text_alignment": "center"
+      }
+    },
+    "custom_box": {
+      "type": "santa-rita-custom-box",
+      "blocks": {
+        "step_select": {
+          "type": "step",
+          "settings": {
+            "text": "Seleccionas 6 botellas de vinos de preferencia."
+          }
+        },
+        "step_checkout": {
+          "type": "step",
+          "settings": {
+            "text": "La agregas al carrito, realizas el pedido y listo!"
+          }
+        }
+      },
+      "block_order": [
+        "step_select",
+        "step_checkout"
+      ],
+      "name": "Caja personalizada",
+      "settings": {
+        "show_section": true,
+        "heading": "Caja personalizada",
+        "text": "Puedes armar tu seleccion de 6 botellas en Santa Rita Online ideal para regalar y auto-regalarse.",
+        "card_heading": "Crea tu propia caja",
+        "button_label": "Armar mi caja",
+        "button_url": "/products/arma-tu-caja",
+        "background_color": "#fffbf6",
+        "panel_background_color": "#fffbf6",
+        "text_color": "#21000f",
+        "accent_color": "#9d1238"
+      }
+    },
+    "faq": {
+      "type": "santa-rita-arrival-faq",
+      "blocks": {
+        "faq_about": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿Que es Arma tu Caja?",
+            "answer": "<p>Es una experiencia para crear una caja personalizada con una seleccion de 6 botellas.</p>"
+          }
+        },
+        "faq_mix": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿Puedo mezclar vinos tintos, blancos y rosados en la misma caja?",
+            "answer": "<p>Si, puedes combinar diferentes estilos segun las opciones disponibles en Santa Rita Online.</p>"
+          }
+        },
+        "faq_delivery": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿Cuanto tarda en llegar mi caja?",
+            "answer": "<p>El tiempo de entrega depende de la comuna o region de despacho y se informa durante el proceso de compra.</p>"
+          }
+        },
+        "faq_shipping": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿El envio tiene costo adicional?",
+            "answer": "<p>El costo de envio se calcula al finalizar la compra segun la direccion de despacho.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_about",
+        "faq_mix",
+        "faq_delivery",
+        "faq_shipping"
+      ],
+      "name": "Preguntas frecuentes",
+      "settings": {
+        "show_section": true,
+        "show_arrival": false,
+        "arrival_heading": "",
+        "arrival_text": "",
+        "show_transport": false,
+        "transport_columns": "4",
+        "show_map": false,
+        "map_embed_code": "",
+        "map_heading": "",
+        "map_text": "",
+        "map_link_label": "",
+        "show_faq": true,
+        "faq_heading": "Preguntas frecuentes",
+        "faq_text": "Resolvemos tus dudas frecuentes"
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "custom_box",
+    "faq"
+  ]
+}
