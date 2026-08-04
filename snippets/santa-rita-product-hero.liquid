@@ -1,22 +1,26 @@
 {% liquid
   assign product = closest.product | default: product
   assign variant = product.selected_or_first_available_variant
+  if variant.available == false and product.available
+    assign variant = product.first_available_variant
+  endif
   assign image = variant.featured_image | default: product.featured_image
   assign breadcrumb_collection = blank
   assign cepa_metafield = product.metafields.custom['cepa']
   assign cc_metafield = product.metafields.custom['cc']
   assign varietal_metafield = product.metafields.custom['varietal']
   assign subtitle_metafield = product.metafields.custom['subtitle']
-  assign is_local_preview = false
-  assign pack_label_metafield = product.metafields.custom.pack_label
-  assign pack_label = pack_label_metafield.value | default: pack_label_metafield
   assign cc_value = cc_metafield.value | default: cc_metafield
   assign cc_text = cc_value | append: '' | strip
   assign cc_text_downcase = cc_text | downcase
+  assign cc_number = cc_text_downcase | remove: 'cc' | remove: 'c.c' | remove: '.' | remove: ',' | remove: ' ' | plus: 0
+  assign has_unit_presentation = false
   assign rating = product.metafields.reviews.rating.value.rating | default: product.metafields.custom.rating.value | default: section.settings.product_hero_default_rating | default: '4.2'
   assign rating_count = product.metafields.reviews.rating_count | default: product.metafields.custom.rating_count.value | default: product.metafields.custom.rating_count | default: section.settings.product_hero_default_rating_count | default: '134'
   assign description = product.description | strip_html
   assign discount_percent = 0
+  assign product_form_id = 'SantaRitaProductHeroForm-' | append: section.id
+  assign presentation_group_name = 'santa-rita-product-presentation-' | append: section.id | append: '-' | append: product.id
 
   if variant.compare_at_price > variant.price
     assign discount_value = variant.compare_at_price | minus: variant.price
@@ -28,12 +32,6 @@
   assign can_add_to_cart = variant.available
   assign add_to_cart_text = 'Agregar'
   assign product_variant_media = ''
-
-  if cc_text != blank and cc_text_downcase contains 'cc'
-    assign cc_label = cc_text
-  elsif cc_text != blank
-    assign cc_label = cc_text | append: 'cc.'
-  endif
 
   capture cepa_label
     if cepa_metafield.type contains 'list.'
@@ -52,17 +50,6 @@
   endcapture
 
   assign cepa_label = cepa_label | strip
-
-  if pack_label == blank and cc_label != blank
-    assign pack_label_prefix = section.settings.product_hero_pack_label | default: '12 Unidades' | split: '|' | first | strip
-    assign pack_label = pack_label_prefix | append: ' | ' | append: cc_label
-  endif
-
-  assign pack_label = pack_label | default: section.settings.product_hero_pack_label | default: '12 Unidades | 750cc.'
-
-  if request.host contains 'localhost' or request.host contains '127.0.0.1' or request.host contains '0.0.0.0'
-    assign is_local_preview = true
-  endif
 
   capture subtitle
     if cepa_label != blank
@@ -96,7 +83,208 @@
   endfor
 
   assign breadcrumb_collection = breadcrumb_collection | default: product.collections.first
+
+  for presentation_variant in product.variants
+    assign presentation_units_metafield = presentation_variant.metafields.custom.unidades_por_caja
+    assign presentation_units_value = presentation_units_metafield.value | default: presentation_units_metafield
+    assign presentation_units = presentation_units_value | default: 1 | plus: 0
+
+    if presentation_units <= 1
+      assign has_unit_presentation = true
+      break
+    endif
+  endfor
 %}
+
+{% capture presentation_price_panels %}
+  {% for presentation_variant in product.variants %}
+    <div
+      class="santa-rita-product-hero__price-panel"
+      data-sr-product-price-panel="{{ presentation_variant.id }}"
+      {% unless presentation_variant.id == variant.id %}
+        hidden
+      {% endunless %}
+    >
+      <strong>{{ presentation_variant.price | money }}</strong>
+      {% if presentation_variant.compare_at_price > presentation_variant.price %}
+        <s>{{ presentation_variant.compare_at_price | money }}</s>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% endcapture %}
+
+{% capture presentation_options %}
+  {% unless has_unit_presentation %}
+    <div class="santa-rita-product-hero__presentation-option">
+      <span class="santa-rita-product-hero__presentation-label santa-rita-product-hero__presentation-label--disabled">
+        <span class="santa-rita-product-hero__presentation-count">1 u.</span>
+        <span class="santa-rita-product-hero__presentation-unavailable">No disponible</span>
+      </span>
+    </div>
+  {% endunless %}
+
+  {% for presentation_variant in product.variants %}
+    {% liquid
+      assign presentation_units_metafield = presentation_variant.metafields.custom.unidades_por_caja
+      assign presentation_units_value = presentation_units_metafield.value | default: presentation_units_metafield
+      assign presentation_units = presentation_units_value | default: 1 | plus: 0
+
+      if presentation_units < 1
+        assign presentation_units = 1
+      endif
+
+      assign presentation_input_id = 'santa-rita-product-presentation-' | append: section.id | append: '-' | append: presentation_variant.id
+      assign presentation_title_metafield = presentation_variant.metafields.custom.titulo_presentacion
+      assign presentation_title = presentation_title_metafield.value | default: presentation_title_metafield
+
+      if presentation_units <= 1
+        assign presentation_label = '1 u.'
+      else
+        assign presentation_label = presentation_units | append: 'u.'
+      endif
+
+      if presentation_title != blank
+        assign presentation_label = presentation_title
+      endif
+    %}
+
+    {% if presentation_units <= 1 %}
+      <div class="santa-rita-product-hero__presentation-option">
+        <input
+          id="{{ presentation_input_id }}"
+          class="santa-rita-product-hero__presentation-radio"
+          data-sr-product-variant-id="{{ presentation_variant.id }}"
+          data-sr-product-variant-available="{{ presentation_variant.available }}"
+          type="radio"
+          name="{{ presentation_group_name }}"
+          value="{{ presentation_variant.id }}"
+          {% if presentation_variant.id == variant.id %}
+            checked
+          {% endif %}
+          {% unless presentation_variant.available %}
+            disabled
+          {% endunless %}
+        >
+        <label class="santa-rita-product-hero__presentation-label" for="{{ presentation_input_id }}">
+          <span class="santa-rita-product-hero__presentation-count">{{ presentation_label }}</span>
+          {% if presentation_variant.available %}
+            <span class="santa-rita-product-hero__presentation-price">{{ presentation_variant.price | money }}</span>
+            {% if presentation_variant.compare_at_price > presentation_variant.price %}
+              <s class="santa-rita-product-hero__presentation-compare">{{ presentation_variant.compare_at_price | money }}</s>
+            {% endif %}
+            <span class="santa-rita-product-hero__presentation-check" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <circle cx="7" cy="7" r="7" fill="currentColor"/>
+                <path d="M4 7.15L6.05 9.2L10.1 4.95" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          {% else %}
+            <span class="santa-rita-product-hero__presentation-unavailable">No disponible</span>
+          {% endif %}
+        </label>
+      </div>
+    {% endif %}
+  {% endfor %}
+
+  {% for presentation_variant in product.variants %}
+    {% liquid
+      assign presentation_units_metafield = presentation_variant.metafields.custom.unidades_por_caja
+      assign presentation_units_value = presentation_units_metafield.value | default: presentation_units_metafield
+      assign presentation_units = presentation_units_value | default: 1 | plus: 0
+
+      if presentation_units < 1
+        assign presentation_units = 1
+      endif
+
+      assign presentation_input_id = 'santa-rita-product-presentation-' | append: section.id | append: '-' | append: presentation_variant.id
+      assign presentation_title_metafield = presentation_variant.metafields.custom.titulo_presentacion
+      assign presentation_title = presentation_title_metafield.value | default: presentation_title_metafield
+      assign presentation_label = presentation_units | append: 'u.'
+
+      if presentation_title != blank
+        assign presentation_label = presentation_title
+      endif
+    %}
+
+    {% if presentation_units > 1 %}
+      <div class="santa-rita-product-hero__presentation-option">
+        <input
+          id="{{ presentation_input_id }}"
+          class="santa-rita-product-hero__presentation-radio"
+          data-sr-product-variant-id="{{ presentation_variant.id }}"
+          data-sr-product-variant-available="{{ presentation_variant.available }}"
+          type="radio"
+          name="{{ presentation_group_name }}"
+          value="{{ presentation_variant.id }}"
+          {% if presentation_variant.id == variant.id %}
+            checked
+          {% endif %}
+          {% unless presentation_variant.available %}
+            disabled
+          {% endunless %}
+        >
+        <label class="santa-rita-product-hero__presentation-label" for="{{ presentation_input_id }}">
+          <span class="santa-rita-product-hero__presentation-count">{{ presentation_label }}</span>
+          {% if presentation_variant.available %}
+            <span class="santa-rita-product-hero__presentation-price">{{ presentation_variant.price | money }}</span>
+            {% if presentation_variant.compare_at_price > presentation_variant.price %}
+              <s class="santa-rita-product-hero__presentation-compare">{{ presentation_variant.compare_at_price | money }}</s>
+            {% endif %}
+            <span class="santa-rita-product-hero__presentation-check" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <circle cx="7" cy="7" r="7" fill="currentColor"/>
+                <path d="M4 7.15L6.05 9.2L10.1 4.95" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          {% else %}
+            <span class="santa-rita-product-hero__presentation-unavailable">No disponible</span>
+          {% endif %}
+        </label>
+      </div>
+    {% endif %}
+  {% endfor %}
+{% endcapture %}
+
+{% capture liter_prices %}
+  {% for presentation_variant in product.variants %}
+    {% liquid
+      assign presentation_units_metafield = presentation_variant.metafields.custom.unidades_por_caja
+      assign presentation_units_value = presentation_units_metafield.value | default: presentation_units_metafield
+      assign presentation_units = presentation_units_value | default: 1 | plus: 0
+      assign presentation_liter_price = 0
+
+      if presentation_units < 1
+        assign presentation_units = 1
+      endif
+
+      if cc_number > 0
+        assign presentation_liter_price = presentation_variant.price | times: 1000 | divided_by: cc_number | divided_by: presentation_units
+      endif
+    %}
+
+    {% if presentation_liter_price > 0 %}
+      <p
+        class="santa-rita-product-hero__liter-price"
+        data-sr-product-liter-price="{{ presentation_variant.id }}"
+        {% unless presentation_variant.id == variant.id %}
+          hidden
+        {% endunless %}
+      >
+        Precio por litro <strong>{{ presentation_liter_price | money }}</strong>
+      </p>
+    {% elsif presentation_variant.unit_price_measurement %}
+      <p
+        class="santa-rita-product-hero__liter-price"
+        data-sr-product-liter-price="{{ presentation_variant.id }}"
+        {% unless presentation_variant.id == variant.id %}
+          hidden
+        {% endunless %}
+      >
+        Precio por litro <strong>{% render 'unit-price', price: presentation_variant.unit_price, measurement: presentation_variant.unit_price_measurement %}</strong>
+      </p>
+    {% endif %}
+  {% endfor %}
+{% endcapture %}
 
 <section class="santa-rita-product-hero color-{{ section.settings.color_scheme }}">
   <div class="santa-rita-product-hero__inner">
@@ -205,18 +393,6 @@ resolved subtitle: {{ subtitle }}</pre>
           </div>
         {% endif %}
 
-        <div class="santa-rita-product-hero__price">
-          <strong>{{ variant.price | money }}</strong>
-          {% if variant.compare_at_price > variant.price %}
-            <s>{{ variant.compare_at_price | money }}</s>
-          {% endif %}
-        </div>
-
-        {% if pack_label != blank %}
-          <p class="santa-rita-product-hero__pack">{{ pack_label }}</p>
-        {% endif %}
-
-        {% assign product_form_id = 'SantaRitaProductHeroForm-' | append: section.id %}
         <product-form-component
           data-section-id="{{ section.id }}"
           data-product-id="{{ product.id }}"
@@ -233,13 +409,33 @@ resolved subtitle: {{ subtitle }}</pre>
             ref="liveRegion"
           ></div>
 
-          {% form 'product', product, id: product_form_id, data-type: 'add-to-cart-form' %}
+          {% form 'product', product, id: product_form_id, class: 'santa-rita-product-hero__form', data-type: 'add-to-cart-form' %}
             <input
               type="hidden"
               name="id"
               ref="variantId"
               value="{{ variant.id }}"
             >
+            <input type="hidden" name="quantity" value="1">
+
+            <div class="santa-rita-product-hero__price" data-sr-product-price>
+              {{ presentation_price_panels }}
+            </div>
+
+            {% if presentation_options != blank %}
+              <santa-rita-product-presentation-selector class="santa-rita-product-hero__presentations">
+                <fieldset class="santa-rita-product-hero__presentation-options" aria-label="Presentación">
+                  {{ presentation_options }}
+                </fieldset>
+              </santa-rita-product-presentation-selector>
+            {% endif %}
+
+            {% if liter_prices != blank %}
+              <div class="santa-rita-product-hero__liter-prices" data-sr-product-liter-prices>
+                {{ liter_prices }}
+              </div>
+            {% endif %}
+
             <add-to-cart-component
               ref="addToCartButtonContainer"
               data-product-variant-media="{{ product_variant_media }}"
@@ -273,6 +469,53 @@ resolved subtitle: {{ subtitle }}</pre>
     </div>
   </div>
 </section>
+
+<script>
+  if (!customElements.get('santa-rita-product-presentation-selector')) {
+    customElements.define(
+      'santa-rita-product-presentation-selector',
+      class SantaRitaProductPresentationSelector extends HTMLElement {
+        connectedCallback() {
+          this.addEventListener('change', this.handleChange);
+        }
+
+        disconnectedCallback() {
+          this.removeEventListener('change', this.handleChange);
+        }
+
+        handleChange = (event) => {
+          const input = event.target;
+
+          if (!(input instanceof HTMLInputElement) || !input.matches('[data-sr-product-variant-id]')) return;
+
+          const form = this.closest('form');
+          const productHero = this.closest('.santa-rita-product-hero');
+          const variantInput = form?.querySelector('input[ref="variantId"]');
+          const addButton = form?.querySelector('[ref="addToCartButton"]');
+          const variantId = input.dataset.srProductVariantId;
+
+          if (!variantId) return;
+
+          if (variantInput instanceof HTMLInputElement) {
+            variantInput.value = variantId;
+          }
+
+          productHero?.querySelectorAll('[data-sr-product-price-panel]').forEach((panel) => {
+            panel.hidden = panel.getAttribute('data-sr-product-price-panel') !== variantId;
+          });
+
+          productHero?.querySelectorAll('[data-sr-product-liter-price]').forEach((price) => {
+            price.hidden = price.getAttribute('data-sr-product-liter-price') !== variantId;
+          });
+
+          if (addButton instanceof HTMLButtonElement) {
+            addButton.disabled = input.dataset.srProductVariantAvailable !== 'true';
+          }
+        };
+      }
+    );
+  }
+</script>
 
 <style>
   .santa-rita-product-hero {
@@ -601,29 +844,146 @@ resolved subtitle: {{ subtitle }}</pre>
     color: #5b5051;
   }
 
-  .santa-rita-product-hero__price {
+  .santa-rita-product-hero__form {
     display: flex;
-    align-items: baseline;
-    gap: 10px;
+    flex-direction: column;
+    width: min(100%, 490px);
+  }
+
+  .santa-rita-product-hero__price {
     margin-top: 28px;
   }
 
-  .santa-rita-product-hero__price strong {
+  .santa-rita-product-hero__price-panel {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .santa-rita-product-hero__price-panel[hidden] {
+    display: none;
+  }
+
+  .santa-rita-product-hero__price-panel strong {
     font-size: 24px;
     font-weight: 800;
     line-height: 1;
   }
 
-  .santa-rita-product-hero__price s {
+  .santa-rita-product-hero__price-panel s {
     color: #7d7071;
     font-size: 15px;
   }
 
-  .santa-rita-product-hero__pack {
-    margin: 8px 0 0;
-    color: #7d7071;
-    font-size: 13px;
-    line-height: 1.3;
+  .santa-rita-product-hero__presentations {
+    display: block;
+    margin-top: 18px;
+  }
+
+  .santa-rita-product-hero__presentation-options {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0 0 18px;
+    border: 0;
+    border-bottom: 1px solid #e2d7d2;
+  }
+
+  .santa-rita-product-hero__presentation-option {
+    position: relative;
+  }
+
+  .santa-rita-product-hero__presentation-radio {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .santa-rita-product-hero__presentation-label {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    min-height: 58px;
+    padding: 0 16px;
+    border: 1px solid #e9e3de;
+    border-radius: 8px;
+    background: #faf7f3;
+    color: #21191a;
+    cursor: pointer;
+    transition:
+      border-color 160ms ease,
+      background-color 160ms ease,
+      color 160ms ease;
+  }
+
+  .santa-rita-product-hero__presentation-count {
+    color: #4a2c31;
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  .santa-rita-product-hero__presentation-price {
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  .santa-rita-product-hero__presentation-compare {
+    color: #817273;
+    font-size: 15px;
+  }
+
+  .santa-rita-product-hero__presentation-check {
+    display: inline-flex;
+    color: #9d1238;
+    opacity: 0;
+  }
+
+  .santa-rita-product-hero__presentation-radio:checked + .santa-rita-product-hero__presentation-label {
+    border-color: #9d1238;
+    background: #fffaf7;
+    color: #21191a;
+    box-shadow: inset 0 0 0 1px #9d1238;
+  }
+
+  .santa-rita-product-hero__presentation-radio:checked + .santa-rita-product-hero__presentation-label .santa-rita-product-hero__presentation-check {
+    opacity: 1;
+  }
+
+  .santa-rita-product-hero__presentation-radio:disabled + .santa-rita-product-hero__presentation-label,
+  .santa-rita-product-hero__presentation-label--disabled {
+    grid-template-columns: auto 1fr;
+    color: #8f8184;
+    cursor: not-allowed;
+    opacity: 0.78;
+  }
+
+  .santa-rita-product-hero__presentation-radio:focus-visible + .santa-rita-product-hero__presentation-label {
+    outline: 2px solid #9d1238;
+    outline-offset: 3px;
+  }
+
+  .santa-rita-product-hero__presentation-unavailable {
+    font-size: 15px;
+  }
+
+  .santa-rita-product-hero__liter-prices {
+    padding-top: 16px;
+  }
+
+  .santa-rita-product-hero__liter-price {
+    margin: 0;
+    color: #6f6365;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  .santa-rita-product-hero__liter-price[hidden] {
+    display: none;
+  }
+
+  .santa-rita-product-hero__liter-price strong {
+    font-weight: 800;
   }
 
   .santa-rita-product-hero__add {
@@ -633,7 +993,7 @@ resolved subtitle: {{ subtitle }}</pre>
     gap: 10px;
     width: min(100%, 490px);
     min-height: 48px;
-    margin-top: 22px;
+    margin-top: 20px;
     padding: 0 28px;
     border: 0;
     border-radius: 10px;
