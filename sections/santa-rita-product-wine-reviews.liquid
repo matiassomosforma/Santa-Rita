@@ -21,7 +21,29 @@
     text-align: center;
   }
 
-  .santa-rita-wine-reviews__summary {
+  .santa-rita-wine-reviews__widget {
+    --jdgm-primary-color: #a80f45;
+    --jdgm-secondary-color: #6d5762;
+    --jdgm-border-color: rgba(37, 23, 27, 0.14);
+    --jdgm-muted-color: rgba(37, 23, 27, 0.62);
+    color: #25171b;
+  }
+
+  .santa-rita-wine-reviews__widget .jdgm-widget,
+  .santa-rita-wine-reviews__widget .jdgm-rev-widg {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-family: var(--font-body--family);
+  }
+
+  .santa-rita-wine-reviews__widget .jdgm-rev-widg__title {
+    display: none;
+  }
+
+  .santa-rita-wine-reviews__widget .jdgm-rev-widg__header {
     display: grid;
     max-width: 620px;
     align-items: center;
@@ -30,51 +52,58 @@
     margin: 0 auto 42px;
   }
 
-  .santa-rita-wine-reviews__score,
-  .santa-rita-wine-reviews__breakdown {
+  .santa-rita-wine-reviews__widget .jdgm-rev-widg__summary,
+  .santa-rita-wine-reviews__widget .jdgm-histogram {
     min-height: 92px;
   }
 
-  .santa-rita-wine-reviews__score {
+  .santa-rita-wine-reviews__widget .jdgm-rev-widg__summary {
     display: grid;
     align-content: center;
     justify-items: end;
     border-right: 1px solid rgba(37, 23, 27, 0.18);
-    padding-right: 32px;
+    padding: 0 32px 0 0;
   }
 
-  .santa-rita-wine-reviews__score-value {
-    margin: 0;
-    color: #a80f45;
+  .santa-rita-wine-reviews__widget .jdgm-rev-widg__summary-inner {
+    display: grid;
+    justify-items: end;
+  }
+
+  .santa-rita-wine-reviews__widget .jdgm-rev-widg__summary-average,
+  .santa-rita-wine-reviews__widget .jdgm-rev-widg__summary-average span {
+    color: var(--jdgm-primary-color);
     font-size: 28px;
     font-weight: 700;
     line-height: 1;
   }
 
-  .santa-rita-wine-reviews__stars {
-    display: inline-flex;
-    gap: 2px;
+  .santa-rita-wine-reviews__widget .jdgm-star,
+  .santa-rita-wine-reviews__widget .jdgm-prev-badge__stars {
     color: #c22c58;
-    font-size: 18px;
+  }
+
+  .santa-rita-wine-reviews__widget .jdgm-rev-widg__summary-stars {
+    margin: 4px 0 0;
     line-height: 1;
   }
 
-  .santa-rita-wine-reviews__count {
+  .santa-rita-wine-reviews__widget .jdgm-rev-widg__summary-text {
     margin: 6px 0 0;
-    color: rgba(37, 23, 27, 0.62);
+    color: var(--jdgm-muted-color);
     font-size: 13px;
     line-height: 1.2;
   }
 
-  .santa-rita-wine-reviews__breakdown {
+  .santa-rita-wine-reviews__widget .jdgm-histogram {
     display: grid;
     align-content: center;
     gap: 8px;
     border-right: 1px solid rgba(37, 23, 27, 0.18);
-    padding-right: 38px;
+    padding: 0 38px 0 0;
   }
 
-  .santa-rita-wine-reviews__bar {
+  .santa-rita-wine-reviews__widget .jdgm-histogram__row {
     display: grid;
     align-items: center;
     grid-template-columns: 120px auto;
@@ -84,74 +113,100 @@
     line-height: 1;
   }
 
-  .santa-rita-wine-reviews__meter {
+  .santa-rita-wine-reviews__widget .jdgm-histogram__bar {
     width: 120px;
     height: 5px;
-  }
-
-  .santa-rita-wine-reviews__meter::-webkit-meter-bar {
-    border: 0;
     border-radius: 999px;
     background: #d4d2cf;
+    box-shadow: none;
   }
 
-  .santa-rita-wine-reviews__meter::-webkit-meter-optimum-value {
+  .santa-rita-wine-reviews__widget .jdgm-histogram__bar-content {
+    height: 5px;
     border-radius: 999px;
-    background: #6d5762;
+    background: var(--jdgm-secondary-color);
   }
 
-  .santa-rita-wine-reviews__meter::-moz-meter-bar {
-    border-radius: 999px;
-    background: #6d5762;
+  .santa-rita-wine-reviews__widget .jdgm-histogram__frequency {
+    display: none;
   }
 
-  .santa-rita-wine-reviews__add-button,
-  .santa-rita-wine-reviews__more-button {
+  .santa-rita-wine-reviews__widget .jdgm-histogram__star {
+    display: inline-flex;
+    gap: 3px;
+    color: #25171b;
+  }
+
+  .santa-rita-wine-reviews__widget .jdgm-write-rev-link,
+  .santa-rita-wine-reviews__widget .jdgm-ask-question-btn,
+  .santa-rita-wine-reviews__widget .jdgm-btn {
     min-height: 30px;
-    border: 1px solid #a80f45;
+    border: 1px solid var(--jdgm-primary-color);
     border-radius: 999px;
-    background: #a80f45;
+    background: var(--jdgm-primary-color);
     color: #ffffff;
     cursor: pointer;
     font-family: var(--font-body--family);
     font-size: 12px;
     font-weight: 700;
     line-height: 1;
-    padding: 7px 24px;
+    padding: 8px 24px;
+    text-decoration: none;
+    text-transform: none;
   }
 
-  .santa-rita-wine-reviews__list {
-    border-top: 1px solid rgba(37, 23, 27, 0.14);
+  .santa-rita-wine-reviews__widget .jdgm-rev-widg__sort-wrapper,
+  .santa-rita-wine-reviews__widget .jdgm-sort-dropdown-wrapper,
+  .santa-rita-wine-reviews__widget .jdgm-rev-widg__summary-text .jdgm-link {
+    display: none;
   }
 
-  .santa-rita-wine-reviews__item {
+  .santa-rita-wine-reviews__widget .jdgm-rev-widg__body,
+  .santa-rita-wine-reviews__widget .jdgm-rev-widg__reviews {
+    border-top: 1px solid var(--jdgm-border-color);
+  }
+
+  .santa-rita-wine-reviews__widget .jdgm-rev {
     display: grid;
     align-items: center;
     grid-template-columns: 180px minmax(0, 1fr) 110px;
     gap: 36px;
-    border-bottom: 1px solid rgba(37, 23, 27, 0.14);
+    margin: 0;
+    border: 0;
+    border-bottom: 1px solid var(--jdgm-border-color);
     padding: 34px 110px;
   }
 
-  .santa-rita-wine-reviews__name {
-    margin: 0 0 8px;
-    font-family: var(--font-body--family);
+  .santa-rita-wine-reviews__widget .jdgm-rev__header {
+    display: grid;
+    gap: 8px;
+  }
+
+  .santa-rita-wine-reviews__widget .jdgm-rev__author {
+    margin: 0;
+    color: #25171b;
     font-size: 16px;
     font-weight: 500;
     line-height: 1.2;
   }
 
-  .santa-rita-wine-reviews__verified {
+  .santa-rita-wine-reviews__widget .jdgm-rev__buyer-badge,
+  .santa-rita-wine-reviews__widget .jdgm-rev__buyer-badge-wrapper {
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    width: fit-content;
     margin: 0;
+    border: 0;
+    background: transparent;
     color: #1f7a3c;
     font-size: 12px;
     line-height: 1.2;
+    text-transform: none;
   }
 
-  .santa-rita-wine-reviews__verified span {
+  .santa-rita-wine-reviews__widget .jdgm-rev__buyer-badge::before,
+  .santa-rita-wine-reviews__widget .jdgm-rev__buyer-badge-wrapper::before {
     display: grid;
     width: 13px;
     height: 13px;
@@ -159,66 +214,92 @@
     border-radius: 50%;
     background: #1f7a3c;
     color: #ffffff;
+    content: "\2713";
     font-size: 9px;
     line-height: 1;
   }
 
-  .santa-rita-wine-reviews__content .santa-rita-wine-reviews__stars {
-    margin-bottom: 14px;
+  .santa-rita-wine-reviews__widget .jdgm-rev__content {
+    display: grid;
+    gap: 12px;
   }
 
-  .santa-rita-wine-reviews__text {
+  .santa-rita-wine-reviews__widget .jdgm-rev__rating {
     margin: 0;
-    color: rgba(37, 23, 27, 0.62);
+    line-height: 1;
+  }
+
+  .santa-rita-wine-reviews__widget .jdgm-rev__title {
+    margin: 0;
+    color: #25171b;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .santa-rita-wine-reviews__widget .jdgm-rev__body,
+  .santa-rita-wine-reviews__widget .jdgm-rev__body p {
+    margin: 0;
+    color: var(--jdgm-muted-color);
     font-size: 13px;
     line-height: 1.35;
   }
 
-  .santa-rita-wine-reviews__date {
+  .santa-rita-wine-reviews__widget .jdgm-rev__timestamp {
     justify-self: end;
+    color: #25171b;
     font-size: 16px;
     font-weight: 700;
     line-height: 1.2;
   }
 
-  .santa-rita-wine-reviews__more-button {
-    display: none;
+  .santa-rita-wine-reviews__widget .jdgm-rev__actions,
+  .santa-rita-wine-reviews__widget .jdgm-rev__reply,
+  .santa-rita-wine-reviews__widget .jdgm-rev__pics {
+    grid-column: 2 / -1;
   }
 
-  .santa-rita-wine-reviews__pagination {
+  .santa-rita-wine-reviews__widget .jdgm-paginate {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 18px;
     margin-top: 42px;
+    border: 0;
   }
 
-  .santa-rita-wine-reviews__page,
-  .santa-rita-wine-reviews__ellipsis {
+  .santa-rita-wine-reviews__widget .jdgm-paginate__page {
     color: #25171b;
     font-size: 14px;
     line-height: 1;
     text-decoration: none;
   }
 
-  .santa-rita-wine-reviews__page.is-active {
+  .santa-rita-wine-reviews__widget .jdgm-paginate__page.jdgm-curt,
+  .santa-rita-wine-reviews__widget .jdgm-paginate__page[aria-current="page"] {
     display: grid;
     width: 32px;
     height: 32px;
     place-items: center;
     border-radius: 50%;
-    background: #a80f45;
+    background: var(--jdgm-primary-color);
     color: #ffffff;
     font-weight: 700;
   }
 
-  .santa-rita-wine-reviews__page--prev {
-    color: rgba(37, 23, 27, 0.28);
+  .santa-rita-wine-reviews__widget .jdgm-paginate__prev-page,
+  .santa-rita-wine-reviews__widget .jdgm-paginate__next-page {
     font-size: 28px;
   }
 
-  .santa-rita-wine-reviews__page--next {
-    font-size: 28px;
+  .santa-rita-wine-reviews__widget .jdgm-paginate__prev-page {
+    color: rgba(37, 23, 27, 0.28);
+  }
+
+  .santa-rita-wine-reviews__widget .jdgm-widget-actions-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 
   @media screen and (max-width: 749px) {
@@ -232,95 +313,92 @@
       text-align: left;
     }
 
-    .santa-rita-wine-reviews__summary {
+    .santa-rita-wine-reviews__widget .jdgm-rev-widg__header {
       grid-template-columns: minmax(0, 1fr) minmax(108px, 0.8fr);
       gap: 20px;
       margin-bottom: 18px;
     }
 
-    .santa-rita-wine-reviews__score {
+    .santa-rita-wine-reviews__widget .jdgm-rev-widg__summary {
       min-height: 0;
       justify-items: start;
       border-right: 0;
       padding-right: 0;
     }
 
-    .santa-rita-wine-reviews__score-value {
+    .santa-rita-wine-reviews__widget .jdgm-rev-widg__summary-inner {
+      justify-items: start;
+    }
+
+    .santa-rita-wine-reviews__widget .jdgm-rev-widg__summary-average,
+    .santa-rita-wine-reviews__widget .jdgm-rev-widg__summary-average span {
       font-size: 28px;
     }
 
-    .santa-rita-wine-reviews__breakdown {
+    .santa-rita-wine-reviews__widget .jdgm-histogram {
       min-height: 0;
       border-right: 0;
       padding-right: 0;
     }
 
-    .santa-rita-wine-reviews__bar {
+    .santa-rita-wine-reviews__widget .jdgm-histogram__row {
       grid-template-columns: minmax(64px, 1fr) auto;
     }
 
-    .santa-rita-wine-reviews__meter {
+    .santa-rita-wine-reviews__widget .jdgm-histogram__bar {
       width: 100%;
     }
 
-    .santa-rita-wine-reviews__add-button {
+    .santa-rita-wine-reviews__widget .jdgm-widget-actions-wrapper {
+      justify-content: flex-start;
       grid-column: 1 / -1;
-      width: fit-content;
+    }
+
+    .santa-rita-wine-reviews__widget .jdgm-write-rev-link,
+    .santa-rita-wine-reviews__widget .jdgm-ask-question-btn,
+    .santa-rita-wine-reviews__widget .jdgm-btn {
       min-width: 156px;
-      margin-top: -2px;
       font-size: 14px;
       padding-inline: 22px;
     }
 
-    .santa-rita-wine-reviews__list {
+    .santa-rita-wine-reviews__widget .jdgm-rev-widg__body,
+    .santa-rita-wine-reviews__widget .jdgm-rev-widg__reviews {
       border-top: 0;
     }
 
-    .santa-rita-wine-reviews__item {
+    .santa-rita-wine-reviews__widget .jdgm-rev {
       grid-template-columns: 1fr auto;
       gap: 14px;
       border-bottom: 0;
       padding: 20px 0 0;
     }
 
-    .santa-rita-wine-reviews__item:nth-child(n + 2) {
+    .santa-rita-wine-reviews__widget .jdgm-rev:nth-of-type(n + 2) {
       display: none;
     }
 
-    .santa-rita-wine-reviews__reviewer {
+    .santa-rita-wine-reviews__widget .jdgm-rev__header {
       grid-column: 1;
     }
 
-    .santa-rita-wine-reviews__date {
+    .santa-rita-wine-reviews__widget .jdgm-rev__timestamp {
       align-self: start;
       grid-column: 2;
       font-size: 13px;
       font-weight: 500;
     }
 
-    .santa-rita-wine-reviews__content {
+    .santa-rita-wine-reviews__widget .jdgm-rev__content {
       grid-column: 1 / -1;
     }
 
-    .santa-rita-wine-reviews__content .santa-rita-wine-reviews__stars {
-      margin-bottom: 12px;
-      font-size: 15px;
-    }
-
-    .santa-rita-wine-reviews__text {
+    .santa-rita-wine-reviews__widget .jdgm-rev__body,
+    .santa-rita-wine-reviews__widget .jdgm-rev__body p {
       font-size: 13px;
     }
 
-    .santa-rita-wine-reviews__more-button {
-      display: block;
-      width: 100%;
-      margin-top: 22px;
-      background: transparent;
-      color: #a80f45;
-      font-size: 14px;
-    }
-
-    .santa-rita-wine-reviews__pagination {
+    .santa-rita-wine-reviews__widget .jdgm-paginate {
       display: none;
     }
   }
