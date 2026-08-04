@@ -1,6 +1,6 @@
 {% liquid
   assign step_blocks = section.blocks | where: 'type', 'step'
-  assign button_url = section.settings.button_url | default: '/products/arma-tu-caja'
+  assign button_url = section.settings.button_url | default: '/apps/boxi/box-builder/3802'
 %}
 
 {% if section.settings.show_section %}
@@ -28,14 +28,16 @@
       {% endif %}
 
       <article class="santa-rita-custom-box__panel">
-        <div class="santa-rita-custom-box__icon" aria-hidden="true">
+        <div class="santa-rita-custom-box__content">
+          <div class="items-header">
+            <div class="santa-rita-custom-box__icon" aria-hidden="true">
           {% if section.settings.icon_image != blank %}
             {{
               section.settings.icon_image
               | image_url: width: 96
               | image_tag:
                 widths: '48, 64, 96',
-                sizes: '48px',
+                sizes: '63px',
                 loading: 'lazy',
                 class: 'santa-rita-custom-box__icon-image'
             }}
@@ -47,11 +49,10 @@
             </svg>
           {% endif %}
         </div>
-
-        <div class="santa-rita-custom-box__content">
           {% if section.settings.card_heading != blank %}
             <h3>{{ section.settings.card_heading }}</h3>
           {% endif %}
+        </div>
 
           {% if step_blocks.size > 0 %}
             <ul class="santa-rita-custom-box__steps">
@@ -88,17 +89,24 @@
   .santa-rita-custom-box__inner {
     width: min(100% - 48px, 1140px);
     margin-inline: auto;
-    padding-block: 46px 52px;
+    padding-block: 55px 55px;
   }
 
   .santa-rita-custom-box__header {
-    max-width: 520px;
+    max-width: 610px;
     margin: 0 auto 28px;
     text-align: center;
   }
 
+  .items-header{
+    display: flex;
+    gap: 25px;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
   .santa-rita-custom-box__header h2 {
-    margin: 0 0 10px;
+    margin: 0 0 25px;
     font-family: var(--font-heading--family);
     font-size: clamp(28px, 3vw, 40px);
     font-weight: 700;
@@ -107,30 +115,31 @@
   }
 
   .santa-rita-custom-box__header p {
-    max-width: 360px;
-    margin: 0 auto;
+    max-width: 610px;
+    margin: 0 auto 35px auto;
     color: #2d2023;
-    font-size: 14px;
+    font-size: 20px;
     line-height: 1.25;
   }
 
   .santa-rita-custom-box__panel {
-    display: grid;
+    display: flex;
     grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
+    align-items: flex-end;
+    justify-content: space-between;
     gap: 18px;
-    width: min(100%, 650px);
+    width: min(100%, 750px);
     margin-inline: auto;
     padding: 26px 32px;
     border: 1px solid rgba(157, 18, 56, 0.48);
-    border-radius: 4px;
+    border-radius: 8px;
     background: var(--sr-custom-box-panel-bg, #fffbf6);
   }
 
   .santa-rita-custom-box__icon {
     display: grid;
-    width: 48px;
-    height: 48px;
+    width: 63px;
+    height: 63px;
     place-items: center;
     border-radius: 50%;
     background: #f6e8df;
@@ -146,10 +155,10 @@
   }
 
   .santa-rita-custom-box__content h3 {
-    margin: 0 0 18px;
+    margin: 0 0;
     color: #21000f;
-    font-family: var(--font-body--family);
-    font-size: 16px;
+    font-family: var(--font-heading--family);
+    font-size: 22px;
     font-weight: 700;
     line-height: 1.25;
   }
@@ -165,37 +174,44 @@
   .santa-rita-custom-box__steps li {
     display: flex;
     align-items: flex-start;
-    gap: 8px;
+    gap: 3px;
     color: #21000f;
-    font-size: 12px;
+    font-size: 16px;
     line-height: 1.35;
   }
 
   .santa-rita-custom-box__steps span {
-    display: inline-flex;
-    width: 13px;
-    height: 13px;
-    flex: 0 0 13px;
-    margin-top: 1px;
+    display: inline-grid;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    margin-top: -1px;
+    place-items: center;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
     color: var(--sr-custom-box-accent, #9d1238);
   }
 
   .santa-rita-custom-box__steps svg {
-    width: 100%;
-    height: 100%;
+    width: 11px;
+    height: 11px;
+  }
+
+  .santa-rita-custom-box__steps svg path {
+    stroke-width: 3px;
   }
 
   .santa-rita-custom-box__button {
     display: inline-flex;
-    min-width: 156px;
+    min-width: 175px;
     min-height: 37px;
     align-items: center;
     justify-content: center;
     border-radius: 8px;
     background: var(--sr-custom-box-accent, #9d1238);
     color: #ffffff;
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 500;
     line-height: 1;
     padding: 8px 18px;
     text-align: center;
@@ -243,6 +259,19 @@
       width: 100%;
       margin-top: 8px;
     }
+
+    .santa-rita-custom-box__panel {
+      flex-direction: column;
+    }
+
+    .santa-rita-custom-box__content h3{
+      font-size: 20px;
+    }
+
+    .santa-rita-custom-box__steps li {
+    display: inline-block;
+    font-size: 14px;
+}
   }
 </style>
 

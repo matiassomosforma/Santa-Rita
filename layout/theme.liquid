@@ -1,3 +1,11 @@
+{% liquid
+  assign is_boxi_builder_page = false
+
+  if request.path contains '/apps/boxi/box-builder'
+    assign is_boxi_builder_page = true
+  endif
+%}
+
 <!doctype html>
 <html
   {% if request.design_mode %}
@@ -30,6 +38,10 @@
     {%- render 'scripts' -%}
     {%- render 'theme-styles-variables' -%}
     {%- render 'color-schemes' -%}
+    {% if is_boxi_builder_page %}
+      {{ 'santa-rita-boxi-builder.css' | asset_url | stylesheet_tag }}
+      <script src="{{ 'santa-rita-boxi-builder.js' | asset_url }}" defer></script>
+    {% endif %}
 
     {% if request.design_mode %}
       {%- render 'theme-editor' -%}
@@ -38,7 +50,7 @@
     {{ content_for_header }}
   </head>
 
-  <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
+  <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}{% if is_boxi_builder_page %} santa-rita-boxi-builder-page{% endif %}">
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
     <div id="header-group">
       {% sections 'header-group' %}

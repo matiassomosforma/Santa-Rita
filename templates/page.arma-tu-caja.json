@@ -14,6 +14,7 @@
       "name": "Banner de pagina",
       "settings": {
         "banner_style": "background",
+        "desktop_image": "shopify://shop_images/Pisco-Monte-Fraile-Reservado-Transparente-40_C2_B0.png",
         "heading": "Arma tu caja de vinos",
         "subheading": "Elige tu propia combinacion con tus vinos preferidos.",
         "show_breadcrumbs": true,
@@ -32,13 +33,13 @@
         "step_select": {
           "type": "step",
           "settings": {
-            "text": "Seleccionas 6 botellas de vinos de preferencia."
+            "text": "Seleccionas <strong>6 botellas de vinos</strong> de preferencia."
           }
         },
         "step_checkout": {
           "type": "step",
           "settings": {
-            "text": "La agregas al carrito, realizas el pedido y listo!"
+            "text": "La agregas al carrito, <strong>realizas el pedido</strong> y listo!"
           }
         }
       },
@@ -50,10 +51,11 @@
       "settings": {
         "show_section": true,
         "heading": "Caja personalizada",
-        "text": "Puedes armar tu seleccion de 6 botellas en Santa Rita Online ideal para regalar y auto-regalarse.",
+        "text": "Podes armar tu selección de 6 botellas en Santa Rita Online ideal para regalar y auto-regalarse.",
+        "icon_image": "shopify://shop_images/Group_7533.png",
         "card_heading": "Crea tu propia caja",
         "button_label": "Armar mi caja",
-        "button_url": "/products/arma-tu-caja",
+        "button_url": "/apps/boxi/box-builder/3802",
         "background_color": "#fffbf6",
         "panel_background_color": "#fffbf6",
         "text_color": "#21000f",
@@ -114,6 +116,7 @@
         "map_embed_code": "",
         "map_heading": "",
         "map_text": "",
+        "map_link": "",
         "map_link_label": "",
         "show_faq": true,
         "faq_heading": "Preguntas frecuentes",
