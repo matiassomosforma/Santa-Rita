@@ -483,7 +483,7 @@
   .santa-rita-related-wines .santa-rita-product-card__quantity-label {
     display: grid;
     min-height: 38px;
-    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-columns: auto auto auto minmax(0, 1fr);
     align-items: center;
     gap: 7px;
     padding: 7px 9px;
@@ -529,6 +529,8 @@
 
   .santa-rita-related-wines .santa-rita-product-card__quantity-check {
     display: inline-flex;
+    grid-column: 4;
+    justify-self: end;
     width: 14px;
     height: 14px;
     color: #9b173f;

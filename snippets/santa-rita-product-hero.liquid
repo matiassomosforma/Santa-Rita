@@ -901,7 +901,7 @@ resolved subtitle: {{ subtitle }}</pre>
 
   .santa-rita-product-hero__presentation-label {
     display: grid;
-    grid-template-columns: auto 1fr auto auto;
+    grid-template-columns: auto auto auto minmax(0, 1fr);
     align-items: center;
     gap: 10px;
     min-height: 58px;
@@ -935,6 +935,8 @@ resolved subtitle: {{ subtitle }}</pre>
 
   .santa-rita-product-hero__presentation-check {
     display: inline-flex;
+    grid-column: 4;
+    justify-self: end;
     color: #9d1238;
     opacity: 0;
   }

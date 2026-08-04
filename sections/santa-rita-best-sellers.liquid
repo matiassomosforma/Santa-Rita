@@ -396,7 +396,7 @@
   .santa-rita-product-card__quantity-label {
     display: grid;
     min-height: 41px;
-    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-columns: auto auto auto minmax(0, 1fr);
     align-items: center;
     gap: 8px;
     padding: 8px 10px;
@@ -443,6 +443,8 @@
 
   .santa-rita-product-card__quantity-check {
     display: inline-flex;
+    grid-column: 4;
+    justify-self: end;
     width: 14px;
     height: 14px;
     color: #9b173f;
