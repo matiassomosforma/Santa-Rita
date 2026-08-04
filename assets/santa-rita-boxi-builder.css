@@ -1,11 +1,13 @@
 body.santa-rita-boxi-builder-page {
   background: #fffbf6;
+  overflow-x: clip;
 }
 
 body.santa-rita-boxi-builder-page #MainContent {
   min-height: 100vh;
   background: #fffbf6;
   color: #21000f;
+  overflow: visible !important;
 }
 
 body.santa-rita-boxi-builder-page .sr-boxi-intro {
@@ -53,6 +55,7 @@ body.santa-rita-boxi-builder-page .sr-boxi-intro p {
 body.santa-rita-boxi-builder-page #MainContent > :not(.sr-boxi-intro) {
   width: min(100% - 48px, 1140px);
   margin-inline: auto;
+  overflow: visible !important;
 }
 
 body.santa-rita-boxi-builder-page .sr-boxi-stepper,
@@ -67,11 +70,18 @@ body.santa-rita-boxi-builder-page .sr-boxi-filter-row {
   align-items: center;
   justify-content: flex-start !important;
   margin: 0 0 48px !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
 body.santa-rita-boxi-builder-page .sr-boxi-filter-button,
+body.santa-rita-boxi-builder-page .sr-boxi-filter-row button,
 body.santa-rita-boxi-builder-page #MainContent button.sr-boxi-filter-button {
+  width: auto !important;
   min-height: 36px !important;
+  flex: 0 0 auto !important;
   border: 1px solid #21000f !important;
   border-radius: 999px !important;
   background: transparent !important;
@@ -84,6 +94,7 @@ body.santa-rita-boxi-builder-page #MainContent button.sr-boxi-filter-button {
 }
 
 body.santa-rita-boxi-builder-page .sr-boxi-filter-button.is-active,
+body.santa-rita-boxi-builder-page .sr-boxi-filter-row button.is-active,
 body.santa-rita-boxi-builder-page #MainContent button.sr-boxi-filter-button.is-active {
   border-color: #21000f !important;
   background: #21000f !important;
@@ -101,41 +112,20 @@ body.santa-rita-boxi-builder-page .sr-boxi-product-card {
   position: relative;
   display: flex !important;
   min-height: 100%;
-  flex-direction: column !important;
-  padding: 18px 14px 14px !important;
   border: 1px solid #f1ebe6 !important;
   border-radius: 8px !important;
   background: #ffffff !important;
   box-shadow: 0 0 2px 0 rgba(140, 26, 62, 0.13) inset, 0 10px 10px 0 rgba(140, 26, 62, 0.05) !important;
 }
 
-body.santa-rita-boxi-builder-page .sr-boxi-product-card img {
-  display: block !important;
-  width: auto !important;
-  max-width: 100% !important;
-  height: 190px !important;
-  margin: 0 auto 18px !important;
-  object-fit: contain !important;
+[class*="_header_1"] > [class*="_flexible_"]::before{
+  content: '';
+  background: red;
 }
 
-body.santa-rita-boxi-builder-page .sr-boxi-product-card :is(h2, h3, h4, p) {
+body.santa-rita-boxi-builder-page .sr-boxi-product-card :is(h2, h3, h4, h5, p, a, [class*='title' i], [class*='name' i], .sr-boxi-product-title) {
   color: #21000f;
   font-family: var(--font-body--family);
-}
-
-body.santa-rita-boxi-builder-page .sr-boxi-product-card :is(h2, h3, h4) {
-  margin: 0 0 8px !important;
-  font-size: 15px !important;
-  font-weight: 700 !important;
-  line-height: 1.25 !important;
-}
-
-body.santa-rita-boxi-builder-page .sr-boxi-product-card [class*='price' i],
-body.santa-rita-boxi-builder-page .sr-boxi-product-card p:has(+ .sr-boxi-add-button) {
-  margin: 0 0 12px !important;
-  color: #21000f !important;
-  font-size: 14px !important;
-  font-weight: 700 !important;
 }
 
 body.santa-rita-boxi-builder-page #MainContent .sr-boxi-add-button,
@@ -196,26 +186,96 @@ body.santa-rita-boxi-builder-page .sr-boxi-summary {
   backdrop-filter: blur(8px);
 }
 
-body.santa-rita-boxi-builder-page .sr-boxi-slots {
-  display: flex !important;
-  flex-wrap: wrap;
-  gap: 8px !important;
-  align-items: center !important;
+body.santa-rita-boxi-builder-page .sr-boxi-summary-band {
+  position: relative !important;
+  overflow: visible !important;
+  background: #f7f8fa !important;
+  box-shadow: 0 0 0 100vmax #f7f8fa !important;
+  clip-path: inset(0 -100vmax) !important;
 }
 
-body.santa-rita-boxi-builder-page .sr-boxi-summary [class*='slot' i],
-body.santa-rita-boxi-builder-page .sr-boxi-summary :is(li, article, div):has(> img) {
-  width: 76px !important;
-  height: 76px !important;
+body.santa-rita-boxi-builder-page .sr-boxi-summary::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0 calc(50% - 50vw);
+  background: #f7f8fa;
+  content: "";
+}
+
+body.santa-rita-boxi-builder-page .sr-boxi-slots {
+  display: grid !important;
+  grid-template-columns: repeat(6, 112px) !important;
+  gap: 14px !important;
+  align-items: start !important;
+  justify-content: start !important;
+  justify-items: stretch !important;
+}
+
+body.santa-rita-boxi-builder-page .sr-boxi-slots > * {
+  position: relative !important;
+  width: 112px !important;
+  min-width: 112px !important;
+  max-width: 112px !important;
+  min-height: 112px !important;
+  flex: 0 0 112px !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+body.santa-rita-boxi-builder-page .sr-boxi-slots > *,
+body.santa-rita-boxi-builder-page .sr-boxi-slots [class*='slot' i] {
+  position: relative !important;
+  display: grid !important;
+  width: 112px !important;
+  height: 112px !important;
+  flex: 0 0 112px !important;
+  place-items: center !important;
+  overflow: hidden !important;
   border: 1px dashed #b8adb0 !important;
   border-radius: 4px !important;
   background: rgba(255, 255, 255, 0.64) !important;
 }
 
 body.santa-rita-boxi-builder-page .sr-boxi-summary img {
-  width: 100% !important;
-  height: 100% !important;
+  position: static !important;
+  display: block !important;
+  width: auto !important;
+  max-width: 72px !important;
+  height: auto !important;
+  max-height: 82px !important;
+  margin: auto !important;
   object-fit: contain !important;
+  transform: none !important;
+}
+
+body.santa-rita-boxi-builder-page .sr-boxi-slots > *:has(img) {
+  display: grid !important;
+  grid-template-rows: 82px minmax(0, auto) !important;
+  align-items: start !important;
+  justify-items: center !important;
+  padding: 4px 4px 6px !important;
+  border: 1px solid #f1ebe6 !important;
+  border-radius: 6px !important;
+  background: #ffffff !important;
+}
+
+body.santa-rita-boxi-builder-page .sr-boxi-slots > *:not(:has(img)) {
+  display: grid !important;
+  height: 112px !important;
+  place-items: center !important;
+  border: 1px dashed #9aa3ae !important;
+  border-radius: 4px !important;
+  background: rgba(255, 255, 255, 0.42) !important;
+}
+
+body.santa-rita-boxi-builder-page .sr-boxi-slots > * :is(span, p, div):not(:has(*)) {
+  max-width: calc(100% - 8px) !important;
+  overflow: hidden !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  line-height: 1.1 !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
 }
 
 body.santa-rita-boxi-builder-page .sr-boxi-total {
@@ -299,9 +359,35 @@ body.santa-rita-boxi-builder-page #MainContent button.sr-boxi-next-button {
     padding: 14px 12px !important;
   }
 
-  body.santa-rita-boxi-builder-page .sr-boxi-summary [class*='slot' i],
-  body.santa-rita-boxi-builder-page .sr-boxi-summary :is(li, article, div):has(> img) {
-    width: 58px !important;
-    height: 58px !important;
+  body.santa-rita-boxi-builder-page .sr-boxi-slots {
+    grid-template-columns: repeat(6, 78px) !important;
+    gap: 8px !important;
+    overflow-x: auto !important;
+    padding-bottom: 2px !important;
+    scrollbar-width: none;
+  }
+
+  body.santa-rita-boxi-builder-page .sr-boxi-slots::-webkit-scrollbar {
+    display: none;
+  }
+
+  body.santa-rita-boxi-builder-page .sr-boxi-slots > * {
+    width: 78px !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
+    min-height: 78px !important;
+    flex-basis: 78px !important;
+  }
+
+  body.santa-rita-boxi-builder-page .sr-boxi-slots > *,
+  body.santa-rita-boxi-builder-page .sr-boxi-slots [class*='slot' i] {
+    width: 78px !important;
+    height: 78px !important;
+    flex-basis: 78px !important;
+  }
+
+  body.santa-rita-boxi-builder-page .sr-boxi-summary img {
+    max-width: 52px !important;
+    max-height: 58px !important;
   }
 }

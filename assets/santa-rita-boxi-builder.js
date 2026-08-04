@@ -15,6 +15,7 @@
     'ultra premium',
     'varietal',
   ]);
+  const PRICE_PATTERN = /\bCLP\b|\$\s?[\d.]+|\b\d{1,3}(?:[.,]\d{3})+\b/;
 
   if (!window.location.pathname.includes(BUILDER_PATH)) return;
 
@@ -69,6 +70,27 @@
     }
   }
 
+  function normalisePriceText() {
+    const walker = document.createTreeWalker(document.getElementById('MainContent') || document.body, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+
+    while (walker.nextNode()) {
+      nodes.push(walker.currentNode);
+    }
+
+    nodes.forEach((node) => {
+      if (node.parentElement?.closest(`#${INTRO_ID}`)) return;
+
+      const nextValue = node.nodeValue
+        .replace(/\bCLP\s+(?=[\d$])/g, '')
+        .replace(/\b(\d{1,3}(?:,\d{3})+)\b/g, (match) => match.replace(/,/g, '.'));
+
+      if (nextValue !== node.nodeValue) {
+        node.nodeValue = nextValue;
+      }
+    });
+  }
+
   function markButton(button) {
     const label = normaliseLower(button.textContent || '');
 
@@ -85,7 +107,6 @@
 
     if (updatedLabel === 'agregar al carro') {
       button.classList.add('sr-boxi-add-button');
-      markProductCard(button);
       return;
     }
 
@@ -98,7 +119,7 @@
     if (FILTER_LABELS.has(label) || FILTER_LABELS.has(updatedLabel)) {
       button.classList.add('sr-boxi-filter-button');
 
-      if (button.getAttribute('aria-pressed') === 'true' || button.className.toLocaleLowerCase().includes('active')) {
+      if (button.getAttribute('aria-pressed') === 'true' || button.getAttribute('aria-selected') === 'true') {
         button.classList.add('is-active');
       }
 
@@ -128,22 +149,97 @@
     }
   }
 
-  function markProductCard(button) {
-    let node = button.parentElement;
+  function clearGeneratedClasses() {
+    document
+      .querySelectorAll(
+        '.sr-boxi-product-card, .sr-boxi-product-grid, .sr-boxi-product-title, .sr-boxi-summary-band, .sr-boxi-summary, .sr-boxi-slots, .sr-boxi-total'
+      )
+      .forEach((element) => {
+        element.classList.remove(
+          'sr-boxi-product-card',
+          'sr-boxi-product-grid',
+          'sr-boxi-product-title',
+          'sr-boxi-summary-band',
+          'sr-boxi-summary',
+          'sr-boxi-slots',
+          'sr-boxi-total'
+        );
+      });
+  }
 
-    for (let depth = 0; node && depth < 7; depth += 1, node = node.parentElement) {
-      const hasImage = Boolean(node.querySelector('img'));
-      const hasPrice = /\bCLP\b|\$\s?[\d.]+/.test(node.textContent || '');
+  function isBuilderChrome(element) {
+    return (
+      element.id === 'MainContent' ||
+      element.id === INTRO_ID ||
+      element.classList.contains('sr-boxi-intro') ||
+      element.classList.contains('sr-boxi-filter-row') ||
+      element.classList.contains('sr-boxi-summary') ||
+      Boolean(element.querySelector('.sr-boxi-intro, .sr-boxi-filter-row, .sr-boxi-summary'))
+    );
+  }
 
-      if (hasImage && hasPrice) {
-        node.classList.add('sr-boxi-product-card');
+  function markProductCards() {
+    const main = document.getElementById('MainContent');
+    if (!main) return;
 
-        const grid = node.parentElement;
-        if (grid) grid.classList.add('sr-boxi-product-grid');
+    const cards = new Set();
 
-        break;
+    main.querySelectorAll('img').forEach((image) => {
+      if (image.closest(`#${INTRO_ID}, header, footer, .sr-boxi-summary`)) return;
+
+      let node = image.parentElement;
+
+      for (let depth = 0; node && depth < 7; depth += 1, node = node.parentElement) {
+        const text = normalise(node.textContent || '');
+        const imageCount = node.querySelectorAll('img').length;
+        const buttonCount = node.querySelectorAll('button').length;
+        const hasPrice = PRICE_PATTERN.test(text);
+
+        if (isBuilderChrome(node)) continue;
+
+        if (hasPrice && imageCount <= 2 && buttonCount <= 3) {
+          cards.add(node);
+          break;
+        }
       }
+    });
+
+    cards.forEach((card) => card.classList.add('sr-boxi-product-card'));
+    cards.forEach(markProductTitle);
+
+    Array.from(cards)
+      .map((card) => card.parentElement)
+      .filter(Boolean)
+      .forEach((parent) => {
+        if (parent.querySelectorAll('.sr-boxi-product-card').length >= 2) {
+          parent.classList.add('sr-boxi-product-grid');
+        }
+      });
+  }
+
+  function markProductTitle(card) {
+    const explicitTitle = card.querySelector(
+      "h1, h2, h3, h4, h5, a, [class*='title' i], [class*='name' i]"
+    );
+
+    if (explicitTitle) {
+      explicitTitle.classList.add('sr-boxi-product-title');
+      return;
     }
+
+    const title = Array.from(card.querySelectorAll('div, span, p')).find((element) => {
+      const text = normalise(element.textContent || '');
+
+      return (
+        text.length > 3 &&
+        text.length < 120 &&
+        !PRICE_PATTERN.test(text) &&
+        !element.querySelector('img, button') &&
+        !['agregar al carro', 'add', '+', '-', '−'].includes(normaliseLower(text))
+      );
+    });
+
+    if (title) title.classList.add('sr-boxi-product-title');
   }
 
   function markSummary(button) {
@@ -154,6 +250,7 @@
 
       if (text.includes('total') && node.querySelector('button')) {
         node.classList.add('sr-boxi-summary');
+        markSummaryBand(node);
 
         const total = Array.from(node.querySelectorAll('div, p, span')).find((candidate) =>
           normaliseLower(candidate.textContent || '').includes('total')
@@ -166,6 +263,18 @@
 
         break;
       }
+    }
+  }
+
+  function markSummaryBand(summary) {
+    let node = summary.parentElement;
+
+    for (let depth = 0; node && depth < 3; depth += 1, node = node.parentElement) {
+      if (node.id === 'MainContent' || node.classList.contains('sr-boxi-product-grid')) return;
+
+      node.classList.add('sr-boxi-summary-band');
+
+      if (node.getBoundingClientRect().height >= summary.getBoundingClientRect().height) break;
     }
   }
 
@@ -183,12 +292,16 @@
   }
 
   function hydrate() {
+    clearGeneratedClasses();
     ensureIntro();
+    normalisePriceText();
     hideStepCopy();
 
     document.querySelectorAll('#MainContent button').forEach((button) => {
       markButton(button);
     });
+
+    markProductCards();
   }
 
   const observer = new MutationObserver(() => hydrate());
