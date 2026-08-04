@@ -365,58 +365,112 @@
     color: #6b5d5d;
   }
 
-  .santa-rita-product-card__price {
+  .santa-rita-product-card__form {
     display: flex;
-    align-items: baseline;
-    gap: 8px;
-    margin-top: 16px;
-    padding-inline: 16px;
+    flex-direction: column;
+    gap: 12px;
+    margin: auto 0 0;
+    padding: 16px 16px 16px;
   }
 
-  .santa-rita-product-card__price strong {
-    color: #1E0812;
-    font-size: 20px;
+  .santa-rita-product-card__quantity-options {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 16px 0 0;
+    border: 0;
+    border-top: 0.5px solid rgba(110, 90, 97, 0.35);
+  }
+
+  .santa-rita-product-card__quantity-option {
+    position: relative;
+  }
+
+  .santa-rita-product-card__quantity-radio {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .santa-rita-product-card__quantity-label {
+    display: grid;
+    min-height: 41px;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid #eee8e2;
+    border-radius: 6px;
+    background: #f5f1eb;
+    color: #1e0812;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .santa-rita-product-card__quantity-radio:checked + .santa-rita-product-card__quantity-label {
+    border-color: #9b173f;
+    background: #fff8f9;
+  }
+
+  .santa-rita-product-card__quantity-radio:focus-visible + .santa-rita-product-card__quantity-label {
+    outline: 2px solid #9b173f;
+    outline-offset: 2px;
+  }
+
+  .santa-rita-product-card__quantity-count {
+    min-width: 42px;
+    color: #2b1e1e;
+    font-size: 14px;
+    font-weight: 700;
     line-height: 1;
   }
 
-  .santa-rita-product-card__price s {
-    color: #6e6262;
-    font-size: 13px;
+  .santa-rita-product-card__quantity-price {
+    color: #1e0812;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
   }
 
-  .santa-rita-product-card__details {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    margin: auto 16px 12px;
-    padding-top: 12px;
-    border-top: 0.5px solid rgba(110, 90, 97, 0.50);
-    margin-top: 12px;
-  }
-
-  .santa-rita-product-card__details span {
-    display: flex;
-    min-height: 52px;
-    flex-direction: column;
-    justify-content: center;
-    padding: 8px 10px;
-    border-radius: 3px;
-    background: #eee8e2;
-    color: #655b58;
+  .santa-rita-product-card__quantity-compare {
+    color: #7d6e73;
     font-size: 12px;
-    line-height: 1.1;
+    line-height: 1;
+    white-space: nowrap;
   }
 
-  .santa-rita-product-card__details strong {
-    margin-top: 4px;
-    color: #21000f;
-    font-size: 14px;
+  .santa-rita-product-card__quantity-check {
+    display: inline-flex;
+    width: 14px;
+    height: 14px;
+    color: #9b173f;
+    opacity: 0;
+  }
+
+  .santa-rita-product-card__quantity-radio:checked + .santa-rita-product-card__quantity-label .santa-rita-product-card__quantity-check {
+    opacity: 1;
+  }
+
+  .santa-rita-product-card__liter-price {
+    margin: 0;
+    padding-top: 10px;
+    border-top: 0.5px solid rgba(110, 90, 97, 0.35);
+    color: #6e5a61;
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  .santa-rita-product-card__liter-price strong {
+    color: #6e5a61;
+    font-weight: 800;
   }
 
   .santa-rita-product-card__button {
-    width: calc(100% - 32px);
+    width: 100%;
     min-height: 44px;
-    margin: 0 16px 16px;
+    margin: 0;
     border: 0;
     border-radius: 7px;
     background: #8C1A3E;
@@ -436,10 +490,6 @@
   .santa-rita-product-card__button:disabled {
     opacity: 0.55;
     cursor: default;
-  }
-
-  .santa-rita-product-card__form {
-    margin: 0;
   }
 
   .santa-rita-best-sellers__empty {
@@ -616,35 +666,39 @@
     font-size: 14px;
   }
 
-  .content-for-layout[data-template='cart'] .santa-rita-product-card__price strong {
-    font-size: 17px;
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__form {
+    gap: 8px;
+    padding: 12px 12px 12px;
   }
 
-  .content-for-layout[data-template='cart'] .santa-rita-product-card__price s {
-    font-size: 11px;
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__quantity-options {
+    gap: 6px;
+    padding-top: 12px;
   }
 
-  .content-for-layout[data-template='cart'] .santa-rita-product-card__details {
-    margin-bottom: 10px;
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__quantity-label {
+    min-height: 34px;
+    gap: 5px;
+    padding: 6px 8px;
   }
 
-  .content-for-layout[data-template='cart'] .santa-rita-product-card__details span {
-    min-height: 46px;
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__quantity-count {
+    min-width: 32px;
     font-size: 10px;
   }
 
-  .content-for-layout[data-template='cart'] .santa-rita-product-card__details strong {
-    font-size: 11px;
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__quantity-price {
+    font-size: 12px;
+  }
+
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__quantity-compare,
+  .content-for-layout[data-template='cart'] .santa-rita-product-card__liter-price {
+    font-size: 9px;
   }
 
   .content-for-layout[data-template='cart'] .santa-rita-product-card__button {
     min-height: 36px;
-    margin-bottom: 12px;
     font-size: 12px;
-  }
-
-  .santa-rita-product-card__mobile-pack-options {
-    display: none;
   }
 
   .content-for-layout[data-template='cart'] .santa-rita-best-sellers__footer {
@@ -734,71 +788,8 @@
       border-bottom: 1px solid rgba(110, 90, 97, 0.25);
     }
 
-    .content-for-layout[data-template='cart'] .santa-rita-product-card__mobile-pack-options {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      padding: 7px 8px 0;
-    }
-
-    .content-for-layout[data-template='cart'] .santa-rita-product-card__mobile-pack-options span {
-      display: inline-flex;
-      min-height: 20px;
-      align-items: center;
-      justify-content: center;
-      padding: 0 7px;
-      border: 1px solid #21000f;
-      border-radius: 999px;
-      color: #21000f;
-      font-size: 9px;
-      font-weight: 700;
-      line-height: 1;
-    }
-
-    .content-for-layout[data-template='cart'] .santa-rita-product-card__mobile-pack-options .is-active {
-      border-color: #21000f;
-      background: #21000f;
-      color: #ffffff;
-    }
-
-    .content-for-layout[data-template='cart'] .santa-rita-product-card__price {
-      margin-top: 8px;
-      padding-inline: 8px;
-    }
-
-    .content-for-layout[data-template='cart'] .santa-rita-product-card__price strong {
-      font-size: 13px;
-    }
-
-    .content-for-layout[data-template='cart'] .santa-rita-product-card__price s {
-      font-size: 9px;
-    }
-
-    .content-for-layout[data-template='cart'] .santa-rita-product-card__details {
-      display: block;
-      margin: 8px 8px;
-      padding-top: 0;
-      border-top: 0;
-    }
-
-    .content-for-layout[data-template='cart'] .santa-rita-product-card__details span {
-      min-height: 43px;
-      padding: 7px 8px;
-      font-size: 8px;
-    }
-
-    .content-for-layout[data-template='cart'] .santa-rita-product-card__details span:first-child {
-      display: none;
-    }
-
-    .content-for-layout[data-template='cart'] .santa-rita-product-card__details strong {
-      font-size: 9px;
-    }
-
     .content-for-layout[data-template='cart'] .santa-rita-product-card__button {
-      width: calc(100% - 16px);
       min-height: 28px;
-      margin: 0 8px 8px;
       font-size: 9px;
     }
 
