@@ -19,7 +19,7 @@
     "discount": "Apply a discount code",
     "discount_menu": "Discount Codes",
     "discount_applied": "Applied discount code: {{ code }}",
-    "filters": "Filters",
+    "filters": "Filtros",
     "filter_count": {
       "one": "{{ count }} filter applied",
       "other": "{{ count }} filters applied"
@@ -41,13 +41,13 @@
     "rating": "Rating of this product is {{ rating }} out of 5",
     "remove_item": "Remove {{ title}}",
     "remove": "Remove",
-    "reset_search": "Reset search",
+    "reset_search": "Restablecer búsqueda",
     "scroll_to": "Scroll to {{ title }}",
-    "search_results_count": "{{ count }} search results found for \"{{ query }}\"",
-    "search_results_no_results": "No results found for \"{{ query }}\"",
+    "search_results_count": "{{ count }} resultados de búsqueda para \"{{ query }}\"",
+    "search_results_no_results": "No se encontraron resultados para \"{{ query }}\"",
     "skip_to_product_info": "Skip to product information",
-    "skip_to_results_list": "Skip to results list",
-    "skip_to_text": "Skip to content",
+    "skip_to_results_list": "Saltar a la lista de resultados",
+    "skip_to_text": "Saltar al contenido",
     "slide_status": "Slide {{ index }} of {{ length }}",
     "slideshow": "Slideshow",
     "slideshow_next": "Next slide",
@@ -69,9 +69,9 @@
     "back": "Back",
     "choose": "Choose",
     // Button to reset current selection or input
-    "clear": "Clear",
+    "clear": "Limpiar",
     // Button to remove all applied product filters
-    "clear_all": "Clear all",
+    "clear_all": "Limpiar todo",
     "close": "Close",
     "open": "Open",
     // Continue shopping link on the cart page which takes the user back to a collection page
@@ -82,16 +82,16 @@
     "log_out": "Log out",
     "open_image_in_full_screen": "Open image in full screen",
     // Button to remove applied filters from search/collection results
-    "remove": "Remove",
+    "remove": "Eliminar",
     "remove_discount": "Remove discount {{ code }}",
     // Button to expand hidden product variant options
     "show_all_options": "Show all options",
     "see_items": {
-      "one": "See {{ count }} item",
+      "one": "Ver {{ count }} producto",
       // Button to view filtered product results and close filter dialog
-      "other": "See {{ count }} items"
+      "other": "Ver {{ count }} productos"
     },
-    "show_filters": "Filter",
+    "show_filters": "Filtrar",
     "show_less": "Show less",
     "show_more": "Show more",
     "sign_in_options": "Other sign in options",
@@ -108,7 +108,7 @@
     "sign_up": "Sign up",
     "submit": "Submit",
     "view_store_information": "View store information",
-    "sort": "Sort"
+    "sort": "Ordenar"
   },
   "blocks": {
     "contact_form": {
@@ -180,7 +180,7 @@
     "duties_included_taxes_at_checkout_shipping_at_checkout_without_policy": "Duties included. Taxes, discounts and shipping calculated at checkout.",
     "duties_included_taxes_at_checkout_shipping_at_checkout_without_policy_without_discounts": "Duties included. Shipping is calculated at checkout.",
     "featured_products": "Featured products",
-    "filters": "Filters",
+    "filters": "Filtros",
     "grid_view": {
       "default_view": "Default",
       "grid_fieldset": "Column grid",
@@ -195,14 +195,14 @@
     "inventory_in_stock": "In stock",
     "inventory_out_of_stock": "Out of stock",
     "item_count": {
-      "one": "{{ count }} item",
-      "other": "{{ count }} items"
+      "one": "{{ count }} producto",
+      "other": "{{ count }} productos"
     },
-    "item_count_cutoff": "More than {{ count }} items",
+    "item_count_cutoff": "Más de {{ count }} productos",
     "language": "Language",
     "localization_region_and_language": "Region and language",
-    "no_products_found": "No products found.",
-    "no_results_found": "No results found",
+    "no_products_found": "No se encontraron productos.",
+    "no_results_found": "No se encontraron resultados",
     "page_placeholder_title": "Page title",
     "page_placeholder_content": "Select a page to display its content.",
     "pagination": {
@@ -216,12 +216,12 @@
     "pickup_not_available": "Pickup currently not available",
     "pickup_ready_in": "{{ pickup_time }}",
     "powered_by": "This shop will be powered by",
-    "price": "Price",
-    "price_compare_at": "Compare at price",
-    "price_from": "From {{ price }}",
-    "price_regular": "Regular price",
-    "price_sale": "Sale price",
-    "price_filter_html": "The highest price is {{ price }}",
+    "price": "Precio",
+    "price_compare_at": "Precio de comparación",
+    "price_from": "Desde {{ price }}",
+    "price_regular": "Precio habitual",
+    "price_sale": "Precio de oferta",
+    "price_filter_html": "El precio más alto es {{ price }}",
     "product_image": "Product image",
     "product_information": "Product information",
     "product_subtotal": "Product subtotal",
@@ -233,28 +233,28 @@
     "quantity": "Quantity",
     "quantity_per_item": "/ea",
     "recently_viewed_products": "Recently viewed",
-    "remove_all": "Remove all",
+    "remove_all": "Eliminar todo",
     "remove_all_items_confirmation": "Remove all {{ count }} items from your cart?",
     "remove_one_item_confirmation": "Remove 1 item from your cart?",
-    "reviews": "reviews",
+    "reviews": "reseñas",
     "read_more": "Read more...",
-    "search_input_label": "Search",
-    "search_input_placeholder": "Search",
-    "search": "Search",
-    "search_results": "Search results",
-    "search_results_label": "Search results",
-    "search_results_no_results": "No results found for \"{{ terms }}\". Try another search.",
-    "search_results_no_results_check_spelling": "No results found for \"{{ terms }}\". Check the spelling or use a different word or phrase.",
-    "search_results_resource_articles": "Blog posts",
-    "search_results_resource_collections": "Collections",
+    "search_input_label": "Buscar",
+    "search_input_placeholder": "Buscar",
+    "search": "Buscar",
+    "search_results": "Resultados de búsqueda",
+    "search_results_label": "Resultados de búsqueda",
+    "search_results_no_results": "No se encontraron resultados para \"{{ terms }}\". Prueba con otra búsqueda.",
+    "search_results_no_results_check_spelling": "No se encontraron resultados para \"{{ terms }}\". Revisa la ortografía o usa una palabra o frase diferente.",
+    "search_results_resource_articles": "Artículos del blog",
+    "search_results_resource_collections": "Colecciones",
     // Section heading for Shopify store pages in search results
-    "search_results_resource_pages": "Pages",
-    "search_results_resource_products": "Products",
+    "search_results_resource_pages": "Páginas",
+    "search_results_resource_products": "Productos",
     "search_results_resource_products_count": {
-      "one": "{{ count }} product",
-      "other": "{{ count }} products"
+      "one": "{{ count }} producto",
+      "other": "{{ count }} productos"
     },
-    "search_results_resource_queries": "Search suggestions",
+    "search_results_resource_queries": "Sugerencias de búsqueda",
     "total_items": "Total items",
     "variant": "Variant",
     "variant_total": "Variant total",
@@ -265,8 +265,8 @@
       "other": "{{ count }} items added to cart"
     },
     // Button to go from search preview to full search results page
-    "search_results_view_all": "View all",
-    "search_results_view_all_button": "View all",
+    "search_results_view_all": "Ver todo",
+    "search_results_view_all_button": "Ver todo",
     // Label for customer's note to seller during checkout
     "seller_note": "Special instructions",
     "shipping_policy": "Shipping calculated at checkout.",
@@ -282,7 +282,7 @@
     "taxes_included_shipping_at_checkout_without_policy": "Taxes included. Discounts and shipping calculated at checkout.",
     "taxes_included_shipping_at_checkout_without_policy_without_discounts": "Taxes included. Shipping is calculated at checkout.",
     "unavailable": "Unavailable",
-    "use_fewer_filters_html": "Try using fewer filters, or <a class=\"{{ class }}\" href=\"{{ link }}\">clear all filters</a>.",
+    "use_fewer_filters_html": "Prueba usando menos filtros o <a class=\"{{ class }}\" href=\"{{ link }}\">limpia todos los filtros</a>.",
     // Link or button to expand additional information
     "view_more_details": "View more details",
     "volume_pricing_available": "Volume pricing available",
@@ -291,7 +291,7 @@
     "each": "{{ price }}/ea",
     "each_abbreviation": "ea",
     "price_at": "at",
-    "price_range": "Price range",
+    "price_range": "Rango de precio",
     "your_cart_is_empty": "Your cart is empty",
     "product_count": "Product count",
     "errors": "Errors",
@@ -313,7 +313,7 @@
   },
   "fields": {
     // Separates min and max values in price range filter
-    "separator": "to"
+    "separator": "a"
   },
   "gift_cards": {
     "issued": {
@@ -331,7 +331,7 @@
   },
   "placeholders": {
     "password": "Password",
-    "search": "Search",
+    "search": "Buscar",
     "product_title": "Product title",
     "collection_title": "Collection title",
     "blog_posts": "Blog posts",

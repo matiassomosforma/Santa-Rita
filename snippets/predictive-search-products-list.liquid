@@ -9,10 +9,11 @@
 {%- enddoc -%}
 {%- liquid
   assign recently_viewed_title_text = 'content.recently_viewed_products' | t
+  assign limit = limit | default: 4
 -%}
 <div
   id="predictive-search-products"
-  class="predictive-search-results__products"
+  class="predictive-search-results__products predictive-search-results__products--santa-rita"
   {% if products_test_id %}
     data-testid="{{ products_test_id }}"
   {% endif %}
@@ -105,17 +106,11 @@
       </ul>
     </div>
   {% else %}
-    <h4 class="predictive-search-results__title">
-      {{ title }}
-    </h4>
     <ul
-      class="predictive-search-results__list predictive-search-results__wrapper-products list-unstyled"
+      class="predictive-search-results__list predictive-search-results__wrapper-products predictive-search-results__wrapper-products--santa-rita list-unstyled"
       role="listbox"
-      aria-label="{{ title }}"
+      aria-label="{{ 'content.search_results_resource_products' | t }}"
     >
-      {% liquid
-        assign limit = limit | default: 8
-      %}
       {% for product in products limit: limit %}
         {% liquid
           assign product_type_downcase = product.type | downcase
@@ -131,12 +126,8 @@
             class="predictive-search-results__card predictive-search-results__card--product"
             ref="resultsItems[]"
           >
-            {% render 'resource-card',
-              resource_type: 'product',
-              resource: product,
-              image_width: 500,
-              image_hover: true,
-              image_aspect_ratio: '4 / 5'
+            {% render 'santa-rita-best-seller-card',
+              product: product
             %}
           </li>
         {% endunless %}

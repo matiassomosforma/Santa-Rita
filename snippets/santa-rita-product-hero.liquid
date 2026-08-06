@@ -15,20 +15,20 @@
   assign cc_text_downcase = cc_text | downcase
   assign cc_number = cc_text_downcase | remove: 'cc' | remove: 'c.c' | remove: '.' | remove: ',' | remove: ' ' | plus: 0
   assign has_unit_presentation = false
-  assign rating = product.metafields.reviews.rating.value.rating | default: product.metafields.custom.rating.value | default: section.settings.product_hero_default_rating | default: '4.2'
-  assign rating_count = product.metafields.reviews.rating_count | default: product.metafields.custom.rating_count.value | default: product.metafields.custom.rating_count | default: section.settings.product_hero_default_rating_count | default: '134'
+  assign has_box_presentation = false
+  assign rating = product.metafields.reviews.rating.value.rating | default: product.metafields.reviews.rating.value
+  assign rating_count = product.metafields.reviews.rating_count.value | default: product.metafields.reviews.rating_count
+  assign rating_count_number = rating_count | plus: 0
+  assign show_rating = false
   assign description = product.description | strip_html
-  assign discount_percent = 0
   assign product_form_id = 'SantaRitaProductHeroForm-' | append: section.id
   assign presentation_group_name = 'santa-rita-product-presentation-' | append: section.id | append: '-' | append: product.id
 
-  if variant.compare_at_price > variant.price
-    assign discount_value = variant.compare_at_price | minus: variant.price
-    assign discount_percent = discount_value | times: 100 | divided_by: variant.compare_at_price | round
-  endif
-
   assign rating_number = rating | times: 1.0
-  assign filled_stars = rating_number | floor
+  assign filled_stars = rating_number | round
+  if rating_count_number > 0 and rating != blank
+    assign show_rating = true
+  endif
   assign can_add_to_cart = variant.available
   assign add_to_cart_text = 'Agregar'
   assign product_variant_media = ''
@@ -91,10 +91,40 @@
 
     if presentation_units <= 1
       assign has_unit_presentation = true
+    else
+      assign has_box_presentation = true
+    endif
+
+    if has_unit_presentation and has_box_presentation
       break
     endif
   endfor
 %}
+
+{% capture presentation_discount_badges %}
+  {% for presentation_variant in product.variants %}
+    {% liquid
+      assign presentation_discount_percent = 0
+
+      if presentation_variant.compare_at_price > presentation_variant.price
+        assign presentation_discount_value = presentation_variant.compare_at_price | minus: presentation_variant.price
+        assign presentation_discount_percent = presentation_discount_value | times: 100 | divided_by: presentation_variant.compare_at_price | round
+      endif
+    %}
+
+    {% if presentation_discount_percent > 0 %}
+      <span
+        class="santa-rita-product-hero__discount"
+        data-sr-product-discount="{{ presentation_variant.id }}"
+        {% unless presentation_variant.id == variant.id %}
+          hidden
+        {% endunless %}
+      >
+        -{{ presentation_discount_percent }}%
+      </span>
+    {% endif %}
+  {% endfor %}
+{% endcapture %}
 
 {% capture presentation_price_panels %}
   {% for presentation_variant in product.variants %}
@@ -243,6 +273,15 @@
       </div>
     {% endif %}
   {% endfor %}
+
+  {% unless has_box_presentation %}
+    <div class="santa-rita-product-hero__presentation-option">
+      <span class="santa-rita-product-hero__presentation-label santa-rita-product-hero__presentation-label--disabled">
+        <span class="santa-rita-product-hero__presentation-count">6u.</span>
+        <span class="santa-rita-product-hero__presentation-unavailable">No disponible</span>
+      </span>
+    </div>
+  {% endunless %}
 {% endcapture %}
 
 {% capture liter_prices %}
@@ -320,9 +359,7 @@
       </div>
 
       <div class="santa-rita-product-hero__details">
-        {% if discount_percent > 0 %}
-          <span class="santa-rita-product-hero__discount">-{{ discount_percent }}%</span>
-        {% endif %}
+        {{ presentation_discount_badges }}
 
         <h1 class="santa-rita-product-hero__title">{{ product.title }}</h1>
 
@@ -379,17 +416,15 @@ resolved subtitle: {{ subtitle }}</pre>
         </script>
         {% endcomment %}
 
-        {% if rating != blank %}
-          <div class="santa-rita-product-hero__rating" aria-label="{{ rating_number | round: 1 }} de 5 estrellas">
+        {% if show_rating %}
+          <div class="santa-rita-product-hero__rating" aria-label="{{ rating_number | round: 1 }} de 5 estrellas, {{ rating_count_number }} reseñas">
             <span class="santa-rita-product-hero__rating-number">{{ rating_number | round: 1 }}</span>
             <span class="santa-rita-product-hero__stars" aria-hidden="true">
               {% for index in (1..5) %}
                 <span class="santa-rita-product-hero__star{% if index <= filled_stars %} is-filled{% endif %}">★</span>
               {% endfor %}
             </span>
-            {% if rating_count != blank %}
-              <span class="santa-rita-product-hero__rating-count">({{ rating_count }})</span>
-            {% endif %}
+            <span class="santa-rita-product-hero__rating-count">({{ rating_count_number }})</span>
           </div>
         {% endif %}
 
@@ -506,6 +541,10 @@ resolved subtitle: {{ subtitle }}</pre>
 
           productHero?.querySelectorAll('[data-sr-product-liter-price]').forEach((price) => {
             price.hidden = price.getAttribute('data-sr-product-liter-price') !== variantId;
+          });
+
+          productHero?.querySelectorAll('[data-sr-product-discount]').forEach((discount) => {
+            discount.hidden = discount.getAttribute('data-sr-product-discount') !== variantId;
           });
 
           if (addButton instanceof HTMLButtonElement) {
@@ -789,6 +828,10 @@ resolved subtitle: {{ subtitle }}</pre>
     font-size: 14px;
     font-weight: 700;
     line-height: 1;
+  }
+
+  .santa-rita-product-hero__discount[hidden] {
+    display: none !important;
   }
 
   .santa-rita-product-hero__title {

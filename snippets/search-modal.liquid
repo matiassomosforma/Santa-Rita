@@ -32,6 +32,7 @@
       class="predictive-search color-{{ settings.popover_color_scheme }}{% if class != blank %} {{ class | strip }}{% endif %}"
       style="--product-corner-radius: {{ settings.product_corner_radius | default: 8 | append: 'px' }}; --card-corner-radius: {{ settings.card_corner_radius | default: 8 | append: 'px' }};{% if settings.card_title_case == 'uppercase' %} --title-case: uppercase;{% endif %}"
       data-section-id="predictive-search"
+      data-santa-rita-search="true"
       data-testid="{{ 'search-component--modal' }}"
       role="search"
       aria-label="{{ 'content.search_input_label' | t }}"
@@ -41,6 +42,7 @@
         method="get"
         role="search"
         class="predictive-search-form"
+        id="SantaRitaPredictiveSearchForm"
         ref="form"
         on:keydown="/onSearchKeyDown"
       >
@@ -101,31 +103,32 @@
             </span>
           </button>
         </div>
-
-        <div class="predictive-search-form__content-wrapper">
-          <div
-            class="predictive-search-form__content"
-            tabindex="-1"
-            ref="predictiveSearchResults"
-            on:click="/handleModalClick"
-          >
-            {% render 'predictive-search-empty-state',
-              load_empty_state: true,
-              shadow_opacity: 0.1,
-              products_test_id: 'products-list-default--modal'
-            %}
-          </div>
-
-          <div class="predictive-search-form__footer">
-            <button
-              class="button predictive-search__search-button"
-              ref="viewAllButton"
-            >
-              {{ 'content.search_results_view_all' | t }}
-            </button>
-          </div>
-        </div>
       </form>
+
+      <div class="predictive-search-form__content-wrapper">
+        <div
+          class="predictive-search-form__content"
+          tabindex="-1"
+          ref="predictiveSearchResults"
+          on:click="/handleModalClick"
+        >
+          {% render 'predictive-search-empty-state',
+            load_empty_state: true,
+            shadow_opacity: 0.1,
+            products_test_id: 'products-list-default--modal'
+          %}
+        </div>
+
+        <div class="predictive-search-form__footer">
+          <button
+            class="button predictive-search__search-button"
+            form="SantaRitaPredictiveSearchForm"
+            ref="viewAllButton"
+          >
+            Ver todos los resultados
+          </button>
+        </div>
+      </div>
     </predictive-search-component>
   </dialog>
 </dialog-component>
@@ -507,5 +510,485 @@
   .predictive-search__close-modal-button:hover {
     --button-color: var(--color-foreground);
     --button-background-color: transparent;
+  }
+
+  #search-modal .search-modal__content,
+  #search-modal .dialog-modal[open].search-modal__content {
+    top: 0;
+    right: 0;
+    left: 0;
+    width: 100vw;
+    max-width: 100vw;
+    max-height: 100dvh;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: #fffbf6;
+    box-shadow: none;
+    overflow-y: auto;
+  }
+
+  #search-modal .search-modal__content::backdrop {
+    background: transparent;
+  }
+
+  #search-modal predictive-search-component[data-santa-rita-search='true'] {
+    display: block;
+    max-width: none;
+    background: #fffbf6;
+    color: #21000f;
+  }
+
+  #search-modal .predictive-search-form {
+    background: #fffbf6;
+    border-bottom: 1px solid rgba(33, 0, 15, 0.08);
+  }
+
+  #search-modal .predictive-search-form__header {
+    position: relative;
+    display: flex;
+    width: min(100%, 1260px);
+    margin: 0 auto;
+    box-sizing: border-box;
+    align-items: center;
+    gap: 18px;
+    padding: 14px 24px;
+    border: 0;
+    border-radius: 0;
+    background: #fffbf6;
+  }
+
+  #search-modal .predictive-search-form__header-inner {
+    min-height: 40px;
+    border: 1px solid #d8d0cf;
+    border-radius: 6px;
+    background: transparent;
+  }
+
+  #search-modal input.search-input {
+    min-height: 40px;
+    padding-block: 0;
+    padding-inline: 38px 12px;
+    color: #21000f;
+    font-size: 14px;
+    background: transparent;
+  }
+
+  .dialog-modal .predictive-search-form__header:has( .predictive-search__reset-button:not(.predictive-search__reset-button[hidden]) )::before{
+    display: none;
+  }
+
+  #search-modal .predictive-search__icon {
+    left: 35px;
+    color: #9d1238;
+  }
+
+  #search-modal .predictive-search__icon > svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  #search-modal .predictive-search__reset-button {
+    display: none;
+  }
+
+  #search-modal .predictive-search__close-modal-button {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    margin: 0;
+    color: #9d1238;
+  }
+
+  #search-modal .predictive-search__close-modal-button .svg-wrapper,
+  #search-modal .predictive-search__close-modal-button svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  #search-modal .predictive-search-form__content-wrapper {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    max-height: none;
+    border-radius: 0;
+    background: #fffbf6;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  #search-modal .predictive-search-form__content {
+    max-height: none;
+    padding: 0;
+    background: #fffbf6;
+    overflow: visible;
+  }
+
+  #search-modal .predictive-search-dropdown {
+    background: #fffbf6;
+  }
+
+  #search-modal .predictive-search-results__inner {
+    width: 100%;
+  }
+
+  #search-modal .santa-rita-search-suggestions {
+    max-width: 1260px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    padding: 24px;
+  }
+
+  #search-modal .santa-rita-search-suggestions__title {
+    margin: 0 0 22px;
+    color: #21000f;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  #search-modal .santa-rita-search-suggestions__list {
+    display: grid;
+    gap: 22px;
+    margin: 0;
+    padding: 0;
+  }
+
+  #search-modal .santa-rita-search-suggestions__item a {
+    color: #21000f;
+    font-size: 14px;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+
+  #search-modal .santa-rita-search-suggestions__item a:hover {
+    color: #9d1238;
+  }
+
+  #search-modal .predictive-search-results__products--santa-rita {
+    max-width: 1260px;
+    margin: 0 auto;
+    padding: 24px 24px 0;
+  }
+
+  #search-modal .predictive-search-results__wrapper-products--santa-rita {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+  }
+
+  #search-modal .predictive-search-results__card--product {
+    width: auto;
+    min-width: 0;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    transform: none;
+  }
+
+  #search-modal .predictive-search-results__card--product:hover,
+  #search-modal .predictive-search-results__card--product:focus-within,
+  #search-modal .predictive-search-results__card--product[aria-selected='true'] {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    outline: 0 !important;
+  }
+
+  #search-modal .santa-rita-product-card {
+    position: relative;
+    display: flex;
+    min-height: 472px;
+    height: 100%;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #fff;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 0 2px 0 rgba(140, 26, 62, 0.13) inset, 0 10px 10px 0 rgba(140, 26, 62, 0.05);
+  }
+
+  #search-modal .santa-rita-product-card__badges {
+    position: absolute;
+    inset: 14px 14px auto;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+
+  #search-modal .santa-rita-product-card__badge {
+    display: inline-flex;
+    min-width: 50px;
+    min-height: 25px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    border-radius: 12px;
+    background: #f5f4ed;
+    color: #21000f;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  #search-modal .santa-rita-product-card__badge--discount {
+    background: #9b173f;
+    color: #ffffff;
+  }
+
+  #search-modal .santa-rita-product-card__badge--blank {
+    opacity: 0;
+  }
+
+  #search-modal .santa-rita__product-image {
+    position: relative;
+  }
+
+  #search-modal .santa-rita-product-card__media {
+    position: relative;
+    display: grid;
+    min-height: 184px;
+    place-items: end center;
+    margin-bottom: 32px;
+    padding-top: 32px;
+    text-decoration: none;
+  }
+
+  #search-modal .santa-rita-product-card__image {
+    width: auto;
+    max-width: 78%;
+    height: 180px;
+    object-fit: contain;
+  }
+
+  #search-modal .santa-rita__star-group {
+    display: flex;
+    gap: 2px;
+  }
+
+  #search-modal .santa-rita-product-card__rating {
+    position: absolute;
+    right: 0;
+    bottom: 5px;
+    display: flex;
+    min-height: 24px;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 6px;
+    padding-inline: 16px;
+    color: #c98d00;
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  #search-modal .santa-rita-product-card__rating small {
+    color: #6e5a61;
+    font-size: 12px;
+  }
+
+  #search-modal .santa-rita-product-card__eyebrow,
+  #search-modal .santa-rita-product-card__origin {
+    margin: 0;
+    padding-inline: 16px;
+    color: #8d183f;
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  #search-modal .santa-rita-product-card h3 {
+    margin: 7px 0 4px;
+    padding-inline: 16px;
+    color: #2b1e1e;
+    font-family: var(--font-heading--family);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: 0;
+  }
+
+  #search-modal .santa-rita-product-card h3 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  #search-modal .santa-rita-product-card__origin {
+    margin-top: 3px;
+    color: #6b5d5d;
+  }
+
+  #search-modal .santa-rita-product-card__form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: auto 0 0;
+    padding: 16px;
+  }
+
+  #search-modal .santa-rita-product-card__quantity-options {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 16px 0 0;
+    border: 0;
+    border-top: 0.5px solid rgba(110, 90, 97, 0.35);
+  }
+
+  #search-modal .santa-rita-product-card__quantity-option {
+    position: relative;
+  }
+
+  #search-modal .santa-rita-product-card__quantity-radio {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  #search-modal .santa-rita-product-card__quantity-label {
+    display: grid;
+    min-height: 41px;
+    grid-template-columns: auto auto auto minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px solid #eee8e2;
+    border-radius: 6px;
+    background: #f5f1eb;
+    color: #1e0812;
+    cursor: pointer;
+  }
+
+  #search-modal .santa-rita-product-card__quantity-radio:checked + .santa-rita-product-card__quantity-label {
+    border-color: #9b173f;
+    background: #fff8f9;
+  }
+
+  #search-modal .santa-rita-product-card__quantity-count {
+    min-width: 42px;
+    color: #2b1e1e;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  #search-modal .santa-rita-product-card__quantity-price {
+    color: #1e0812;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  #search-modal .santa-rita-product-card__quantity-compare {
+    color: #7d6e73;
+    font-size: 12px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  #search-modal .santa-rita-product-card__quantity-check {
+    display: inline-flex;
+    grid-column: 4;
+    justify-self: end;
+    width: 14px;
+    height: 14px;
+    color: #9b173f;
+    opacity: 0;
+  }
+
+  #search-modal .santa-rita-product-card__quantity-radio:checked + .santa-rita-product-card__quantity-label .santa-rita-product-card__quantity-check {
+    opacity: 1;
+  }
+
+  #search-modal .santa-rita-product-card__liter-price {
+    margin: 0;
+    padding-top: 10px;
+    border-top: 0.5px solid rgba(110, 90, 97, 0.35);
+    color: #6e5a61;
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  #search-modal .santa-rita-product-card__liter-price strong {
+    color: #6e5a61;
+    font-weight: 800;
+  }
+
+  #search-modal .santa-rita-product-card__button {
+    width: 100%;
+    min-height: 44px;
+    margin: 0;
+    border: 1px solid #8c1a3e;
+    border-radius: 7px;
+    background: #8c1a3e;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  #search-modal .predictive-search-form__footer {
+    position: relative;
+    display: none;
+    justify-content: center;
+    padding: 24px 24px 30px;
+    background: #fffbf6;
+  }
+
+  #search-modal predictive-search-component:has([data-search-results]):not(:has(.predictive-search-results__no-results)) .predictive-search-form__footer {
+    display: flex;
+  }
+
+  #search-modal .predictive-search__search-button {
+    min-width: 210px;
+    min-height: 45px;
+    border: 1px solid #9d1238;
+    border-radius: 8px;
+    background: transparent;
+    color: #9d1238;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  #search-modal .predictive-search__search-button:hover {
+    background: #9d1238;
+    color: #ffffff;
+    transform: none;
+    box-shadow: none;
+  }
+
+  @media screen and (max-width: 989px) {
+    #search-modal .predictive-search-results__wrapper-products--santa-rita {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    #search-modal .predictive-search-form__header {
+      padding: 10px 12px;
+    }
+
+    #search-modal .predictive-search-results__products--santa-rita {
+      padding: 18px 12px 0;
+    }
+
+    #search-modal .santa-rita-search-suggestions {
+      padding: 18px 12px;
+    }
+
+    #search-modal .predictive-search-results__wrapper-products--santa-rita {
+      gap: 16px 12px;
+    }
+
+    #search-modal .santa-rita-product-card {
+      min-height: 450px;
+    }
   }
 {% endstylesheet %}

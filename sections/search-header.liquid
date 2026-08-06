@@ -1,7 +1,7 @@
 
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
-<div class="section section--page-width color-{{ section.settings.color_scheme }}">
+<div class="section section--page-width color-{{ section.settings.color_scheme }} santa-rita-search-header">
   <div
     class="spacing-style search-page__header"
     style="
@@ -9,10 +9,10 @@
       {% render 'spacing-style', settings: section.settings %}
     "
   >
-    {% assign heading_text = 'content.search' | t %}
+    {% assign heading_text = 'Buscar' %}
 
     {% if search.performed %}
-      {% assign heading_text = 'content.search_results' | t %}
+      {% assign heading_text = 'Resultados de búsqueda' %}
     {% endif %}
 
     {% capture heading_text %}
@@ -23,6 +23,12 @@
     {% content_for 'block', id: 'search', type: '_search-input' %}
   </div>
 </div>
+
+{% stylesheet %}
+  .santa-rita-search-header {
+    background: #fffbf6;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {

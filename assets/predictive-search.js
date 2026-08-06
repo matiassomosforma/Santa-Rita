@@ -13,6 +13,7 @@ import { DialogCloseEvent, DialogOpenEvent, DialogComponent } from '@theme/dialo
  * @property {HTMLElement} predictiveSearchResults - The predictive search results container.
  * @property {HTMLElement} resetButton - The reset button element.
  * @property {HTMLElement[]} [resultsItems] - The search results items elements.
+ * @property {HTMLFormElement} [form] - The predictive search form.
  * @property {HTMLElement} [recentlyViewedWrapper] - The recently viewed products wrapper.
  * @property {HTMLElement[]} [recentlyViewedTitle] - The recently viewed title elements.
  * @property {HTMLElement[]} [recentlyViewedItems] - The recently viewed product items.
@@ -29,6 +30,10 @@ class PredictiveSearchComponent extends Component {
   #activeFetch = null;
 
   #emptyStateLoaded = false;
+
+  #SANTA_RITA_SEARCH_STORAGE_KEY = 'santaRitaRecentSearches';
+
+  #SANTA_RITA_MAX_SUGGESTIONS = 4;
 
   /**
    * Get the dialog component.
@@ -56,7 +61,12 @@ class PredictiveSearchComponent extends Component {
       this.addEventListener('click', this.#handleModalClick, { signal });
     }
 
-    if (RecentlyViewed.getProducts().length > 0) {
+    if (this.dataset.santaRitaSearch === 'true') {
+      this.refs.form?.addEventListener('submit', this.#handleSantaRitaSearchSubmit, { signal });
+      this.#hydrateSantaRitaSuggestions(this.refs.predictiveSearchResults);
+    }
+
+    if (this.dataset.santaRitaSearch !== 'true' && RecentlyViewed.getProducts().length > 0) {
       requestIdleCallback(() => {
         this.#loadEmptyState();
       });
@@ -105,7 +115,11 @@ class PredictiveSearchComponent extends Component {
   };
 
   #handleDialogOpen = () => {
-    if (!this.#emptyStateLoaded && RecentlyViewed.getProducts().length > 0) {
+    if (
+      this.dataset.santaRitaSearch !== 'true' &&
+      !this.#emptyStateLoaded &&
+      RecentlyViewed.getProducts().length > 0
+    ) {
       this.#loadEmptyState();
     }
   };
@@ -114,6 +128,153 @@ class PredictiveSearchComponent extends Component {
     if (this.#emptyStateLoaded) return;
     this.#emptyStateLoaded = true;
     this.resetSearch(false);
+  }
+
+  /**
+   * Stores submitted search terms so the empty state can become dynamic over time.
+   */
+  #handleSantaRitaSearchSubmit = () => {
+    this.#storeSantaRitaSearchTerm(this.refs.searchInput.value);
+  };
+
+  /**
+   * @param {string} searchTerm
+   */
+  #storeSantaRitaSearchTerm(searchTerm) {
+    const normalizedTerm = searchTerm.trim().replace(/\s+/g, ' ');
+    if (!normalizedTerm) return;
+
+    const recentSearches = this.#getSantaRitaSearchTerms().filter(
+      (term) => term.toLowerCase() !== normalizedTerm.toLowerCase()
+    );
+
+    recentSearches.unshift(normalizedTerm);
+    try {
+      localStorage.setItem(
+        this.#SANTA_RITA_SEARCH_STORAGE_KEY,
+        JSON.stringify(recentSearches.slice(0, this.#SANTA_RITA_MAX_SUGGESTIONS))
+      );
+    } catch {
+      // If storage is unavailable, keep the static fallback suggestions.
+    }
+  }
+
+  #getSantaRitaSearchTerms() {
+    try {
+      const terms = JSON.parse(localStorage.getItem(this.#SANTA_RITA_SEARCH_STORAGE_KEY) || '[]');
+      return Array.isArray(terms) ? terms.filter((term) => typeof term === 'string' && term.trim()) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * @param {ParentNode} root
+   */
+  async #hydrateSantaRitaSuggestions(root) {
+    if (this.dataset.santaRitaSearch !== 'true') return;
+
+    const suggestionsList = root.querySelector('[data-sr-search-suggestions-list]');
+    if (!(suggestionsList instanceof HTMLElement)) return;
+
+    const suggestions = this.#getSantaRitaSearchTerms().map((term) => ({
+      label: term,
+      url: this.#getSearchUrl(term),
+    }));
+
+    if (suggestions.length < this.#SANTA_RITA_MAX_SUGGESTIONS) {
+      const viewedProductSuggestions = await this.#getSantaRitaViewedProductSuggestions();
+
+      for (const suggestion of viewedProductSuggestions) {
+        const isDuplicate = suggestions.some(
+          (item) => item.label.toLowerCase() === suggestion.label.toLowerCase() || item.url === suggestion.url
+        );
+
+        if (!isDuplicate) {
+          suggestions.push(suggestion);
+        }
+
+        if (suggestions.length >= this.#SANTA_RITA_MAX_SUGGESTIONS) break;
+      }
+    }
+
+    if (suggestions.length === 0) {
+      this.#wireSantaRitaDefaultSuggestions(suggestionsList);
+      return;
+    }
+
+    suggestionsList.replaceChildren(
+      ...suggestions.slice(0, this.#SANTA_RITA_MAX_SUGGESTIONS).map((suggestion) => {
+        const item = document.createElement('li');
+        item.className = 'santa-rita-search-suggestions__item';
+        item.setAttribute('ref', 'resultsItems[]');
+
+        const link = document.createElement('a');
+        link.href = suggestion.url;
+        link.textContent = suggestion.label;
+        link.addEventListener('click', () => {
+          if (suggestion.type !== 'product') {
+            this.#storeSantaRitaSearchTerm(suggestion.label);
+          }
+        });
+
+        item.append(link);
+        return item;
+      })
+    );
+  }
+
+  /**
+   * @param {HTMLElement} suggestionsList
+   */
+  #wireSantaRitaDefaultSuggestions(suggestionsList) {
+    const defaultSuggestionLinks = suggestionsList.querySelectorAll('[data-sr-default-suggestion] a');
+
+    defaultSuggestionLinks.forEach((link) => {
+      link.addEventListener(
+        'click',
+        () => {
+          this.#storeSantaRitaSearchTerm(link.textContent || '');
+        },
+        { once: true }
+      );
+    });
+  }
+
+  /**
+   * @param {string} term
+   */
+  #getSearchUrl(term) {
+    const searchUrl = new URL(Theme.routes.search_url, location.origin);
+    searchUrl.searchParams.set('q', term);
+    searchUrl.searchParams.set('options[prefix]', 'last');
+    return searchUrl.toString();
+  }
+
+  async #getSantaRitaViewedProductSuggestions() {
+    const recentlyViewedMarkup = await this.#getRecentlyViewedProductsMarkup();
+    if (!recentlyViewedMarkup) return [];
+
+    const parsedMarkup = new DOMParser().parseFromString(recentlyViewedMarkup, 'text/html');
+    const productCards = Array.from(parsedMarkup.querySelectorAll('#predictive-search-products li'));
+
+    return productCards
+      .map((card) => {
+        const link = card.querySelector('a[href]');
+        if (!(link instanceof HTMLAnchorElement)) return null;
+
+        const title = card.querySelector('.resource-card__title');
+        const label = title?.textContent?.trim().replace(/\s+/g, ' ');
+        if (!label) return null;
+
+        return {
+          label,
+          url: link.href,
+          type: 'product',
+        };
+      })
+      .filter(Boolean)
+      .slice(0, this.#SANTA_RITA_MAX_SUGGESTIONS);
   }
 
   get #allResultsItems() {
@@ -232,6 +393,7 @@ class PredictiveSearchComponent extends Component {
         } else {
           const searchUrl = new URL(Theme.routes.search_url, location.origin);
           searchUrl.searchParams.set('q', this.refs.searchInput.value);
+          this.#storeSantaRitaSearchTerm(this.refs.searchInput.value);
           window.location.href = searchUrl.toString();
         }
         break;
@@ -399,7 +561,7 @@ class PredictiveSearchComponent extends Component {
      * when #closeResults is called and therefore the height is animated */
     const viewedProducts = RecentlyViewed.getProducts();
 
-    if (viewedProducts.length > 0) {
+    if (this.dataset.santaRitaSearch !== 'true' && viewedProducts.length > 0) {
       const recentlyViewedMarkup = await this.#getRecentlyViewedProductsMarkup();
       if (!recentlyViewedMarkup) return;
 
@@ -421,6 +583,7 @@ class PredictiveSearchComponent extends Component {
     if (abortController.signal.aborted) return;
 
     morph(predictiveSearchResults, parsedEmptySectionMarkup);
+    await this.#hydrateSantaRitaSuggestions(predictiveSearchResults);
     this.#resetScrollPositions();
   };
 }

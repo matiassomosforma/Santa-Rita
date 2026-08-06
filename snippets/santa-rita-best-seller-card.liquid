@@ -8,8 +8,19 @@
 
   assign selected_variant = product.selected_or_first_available_variant
   assign has_unit_presentation = false
+  assign has_box_presentation = false
 
-  assign rating_count = product.metafields.custom.rating_count | default: section_settings.rating_count
+  assign judgeme_rating = product.metafields.reviews.rating.value.rating | default: product.metafields.reviews.rating.value
+  assign judgeme_rating_count = product.metafields.reviews.rating_count.value | default: product.metafields.reviews.rating_count
+  assign rating_number = judgeme_rating | times: 1.0
+  assign rating_count_number = judgeme_rating_count | plus: 0
+  assign filled_stars = rating_number | round
+  assign show_rating = false
+
+  if rating_count_number > 0 and judgeme_rating != blank
+    assign show_rating = true
+  endif
+
   assign location_metafield = product.metafields.custom.location
   assign location = ''
 
@@ -55,13 +66,6 @@
     assign eyebrow = cepa_label | append: ' - ' | append: cc_label
   endif
 
-  assign discount_percent = 0
-
-  if selected_variant.compare_at_price > selected_variant.price
-    assign discount_value = selected_variant.compare_at_price | minus: selected_variant.price
-    assign discount_percent = discount_value | times: 100 | divided_by: selected_variant.compare_at_price | round
-  endif
-
   assign card_uid = section.id | default: product.id | append: '-' | append: product.id
 
   for presentation_variant in product.variants
@@ -71,11 +75,40 @@
 
     if presentation_units <= 1
       assign has_unit_presentation = true
+    else
+      assign has_box_presentation = true
+    endif
+
+    if has_unit_presentation and has_box_presentation
       break
     endif
   endfor
 
 %}
+
+{% capture discount_badges %}
+  {% for presentation_variant in product.variants %}
+    {% liquid
+      assign presentation_discount_percent = 0
+
+      if presentation_variant.compare_at_price > presentation_variant.price
+        assign presentation_discount_value = presentation_variant.compare_at_price | minus: presentation_variant.price
+        assign presentation_discount_percent = presentation_discount_value | times: 100 | divided_by: presentation_variant.compare_at_price | round
+      endif
+    %}
+
+    {% if presentation_discount_percent > 0 %}
+      <span class="santa-rita-product-card__badge santa-rita-product-card__badge--discount santa-rita-product-card__badge--variant-{{ presentation_variant.id }}">-{{ presentation_discount_percent }}%</span>
+    {% else %}
+      <span class="santa-rita-product-card__badge santa-rita-product-card__badge--blank santa-rita-product-card__badge--variant-{{ presentation_variant.id }}"></span>
+    {% endif %}
+
+    {% capture variant_discount_style %}
+      {{ variant_discount_style }}
+      .santa-rita-product-card:has([data-card-variant-id='{{ presentation_variant.id }}']:checked) .santa-rita-product-card__badge--variant-{{ presentation_variant.id }} { display: inline-flex; }
+    {% endcapture %}
+  {% endfor %}
+{% endcapture %}
 
 {% capture presentation_options %}
   {% unless has_unit_presentation %}
@@ -207,6 +240,15 @@
       </div>
     {% endif %}
   {% endfor %}
+
+  {% unless has_box_presentation %}
+    <div class="santa-rita-product-card__quantity-option">
+      <span class="santa-rita-product-card__quantity-label santa-rita-product-card__quantity-label--disabled">
+        <span class="santa-rita-product-card__quantity-count">6u.</span>
+        <span class="santa-rita-product-card__quantity-unavailable">No disponible</span>
+      </span>
+    </div>
+  {% endunless %}
 {% endcapture %}
 
 {% capture liter_prices %}
@@ -251,6 +293,10 @@
     display: none;
   }
 
+  .santa-rita-product-card__badges .santa-rita-product-card__badge {
+    display: none;
+  }
+
   .santa-rita-product-card__quantity-radio:disabled + .santa-rita-product-card__quantity-label,
   .santa-rita-product-card__quantity-label--disabled {
     border-color: #eee8e2;
@@ -266,18 +312,14 @@
     font-weight: 600;
   }
 
+  {{ variant_discount_style }}
   {{ variant_liter_price_style }}
 {% endstyle %}
 
 {% unless is_tour_product %}
   <article class="santa-rita-product-card">
   <div class="santa-rita-product-card__badges">
-    {% if discount_percent > 0 %}
-      <span class="santa-rita-product-card__badge santa-rita-product-card__badge--discount">-{{ discount_percent }}%</span>
-    {% else %}
-      <span class="santa-rita-product-card__badge santa-rita-product-card__badge--blank"></span>
-    {% endif %}
-
+    {{ discount_badges }}
   </div>
 
   <div class="santa-rita__product-image">
@@ -297,27 +339,27 @@
       {% endif %}
     </a>
 
-    <div class="santa-rita-product-card__rating">
-      <div class="santa-rita__star-group">
-        {% for i in (1..5) %}
-        <span aria-label="5 estrellas">
-          <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 9 9" fill="none">
-            <g clip-path="url(#clip0_1568_13293)">
-              <path d="M2.03172 8.68672C1.8146 8.7981 1.56822 8.60291 1.6121 8.35372L2.07897 5.6931L0.0972875 3.80535C-0.087775 3.62872 0.00841247 3.30585 0.256475 3.27097L3.0116 2.87947L4.2401 0.445537C4.35091 0.226162 4.65072 0.226162 4.76154 0.445537L5.99004 2.87947L8.74516 3.27097C8.99323 3.30585 9.08941 3.62872 8.90379 3.80535L6.92266 5.6931L7.38954 8.35372C7.43341 8.60291 7.18704 8.7981 6.96991 8.68672L4.49998 7.41772L2.03172 8.68672Z" fill="#D7A040"/>
-            </g>
-            <defs>
-              <clipPath id="clip0_1568_13293">
-                <rect width="9" height="9" fill="white"/>
-              </clipPath>
-            </defs>
-          </svg>
-        </span>
-        {% endfor %}
+    {% if show_rating %}
+      <div class="santa-rita-product-card__rating" aria-label="{{ rating_number | round: 1 }} de 5 estrellas, {{ rating_count_number }} reseñas">
+        <div class="santa-rita__star-group" aria-hidden="true">
+          {% for i in (1..5) %}
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 9 9" fill="none">
+                <g clip-path="url(#clip0_1568_13293_{{ card_uid }}_{{ i }})">
+                  <path d="M2.03172 8.68672C1.8146 8.7981 1.56822 8.60291 1.6121 8.35372L2.07897 5.6931L0.0972875 3.80535C-0.087775 3.62872 0.00841247 3.30585 0.256475 3.27097L3.0116 2.87947L4.2401 0.445537C4.35091 0.226162 4.65072 0.226162 4.76154 0.445537L5.99004 2.87947L8.74516 3.27097C8.99323 3.30585 9.08941 3.62872 8.90379 3.80535L6.92266 5.6931L7.38954 8.35372C7.43341 8.60291 7.18704 8.7981 6.96991 8.68672L4.49998 7.41772L2.03172 8.68672Z" fill="{% if i <= filled_stars %}#D7A040{% else %}#E7DDD8{% endif %}"/>
+                </g>
+                <defs>
+                  <clipPath id="clip0_1568_13293_{{ card_uid }}_{{ i }}">
+                    <rect width="9" height="9" fill="white"/>
+                  </clipPath>
+                </defs>
+              </svg>
+            </span>
+          {% endfor %}
+        </div>
+        <small>{{ rating_count_number }} {% if rating_count_number == 1 %}reseña{% else %}reseñas{% endif %}</small>
       </div>
-      {% if rating_count != blank %}
-        <small>{{ rating_count }} reseñas</small>
-      {% endif %}
-    </div>
+    {% endif %}
   </div>
 
   {% if eyebrow != blank %}

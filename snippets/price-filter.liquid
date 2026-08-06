@@ -27,6 +27,11 @@
   assign min_value_money = filter.min_value.value | money
   assign max_value_money = filter.max_value.value | money
   assign zero_money = 0 | money
+  assign filter_label = filter.label
+
+  if filter.label == 'Price'
+    assign filter_label = 'Precio'
+  endif
 
   if is_clp
     assign range_max_without_currency = range_max_without_currency | replace: ',', '.'
@@ -67,7 +72,7 @@
       class="facets__summary"
       data-testid="price-filter"
     >
-      <span class="facets__label">{{ filter.label }}</span>
+      <span class="facets__label">{{ filter_label }}</span>
       <facet-status-component class="facets__status">
         <template ref="moneyFormat">{{ shop.money_format }}</template>
 
