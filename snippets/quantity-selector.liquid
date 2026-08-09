@@ -52,6 +52,8 @@
       {% if can_update_quantity == false %}
         disabled
       {% endif %}
+      onClick="setTimeout(function(){if(document.URL.includes('/cart')) {window.location.reload();}},2000);"
+    
     >
       <span class="visually-hidden">{{ 'accessibility.decrease_quantity' | t }}</span
       ><span class="svg-wrapper icon-plus">
@@ -89,6 +91,8 @@
       {% if can_update_quantity == false %}
         disabled
       {% endif %}
+      onClick="setTimeout(function(){if(document.URL.includes('/cart')) {window.location.reload();}},2000);"
+    
     >
       <span class="visually-hidden">{{ 'accessibility.increase_quantity' | t }}</span
       ><span class="svg-wrapper icon-plus">

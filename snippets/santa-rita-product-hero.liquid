@@ -23,6 +23,7 @@
   assign description = product.description | strip_html
   assign product_form_id = 'SantaRitaProductHeroForm-' | append: section.id
   assign presentation_group_name = 'santa-rita-product-presentation-' | append: section.id | append: '-' | append: product.id
+  assign wpd_product_collection_ids = product.collections | map: 'id' | join: ','
 
   assign rating_number = rating | times: 1.0
   assign filled_stars = rating_number | round
@@ -131,13 +132,25 @@
     <div
       class="santa-rita-product-hero__price-panel"
       data-sr-product-price-panel="{{ presentation_variant.id }}"
+      data-wsh-product-id="{{ product.id }}"
+      data-wsh-variant-id="{{ presentation_variant.id }}"
       {% unless presentation_variant.id == variant.id %}
         hidden
       {% endunless %}
     >
-      <strong>{{ presentation_variant.price | money }}</strong>
+      <strong
+        class="sr-wsh-price price"
+        data-wpd-product-handle="{{ product.handle }}"
+        data-wpd-variant-id="{{ presentation_variant.id }}"
+        data-wpd-variant-price="{{ presentation_variant.price }}"
+        data-wpd-variant-compare-at-price="{{ presentation_variant.compare_at_price }}"
+        data-wpd-product-collection-ids="{{ wpd_product_collection_ids }}"
+        data-wpd-product-id="{{ product.id }}"
+      >
+        {{- presentation_variant.price | money -}}
+      </strong>
       {% if presentation_variant.compare_at_price > presentation_variant.price %}
-        <s>{{ presentation_variant.compare_at_price | money }}</s>
+        <s class="sr-wsh-compare-price compare-at-price data-wpd-hide">{{ presentation_variant.compare_at_price | money }}</s>
       {% endif %}
     </div>
   {% endfor %}
@@ -198,9 +211,27 @@
         <label class="santa-rita-product-hero__presentation-label" for="{{ presentation_input_id }}">
           <span class="santa-rita-product-hero__presentation-count">{{ presentation_label }}</span>
           {% if presentation_variant.available %}
-            <span class="santa-rita-product-hero__presentation-price">{{ presentation_variant.price | money }}</span>
+            <span
+              class="santa-rita-product-hero__presentation-price sr-wsh-price price"
+              data-wsh-product-id="{{ product.id }}"
+              data-wsh-variant-id="{{ presentation_variant.id }}"
+              data-wpd-product-handle="{{ product.handle }}"
+              data-wpd-variant-id="{{ presentation_variant.id }}"
+              data-wpd-variant-price="{{ presentation_variant.price }}"
+              data-wpd-variant-compare-at-price="{{ presentation_variant.compare_at_price }}"
+              data-wpd-product-collection-ids="{{ wpd_product_collection_ids }}"
+              data-wpd-product-id="{{ product.id }}"
+            >
+              {{- presentation_variant.price | money -}}
+            </span>
             {% if presentation_variant.compare_at_price > presentation_variant.price %}
-              <s class="santa-rita-product-hero__presentation-compare">{{ presentation_variant.compare_at_price | money }}</s>
+              <s
+                class="santa-rita-product-hero__presentation-compare sr-wsh-compare-price compare-at-price data-wpd-hide"
+                data-wsh-product-id="{{ product.id }}"
+                data-wsh-variant-id="{{ presentation_variant.id }}"
+              >
+                {{- presentation_variant.compare_at_price | money -}}
+              </s>
             {% endif %}
             <span class="santa-rita-product-hero__presentation-check" aria-hidden="true">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -256,9 +287,27 @@
         <label class="santa-rita-product-hero__presentation-label" for="{{ presentation_input_id }}">
           <span class="santa-rita-product-hero__presentation-count">{{ presentation_label }}</span>
           {% if presentation_variant.available %}
-            <span class="santa-rita-product-hero__presentation-price">{{ presentation_variant.price | money }}</span>
+            <span
+              class="santa-rita-product-hero__presentation-price sr-wsh-price price"
+              data-wsh-product-id="{{ product.id }}"
+              data-wsh-variant-id="{{ presentation_variant.id }}"
+              data-wpd-product-handle="{{ product.handle }}"
+              data-wpd-variant-id="{{ presentation_variant.id }}"
+              data-wpd-variant-price="{{ presentation_variant.price }}"
+              data-wpd-variant-compare-at-price="{{ presentation_variant.compare_at_price }}"
+              data-wpd-product-collection-ids="{{ wpd_product_collection_ids }}"
+              data-wpd-product-id="{{ product.id }}"
+            >
+              {{- presentation_variant.price | money -}}
+            </span>
             {% if presentation_variant.compare_at_price > presentation_variant.price %}
-              <s class="santa-rita-product-hero__presentation-compare">{{ presentation_variant.compare_at_price | money }}</s>
+              <s
+                class="santa-rita-product-hero__presentation-compare sr-wsh-compare-price compare-at-price data-wpd-hide"
+                data-wsh-product-id="{{ product.id }}"
+                data-wsh-variant-id="{{ presentation_variant.id }}"
+              >
+                {{- presentation_variant.compare_at_price | money -}}
+              </s>
             {% endif %}
             <span class="santa-rita-product-hero__presentation-check" aria-hidden="true">
               <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -305,11 +354,13 @@
       <p
         class="santa-rita-product-hero__liter-price"
         data-sr-product-liter-price="{{ presentation_variant.id }}"
+        data-wsh-product-id="{{ product.id }}"
+        data-wsh-variant-id="{{ presentation_variant.id }}"
         {% unless presentation_variant.id == variant.id %}
           hidden
         {% endunless %}
       >
-        Precio por litro <strong>{{ presentation_liter_price | money }}</strong>
+        Precio por litro <strong class="sr-wsh-liter-price">{{ presentation_liter_price | money }}</strong>
       </p>
     {% elsif presentation_variant.unit_price_measurement %}
       <p
@@ -325,7 +376,11 @@
   {% endfor %}
 {% endcapture %}
 
-<section class="santa-rita-product-hero color-{{ section.settings.color_scheme }}">
+<section
+  class="santa-rita-product-hero color-{{ section.settings.color_scheme }}"
+  data-wsh-product-id="{{ product.id }}"
+  data-wsh-selected-variant-id="{{ variant.id }}"
+>
   <div class="santa-rita-product-hero__inner">
     {% if section.settings.product_hero_show_breadcrumbs != false %}
       <nav class="santa-rita-product-hero__breadcrumbs" aria-label="Breadcrumb">
@@ -453,7 +508,12 @@ resolved subtitle: {{ subtitle }}</pre>
             >
             <input type="hidden" name="quantity" value="1">
 
-            <div class="santa-rita-product-hero__price" data-sr-product-price>
+            <div
+              class="santa-rita-product-hero__price"
+              data-sr-product-price
+              data-wsh-product-id="{{ product.id }}"
+              data-wsh-selected-variant-id="{{ variant.id }}"
+            >
               {{ presentation_price_panels }}
             </div>
 
@@ -534,6 +594,11 @@ resolved subtitle: {{ subtitle }}</pre>
           if (variantInput instanceof HTMLInputElement) {
             variantInput.value = variantId;
           }
+
+          productHero?.setAttribute('data-wsh-selected-variant-id', variantId);
+          form?.querySelectorAll('[data-wsh-selected-variant-id]').forEach((element) => {
+            element.setAttribute('data-wsh-selected-variant-id', variantId);
+          });
 
           productHero?.querySelectorAll('[data-sr-product-price-panel]').forEach((panel) => {
             panel.hidden = panel.getAttribute('data-sr-product-price-panel') !== variantId;

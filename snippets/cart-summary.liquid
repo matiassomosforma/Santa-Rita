@@ -255,9 +255,15 @@
         data-testid="cart-total-value"
         data-cart-subtotal
       >
-        {{ total_price }}
+        <span class="wcp-original-cart-total"><span data-wpd-cart-total>{{ total_price }}</span></span><span class="wcp-cart-total"></span>
       </text-component>
     </span>
+<div class="additional-notes">
+<span class="wcp-minimums-note"></span>
+<span class="wcp-extra-note "></span>
+</div>
+{% render "wcp_multi_currency_msg" %}
+
     {% if settings.show_installments %}
       <span class="cart-totals__item cart-totals__installments">
         {% form 'cart', cart %}
@@ -291,7 +297,11 @@
     </span>
   </button>
 
-  {% if additional_checkout_buttons and settings.show_accelerated_checkout_buttons %}
+  {% if customer.tags contains 'wpdnet' %}
+                    {% if shop.metafields.wcp_net.isNetEnabled == 'true' or shop.metafields.wcp_net.isNetEnabled == '1' %}
+                    <div style="margin-top:30px;display:none" id="wpdNetContainer">
+                    <p>{{shop.metafields.wcp_net.netCartMsg}}</p><a id="wcp-30-open" class="button"> {{shop.metafields.wcp_net.netBtnMsg}}</a>
+                    </div>{% endif %}{% endif %} {% if additional_checkout_buttons and settings.show_accelerated_checkout_buttons %}
     <div
       class="
         additional-checkout-buttons

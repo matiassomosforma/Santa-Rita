@@ -290,9 +290,9 @@
                     <div>
                       {% if item.original_price != item.final_price %}
                         <span class="visually-hidden">{{ 'content.price_sale' | t }}</span>
-                        <span>{{ item.final_price | money }}</span>
+                        <span><span data-wpd-cart-variant-id="{{ item.variant.id }}" data-wpd-cart-item="{{ item.key }}"><span data-wpd-cart-drawer-product-handle="{{ item.product.handle }}" data-wpd-cart-drawer-variant-id="{{ item.variant.id }}" data-wpd-cart-drawer-variant-price="{{ item.variant.price }}" data-wpd-cart-drawer-variant-compare-at-price="{{ item.variant.compare_at_price }}" data-wpd-cart-drawer-product-collection-ids="{% assign wpdProductCollectionIds = item.product.collections | map:'id' %}{{ wpdProductCollectionIds | join:',' }}" data-wpd-cart-drawer-product-id="{{ item.product.id }}" data-wpd-cart-drawer-item="{{ item.key }}" data-wpd-cart-drawer-quantity="{{ item.quantity }}">{{ item.final_price | money }}</span></span></span>
                         <span class="visually-hidden">{{ 'content.price_regular' | t }}</span>
-                        <s class="compare-at-price">
+                        <s class="compare-at-price data-wpd-hide">
                           {% if item.variant.compare_at_price > item.original_price %}
                             {{ item.variant.compare_at_price | money }}
                           {% else %}
@@ -306,11 +306,11 @@
                           <span class="visually-hidden">{{ 'content.price' | t }}</span>
                         {% endif %}
 
-                        <span>{{ item.original_price | money }}</span>
+                        <span><span data-wpd-cart-variant-id="{{ item.variant.id }}" data-wpd-cart-item="{{ item.key }}"><span data-wpd-cart-drawer-product-handle="{{ item.product.handle }}" data-wpd-cart-drawer-variant-id="{{ item.variant.id }}" data-wpd-cart-drawer-variant-price="{{ item.variant.price }}" data-wpd-cart-drawer-variant-compare-at-price="{{ item.variant.compare_at_price }}" data-wpd-cart-drawer-product-collection-ids="{% assign wpdProductCollectionIds = item.product.collections | map:'id' %}{{ wpdProductCollectionIds | join:',' }}" data-wpd-cart-drawer-product-id="{{ item.product.id }}" data-wpd-cart-drawer-item="{{ item.key }}" data-wpd-cart-drawer-quantity="{{ item.quantity }}">{{ item.original_price | money }}</span></span></span>
 
                         {% if item.variant.compare_at_price > item.original_price %}
                           <span class="visually-hidden">{{ 'content.price_regular' | t }}</span>
-                          <s class="compare-at-price">{{ item.variant.compare_at_price | money }}</s>
+                          <s class="compare-at-price data-wpd-hide">{{ item.variant.compare_at_price | money }}</s>
                         {% endif %}
                       {% endif %}
                     </div>
@@ -350,6 +350,8 @@
                       {% if can_remove == false %}
                         hidden
                       {% endif %}
+      onClick="setTimeout(function(){if(document.URL.includes('/cart')) {window.location.reload();}},2000);"
+    
                     >
                       {{- 'icon-delete.svg' | inline_asset_content -}}
                       <span class="visually-hidden">{{ 'accessibility.remove' | t }}</span>
@@ -408,7 +410,7 @@
                   {%- if compare_line_price != blank -%}
                     <s class="cart-items__price-compare">{{ compare_line_price }}</s>
                   {%- endif -%}
-                  <text-component value="{{ price | strip_html }}">{{ price }}</text-component>
+                  <text-component value="{{ price | strip_html }}"><span data-wpd-cart-variant-id="{{ item.variant.id }}" data-wpd-cart-item="{{ item.key }}" data-wpd-cart-line-price><span data-wpd-cart-drawer-product-handle="{{ item.product.handle }}" data-wpd-cart-drawer-variant-id="{{ item.variant.id }}" data-wpd-cart-drawer-variant-price="{{ item.variant.price }}" data-wpd-cart-drawer-variant-compare-at-price="{{ item.variant.compare_at_price }}" data-wpd-cart-drawer-product-collection-ids="{% assign wpdProductCollectionIds = item.product.collections | map:'id' %}{{ wpdProductCollectionIds | join:',' }}" data-wpd-cart-drawer-product-id="{{ item.product.id }}" data-wpd-cart-drawer-item="{{ item.key }}" data-wpd-cart-drawer-quantity="{{ item.quantity }}" data-wpd-cart-drawer-line-price>{{ price }}</span></span></text-component>
                   {%- if item.unit_price_measurement -%}
                     <div class="cart-items__price-unit cart-secondary-typography">
                       {% render 'unit-price', price: unit_price, measurement: item.unit_price_measurement %}

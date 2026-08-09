@@ -345,5 +345,79 @@
       "success_moderated": "Comentario publicado y a la espera de moderación",
       "success": "Comentario publicado"
     }
+  },
+  "shopify": {
+    "checkout": {
+      "contact": {
+        "city_label": "Comuna",
+        "company_label": "RUT",
+        "optional_company_label": "RUT (opcional)"
+      },
+      "field_errors": {
+        "address_city_blank": "Introduce la comuna",
+        "address_city_too_long": "El nombre de la comuna es demasiado largo (el máximo es 255 caracteres)",
+        "address_city_contains_html_tags": "La comuna no puede contener etiquetas HTML.",
+        "address_city_contains_emojis": "La comuna no puede contener etiquetas HTML.",
+        "address_city_contains_mathematical_symbols": "La comuna no puede contener símbolos matemáticos",
+        "address_company_blank": "Introduce un RUT válido",
+        "address_company_too_long": "El RUT es demasiado largo (el máximo es de 255 caracteres)",
+        "address_company_contains_html_tags": "El RUT no puede contener etiquetas HTML.",
+        "address_company_contains_emojis": "El RUT no puede contener emojis",
+        "address_company_contains_mathematical_symbols": "El RUT no puede contener símbolos matemáticos"
+      },
+      "wallets": {
+        "errors": {
+          "missing": {
+            "city": "Introduce una comuna",
+            "billing_city": "Introduce la comuna de la dirección de facturación"
+          }
+        }
+      },
+      "payment_errors": {
+        "shipping_company_required_error": "{{shopName}} necesita un RUT para la dirección de envío."
+      }
+    }
+  },
+  "sections": {
+    "byob-custom-messages": {
+      "addMore": "Agregar 1 item | Agregar {quantity} items",
+      "addMoreFrom": "Agregar {quantity} item desde {title}",
+      "unlockPercentageDiscount": "{requirement_text} ¡para obtener un {percentage}% de descuento!",
+      "unlockFixedAmountDiscount": "{requirement_text} ¡para obtener un {amount}% de descuento!",
+      "addMoreToUnlock": "{requirement_text} para obtener {discount_text}",
+      "addMoreQuantity": "Añade {extra} más",
+      "addMoreAmount": "Compra más",
+      "bundleAt": "el paquete por {price}!",
+      "bundleAtPerItem": "el paquete a {price} / ud!",
+      "addToBundle": "Agregar al Kit",
+      "added": "Ya agregado",
+      "addBundleToCart": "Agregar kit al carrito",
+      "alertSoldOut": "Este producto está agotado. Por favor selecciona otra opción",
+      "bundleAddedToCart": "¡Tu kit se ha agregado al carrito!",
+      "addToCartButtonTooltip": "¡Agregue más artículos para completar el paquete!",
+      "appliedTier": "Guardar {discount}",
+      "loadMore": "Ver más",
+      "loading": "Cargando...",
+      "pick": "Selecciona",
+      "soldOut": "Agotado",
+      "atLeast": " al menos ",
+      "maximumOf": " máximo ",
+      "lessThan": " menos que ",
+      "tabHeading": "Selecciona {operator}{quantity} item(s) desde {title}",
+      "totalPrice": "Precio total",
+      "saved": "Salvado",
+      "unavailable": "No disponible",
+      "viewCart": "Ver Carrito",
+      "selectOnce": "El elemento solo puede ser seleccionado una vez!",
+      "noteHeader": "Agrega una nota",
+      "required": "Necesario",
+      "checkout": "Pagar pedido",
+      "createAnother": "Crear otro paquete",
+      "quantity": "Cantidad",
+      "optional": "Opcional",
+      "quickviewIconText": "Vista Rápida",
+      "filterBy": "Filtrar por:",
+      "stepBuilderReady": "Tu kit está listo. ¡Agrégalo al carrito y completa tu pedido ahora!"
+    }
   }
 }

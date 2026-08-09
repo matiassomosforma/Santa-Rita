@@ -78,35 +78,35 @@
     {% if show_compare_price %}
       <span role="group">
         <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>
-        <span class="compare-at-price">{{- compare_at_price -}}</span>
+        <span class="compare-at-price"><span class="data-wpd-hide">{{- compare_at_price -}}</span></span>
       </span>
     {% endif %}
     <span role="group">
       <span class="visually-hidden">{{ 'content.price_range' | t }}&nbsp;</span>
-      <span class="price">{{ price_min }} - {{ price_max }}</span>
+      <span data-wpd-product-handle="{{ product_resource.handle }}" data-wpd-variant-id="{{ product_resource.selected_or_first_available_variant.id }}" data-wpd-variant-price="{{ product_resource.selected_or_first_available_variant.price }}" data-wpd-variant-compare-at-price="{{ product_resource.selected_or_first_available_variant.compare_at_price }}" data-wpd-product-collection-ids="{% assign wpdProductCollectionIds = product_resource.collections | map:'id' %}{{ wpdProductCollectionIds | join:',' }}" data-wpd-product-id="{{ product_resource.id }}"><span class="price">{{ price_min }} - {{ price_max }}</span></span>
     </span>
   {% else %}
     {% comment %} Standard pricing display {% endcomment %}
     {% if show_sale_price_first == false and show_compare_price %}
       <span role="group">
         <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>
-        <span class="compare-at-price">{{- compare_at_price -}}</span>
+        <span class="compare-at-price"><span class="data-wpd-hide">{{- compare_at_price -}}</span></span>
       </span>
     {% endif %}
 
     {% if show_compare_price %}
       <span role="group">
         <span class="visually-hidden">{{ 'content.price_sale' | t }}&nbsp;</span>
-        <span class="price">{{ price | default: '&nbsp;' }}</span>
+        <span data-wpd-product-handle="{{ product_resource.handle }}" data-wpd-variant-id="{{ product_resource.selected_or_first_available_variant.id }}" data-wpd-variant-price="{{ product_resource.selected_or_first_available_variant.price }}" data-wpd-variant-compare-at-price="{{ product_resource.selected_or_first_available_variant.compare_at_price }}" data-wpd-product-collection-ids="{% assign wpdProductCollectionIds = product_resource.collections | map:'id' %}{{ wpdProductCollectionIds | join:',' }}" data-wpd-product-id="{{ product_resource.id }}"><span class="price">{{ price | default: '&nbsp;' }}</span></span>
       </span>
     {% else %}
-      <span class="price">{{ price | default: '&nbsp;' }}</span>
+      <span data-wpd-product-handle="{{ product_resource.handle }}" data-wpd-variant-id="{{ product_resource.selected_or_first_available_variant.id }}" data-wpd-variant-price="{{ product_resource.selected_or_first_available_variant.price }}" data-wpd-variant-compare-at-price="{{ product_resource.selected_or_first_available_variant.compare_at_price }}" data-wpd-product-collection-ids="{% assign wpdProductCollectionIds = product_resource.collections | map:'id' %}{{ wpdProductCollectionIds | join:',' }}" data-wpd-product-id="{{ product_resource.id }}"><span class="price">{{ price | default: '&nbsp;' }}</span></span>
     {% endif %}
 
     {% if show_sale_price_first == true and show_compare_price %}
       <span role="group">
         <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>
-        <span class="compare-at-price">{{- compare_at_price -}}</span>
+        <span class="compare-at-price"><span class="data-wpd-hide">{{- compare_at_price -}}</span></span>
       </span>
     {% endif %}
   {% endif %}
