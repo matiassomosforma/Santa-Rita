@@ -102,8 +102,6 @@
       ],
       "name": "Tours",
       "settings": {
-        "collection": "tours",
-        "products": [],
         "products_limit": 6,
         "heading": "Elige tu experiencia",
         "subheading": "Desde recorridos clasicos hasta vivencias unicas en el corazon de la vina.",
