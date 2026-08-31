@@ -1,6 +1,11 @@
 {% liquid
   assign current_product = product
   assign variant = current_product.selected_or_first_available_variant
+  assign variant_price_number = variant.price | plus: 0
+  assign is_free_tour = false
+  if variant_price_number <= 0
+    assign is_free_tour = true
+  endif
   assign hero_image = current_product.metafields.custom.tour_banner_image.value | default: current_product.metafields.custom.tour_banner_image | default: current_product.featured_image
   assign hero_subheading = current_product.metafields.custom.tour_hero_subheading.value | default: current_product.metafields.custom.tour_hero_subheading | default: section.settings.hero_subheading
   assign duration = current_product.metafields.custom.tour_duration.value | default: current_product.metafields.custom.tour_duration
@@ -134,8 +139,10 @@
           <p>{{ current_product.description | strip_html | truncatewords: 22 }}</p>
         {% endif %}
 
-        <strong>{{ variant.price | money }}</strong>
-        {% if section.settings.price_note != blank %}
+        <strong>{% if is_free_tour %}Gratuito{% else %}{{ variant.price | money }}{% endif %}</strong>
+        {% if is_free_tour %}
+          <span>Sin costo por persona</span>
+        {% elsif section.settings.price_note != blank %}
           <span>{{ section.settings.price_note }}</span>
         {% endif %}
       </div>
@@ -394,7 +401,7 @@
 
               <div class="santa-rita-tour-detail__total">
                 <span>{{ section.settings.total_label }}</span>
-                <strong data-tour-total>{{ variant.price | money }}</strong>
+                <strong data-tour-total>{% if is_free_tour %}Gratuito{% else %}{{ variant.price | money }}{% endif %}</strong>
               </div>
 
               <add-to-cart-component
@@ -465,6 +472,11 @@
 
           const quantity = this.getPeopleCount();
           const total = this.priceCents * quantity / 100;
+
+          if (this.priceCents === 0) {
+            this.totalElement.textContent = 'Gratuito';
+            return;
+          }
 
           this.totalElement.textContent = new Intl.NumberFormat('es-CL', {
             style: 'currency',
@@ -1403,7 +1415,7 @@
       "type": "text",
       "id": "price_note",
       "label": "Nota precio",
-      "default": "CLP / por persona"
+      "default": "por persona"
     },
     {
       "type": "header",

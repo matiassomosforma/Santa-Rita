@@ -13,7 +13,7 @@
       "type": "santa-rita-tour-metaobject-detail",
       "settings": {
         "tours_page": "tours",
-        "price_note": "CLP / por persona",
+        "price_note": "por persona",
         "default_duration": "1h 30'",
         "default_schedule": "1 - 12 personas",
         "default_languages": "3 idiomas",

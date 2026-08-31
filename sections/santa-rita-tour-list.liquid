@@ -59,7 +59,12 @@
                 assign short_description = tour.short_description.value | default: tour.short_description
                 assign tour_price = tour.price.value | default: tour.price
                 assign price_amount = tour_price.amount | default: tour_price | default: 0
-                assign price_cents = price_amount | round
+                assign price_amount_number = price_amount | plus: 0
+                assign price_cents = price_amount_number | round
+                assign is_free_tour = false
+                if price_amount_number <= 0
+                  assign is_free_tour = true
+                endif
                 assign tour_url = tour.system.url
               %}
 
@@ -100,8 +105,10 @@
 
                   <div class="santa-rita-tour-list__footer">
                     <div>
-                      <strong>{{ price_cents | money }}</strong>
-                      {% if duration != blank %}
+                      <strong>{% if is_free_tour %}Gratuito{% else %}{{ price_cents | money }}{% endif %}</strong>
+                      {% if is_free_tour %}
+                        <small>Sin costo por persona</small>
+                      {% elsif duration != blank %}
                         <small>
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />

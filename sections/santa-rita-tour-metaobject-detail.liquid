@@ -33,7 +33,12 @@
   assign booking_url = current_tour.booking_url.value | default: current_tour.booking_url | default: section.settings.booking_url
   assign tour_price = current_tour.price.value | default: current_tour.price
   assign price_amount = tour_price.amount | default: tour_price | default: 0
-  assign price_cents = price_amount | round
+  assign price_amount_number = price_amount | plus: 0
+  assign price_cents = price_amount_number | round
+  assign is_free_tour = false
+  if price_amount_number <= 0
+    assign is_free_tour = true
+  endif
   assign price_currency = tour_price.currency_code | default: cart.currency.iso_code | default: shop.currency
   assign booking_url_string = booking_url | append: ''
   assign time_options = time_options_source | split: ','
@@ -133,8 +138,10 @@
           <p>{{ short_description | strip_html | truncatewords: 22 }}</p>
         {% endif %}
 
-        <strong>{{ price_cents | money }}</strong>
-        {% if section.settings.price_note != blank %}
+        <strong>{% if is_free_tour %}Gratuito{% else %}{{ price_cents | money }}{% endif %}</strong>
+        {% if is_free_tour %}
+          <span>Sin costo por persona</span>
+        {% elsif section.settings.price_note != blank %}
           <span>{{ section.settings.price_note }}</span>
         {% endif %}
       </div>
@@ -384,7 +391,7 @@
 
             <div class="santa-rita-tour-detail__total">
               <span>{{ section.settings.total_label }}</span>
-              <strong data-tour-total>{{ price_cents | money }}</strong>
+              <strong data-tour-total>{% if is_free_tour %}Gratuito{% else %}{{ price_cents | money }}{% endif %}</strong>
             </div>
 
             <button
@@ -646,6 +653,11 @@
 
         updateTotal(total = this.quote?.total || 0) {
           if (!this.totalElement) return;
+
+          if (this.priceCents === 0 && total === 0) {
+            this.totalElement.textContent = 'Gratuito';
+            return;
+          }
 
           this.totalElement.textContent = new Intl.NumberFormat('es-CL', {
             style: 'currency',
@@ -2015,7 +2027,7 @@ box-shadow: 0px 2px 2px 0px #8C1A3E0D;
       "type": "text",
       "id": "price_note",
       "label": "Nota precio",
-      "default": "CLP / por persona"
+      "default": "por persona"
     },
     {
       "type": "header",
