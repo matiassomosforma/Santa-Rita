@@ -860,12 +860,19 @@
     display: none;
   }
 
-  .product-grid-container--santa-rita .facets--vertical .facets__item:not(:has([data-testid='price-filter'])) {
-    display: none;
-  }
-
   .product-grid-container--santa-rita .facets--vertical {
     padding-block: 0;
+  }
+
+  .product-grid-container--santa-rita .facets--vertical .facets__filters-wrapper {
+    display: grid;
+    gap: 28px;
+  }
+
+  .product-grid-container--santa-rita .facets--vertical .facets-remove__title {
+    display: block;
+    width: 100%;
+    font-size: 15px;
   }
 
   .product-grid-container--santa-rita .facets--vertical .facets__summary {
@@ -971,6 +978,51 @@
 
   .product-grid-container--santa-rita .facets--vertical .facets__item {
     border: 0;
+  }
+
+  .product-grid-container--santa-rita .facets--vertical .facets__inputs {
+    padding-block: 12px 0;
+  }
+
+  .product-grid-container--santa-rita .facets--vertical .facets__inputs-wrapper {
+    margin: 0;
+  }
+
+  .product-grid-container--santa-rita .facets--vertical .facets__inputs-wrapper .facets__inputs-list {
+    gap: 9px;
+  }
+
+  .product-grid-container--santa-rita .facets--vertical .checkbox {
+    min-height: 18px;
+  }
+
+  .product-grid-container--santa-rita .facets--vertical .checkbox__label {
+    min-height: 18px;
+    align-items: center;
+    gap: 8px;
+    color: #21000f;
+    font-size: 15px;
+    line-height: 1.15;
+  }
+
+  .product-grid-container--santa-rita .facets--vertical .checkbox__label .icon-checkmark {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 17px;
+    border: 1px solid #9b173f;
+    border-radius: 3px;
+    color: transparent;
+    background: transparent;
+    --icon-stroke-width: 3px;
+  }
+
+  .product-grid-container--santa-rita .facets--vertical .checkbox__label .icon-checkmark path {
+    display: block;
+  }
+
+  .product-grid-container--santa-rita .facets--vertical .checkbox__input:checked + .checkbox__label .icon-checkmark {
+    background: #9b173f;
+    color: #ffffff;
   }
 
   .product-grid-container--santa-rita .facets--vertical .price-facet__inputs-wrapper {
@@ -1134,11 +1186,12 @@
     }
 
     #filters-drawer .facets-remove__title {
+      display: block;
       width: 100%;
       margin: 0 0 6px;
       color: #21000f;
       font-family: var(--font-body--family);
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 500;
       line-height: 1.2;
     }
