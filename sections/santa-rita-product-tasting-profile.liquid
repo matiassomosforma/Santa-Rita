@@ -66,12 +66,16 @@
   assign mouthfeel_progress = '25%'
 
   case mouthfeel_handle
-    when 'semidulce'
+    when '0', 'seco', 'bajo'
+      assign mouthfeel_handle = 'bajo'
+    when '1', 'semidulce', 'medio'
+      assign mouthfeel_handle = 'medio'
       assign mouthfeel_progress = '50%'
-    when 'dulce'
+    when '2', 'dulce', 'alto'
+      assign mouthfeel_handle = 'alto'
       assign mouthfeel_progress = '75%'
     else
-      assign mouthfeel_handle = 'seco'
+      assign mouthfeel_handle = 'bajo'
   endcase
 
   assign temperature = temperature_metafield.value | default: temperature_metafield
@@ -181,17 +185,17 @@
                 <h3 class="santa-rita-tasting-profile__title">Presencia en boca</h3>
                 {% if mouthfeel_metafield != blank %}
                   <div class="santa-rita-tasting-profile__mouthfeel" style="--mouthfeel-progress: {{ mouthfeel_progress }};">
-                    {% assign mouthfeel_options = 'Seco,Semidulce,Dulce' | split: ',' %}
+                    {% assign mouthfeel_options = 'Bajo,Medio,Alto' | split: ',' %}
                     {% for option in mouthfeel_options %}
                       {% assign option_handle = option | handleize %}
                       <div class="santa-rita-tasting-profile__mouthfeel-option{% if mouthfeel_handle == option_handle %} is-active{% endif %}">
                         <span class="santa-rita-tasting-profile__drop" aria-hidden="true">
                           {% case option_handle %}
-                            {% when 'semidulce' %}
+                            {% when 'medio' %}
                               <svg xmlns="http://www.w3.org/2000/svg" width="19" height="14" viewBox="0 0 19 14" fill="none">
                                 <path d="M9.40298 13.7101C6.90916 13.7101 4.51747 12.7194 2.75407 10.956C0.990669 9.19262 0 6.80093 0 4.3071C0 -1.96156 12.4028 0.460034 12.4028 0.460034C12.4028 0.460034 18.4028 -1.38767 18.4028 3.95947C18.4028 6.4533 17.8153 9.19262 16.0519 10.956C14.2885 12.7194 11.8968 13.7101 9.40298 13.7101Z" fill="white"/>
                               </svg>
-                            {% when 'dulce' %}
+                            {% when 'alto' %}
                               <svg xmlns="http://www.w3.org/2000/svg" width="19" height="27" viewBox="0 0 19 27" fill="none">
                                 <path d="M9.40298 26.25C6.90916 26.25 4.51747 25.2593 2.75407 23.4959C0.990669 21.7325 0 19.3408 0 16.847C0 10.5784 9.40298 0 9.40298 0C9.40298 0 18.806 10.5784 18.806 16.847C18.806 19.3408 17.8153 21.7325 16.0519 23.4959C14.2885 25.2593 11.8968 26.25 9.40298 26.25Z" fill="white"/>
                               </svg>
@@ -874,7 +878,7 @@
     },
     {
       "type": "paragraph",
-      "content": "Para pares de texto e imagen usa custom.aromas_items y custom.maridajes_items como listas de metaobjects con campos nombre e imagen. Como respaldo, el producto también puede usar custom.aromas, custom.aromas_imagenes, custom.maridajes, custom.maridajes_imagenes, custom.presencia_boca, custom.perfil_chips y custom.temperatura_servicio."
+      "content": "Para pares de texto e imagen usa custom.aromas_items y custom.maridajes_items como listas de metaobjects con campos nombre e imagen. Como respaldo, el producto también puede usar custom.aromas, custom.aromas_imagenes, custom.maridajes, custom.maridajes_imagenes, custom.presencia_boca, custom.perfil_chips y custom.temperatura_servicio. Presencia en boca acepta Bajo/Medio/Alto, 0/1/2 o los valores antiguos Seco/Semidulce/Dulce."
     },
     {
       "type": "textarea",
@@ -892,19 +896,19 @@
       "type": "select",
       "id": "default_mouthfeel",
       "label": "Presencia en boca por defecto",
-      "default": "Seco",
+      "default": "Bajo",
       "options": [
         {
-          "value": "Seco",
-          "label": "Seco"
+          "value": "Bajo",
+          "label": "Bajo"
         },
         {
-          "value": "Semidulce",
-          "label": "Semidulce"
+          "value": "Medio",
+          "label": "Medio"
         },
         {
-          "value": "Dulce",
-          "label": "Dulce"
+          "value": "Alto",
+          "label": "Alto"
         }
       ]
     },
