@@ -4,10 +4,16 @@
   assign hero_image = current_tour.banner_image.value | default: current_tour.banner_image
   assign hero_subheading = current_tour.hero_subheading.value | default: current_tour.hero_subheading | default: section.settings.hero_subheading
   assign short_description = current_tour.short_description.value | default: current_tour.short_description
-  assign duration = current_tour.duration.value | default: current_tour.duration | default: section.settings.default_duration
-  assign people = current_tour.people.value | default: current_tour.people | default: section.settings.default_schedule
-  assign languages = current_tour.languages.value | default: current_tour.languages | default: section.settings.default_languages
-  assign wines = current_tour.wines.value | default: current_tour.wines | default: section.settings.default_capacity
+  assign duration = current_tour.duration.value | default: current_tour.duration
+  assign people = current_tour.people.value | default: current_tour.people
+  assign languages = current_tour.languages.value | default: current_tour.languages
+  assign wines = current_tour.wines.value | default: current_tour.wines
+  if request.design_mode
+    assign duration = duration | default: section.settings.default_duration
+    assign people = people | default: section.settings.default_schedule
+    assign languages = languages | default: section.settings.default_languages
+    assign wines = wines | default: section.settings.default_capacity
+  endif
   assign route_heading = current_tour.route_heading.value | default: current_tour.route_heading | default: section.settings.route_heading
   assign route_stops_value = current_tour.route_stops.value
   assign route_stops_text = current_tour.route_stops.value | default: current_tour.route_stops
@@ -32,6 +38,43 @@
   assign booking_url_string = booking_url | append: ''
   assign time_options = time_options_source | split: ','
   assign language_options = language_options_source | split: ','
+  assign show_duration = true
+  assign duration_text = duration | append: '' | strip
+  assign duration_first = duration_text | slice: 0, 1
+  if duration_text == blank or duration_first == '0'
+    assign show_duration = false
+  endif
+  assign show_people = true
+  assign people_text = people | append: '' | strip
+  assign people_first = people_text | slice: 0, 1
+  if people_text == blank or people_first == '0'
+    assign show_people = false
+  endif
+  assign show_languages = true
+  assign languages_text = languages | append: '' | strip
+  assign languages_first = languages_text | slice: 0, 1
+  if languages_text == blank or languages_first == '0'
+    assign show_languages = false
+  endif
+  assign show_wines = true
+  assign wines_text = wines | append: '' | strip
+  assign wines_first = wines_text | slice: 0, 1
+  if wines_text == blank or wines_first == '0'
+    assign show_wines = false
+  endif
+  assign visible_metric_count = 0
+  if show_duration
+    assign visible_metric_count = visible_metric_count | plus: 1
+  endif
+  if show_people
+    assign visible_metric_count = visible_metric_count | plus: 1
+  endif
+  if show_languages
+    assign visible_metric_count = visible_metric_count | plus: 1
+  endif
+  if show_wines
+    assign visible_metric_count = visible_metric_count | plus: 1
+  endif
 %}
 
 {{ 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css' | stylesheet_tag }}
@@ -101,8 +144,9 @@
   <div class="santa-rita-tour-detail__content">
     <div class="santa-rita-tour-detail__layout">
       <div class="santa-rita-tour-detail__main">
-        <div class="santa-rita-tour-detail__metrics">
-          {% if duration != blank %}
+        {% if visible_metric_count > 0 %}
+        <div class="santa-rita-tour-detail__metrics" style="--tour-metric-count: {{ visible_metric_count }};">
+          {% if show_duration %}
             <div class="santa-rita-tour-detail__metric">
               <span>
                 <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -114,7 +158,7 @@
             </div>
           {% endif %}
 
-          {% if people != blank %}
+          {% if show_people %}
             <div class="santa-rita-tour-detail__metric">
               <span>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -127,7 +171,7 @@
             </div>
           {% endif %}
 
-          {% if languages != blank %}
+          {% if show_languages %}
             <div class="santa-rita-tour-detail__metric">
               <span>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -139,7 +183,7 @@
             </div>
           {% endif %}
 
-          {% if wines != blank %}
+          {% if show_wines %}
             <div class="santa-rita-tour-detail__metric">
               <span>
                 <svg width="16" height="21" viewBox="0 0 16 21" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -151,6 +195,7 @@
             </div>
           {% endif %}
         </div>
+        {% endif %}
 
         <a href="#SantaRitaTourReserve-{{ section.id }}" class="santa-rita-tour-detail__mobile-reserve-button">
           {{ section.settings.reserve_button_label }}
@@ -1042,7 +1087,7 @@
 
   .santa-rita-tour-detail__metrics {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--tour-metric-count, 4), minmax(0, 1fr));
     gap: 0;
     overflow: hidden;
     margin-bottom: 0;
@@ -1730,7 +1775,7 @@ box-shadow: 0px 2px 2px 0px #8C1A3E0D;
     }
 
     .santa-rita-tour-detail__metrics {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(var(--tour-metric-count, 4), minmax(0, 1fr));
       margin: 0 20px 12px;
       border-radius: 6px;
     }

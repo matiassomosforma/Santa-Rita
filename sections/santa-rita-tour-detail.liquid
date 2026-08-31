@@ -3,10 +3,16 @@
   assign variant = current_product.selected_or_first_available_variant
   assign hero_image = current_product.metafields.custom.tour_banner_image.value | default: current_product.metafields.custom.tour_banner_image | default: current_product.featured_image
   assign hero_subheading = current_product.metafields.custom.tour_hero_subheading.value | default: current_product.metafields.custom.tour_hero_subheading | default: section.settings.hero_subheading
-  assign duration = current_product.metafields.custom.tour_duration.value | default: current_product.metafields.custom.tour_duration | default: section.settings.default_duration
-  assign people = current_product.metafields.custom.tour_people.value | default: current_product.metafields.custom.tour_people | default: current_product.metafields.custom.tour_capacity.value | default: current_product.metafields.custom.tour_capacity | default: section.settings.default_schedule
-  assign languages = current_product.metafields.custom.tour_languages.value | default: current_product.metafields.custom.tour_languages | default: section.settings.default_languages
-  assign wines = current_product.metafields.custom.tour_wines.value | default: current_product.metafields.custom.tour_wines | default: section.settings.default_capacity
+  assign duration = current_product.metafields.custom.tour_duration.value | default: current_product.metafields.custom.tour_duration
+  assign people = current_product.metafields.custom.tour_people.value | default: current_product.metafields.custom.tour_people | default: current_product.metafields.custom.tour_capacity.value | default: current_product.metafields.custom.tour_capacity
+  assign languages = current_product.metafields.custom.tour_languages.value | default: current_product.metafields.custom.tour_languages
+  assign wines = current_product.metafields.custom.tour_wines.value | default: current_product.metafields.custom.tour_wines
+  if request.design_mode
+    assign duration = duration | default: section.settings.default_duration
+    assign people = people | default: section.settings.default_schedule
+    assign languages = languages | default: section.settings.default_languages
+    assign wines = wines | default: section.settings.default_capacity
+  endif
   assign route_heading = current_product.metafields.custom.tour_route_heading.value | default: current_product.metafields.custom.tour_route_heading | default: section.settings.route_heading
   assign route_stops_text = current_product.metafields.custom.tour_route_stops.value | default: current_product.metafields.custom.tour_route_stops
   assign route_stop_lines = route_stops_text | newline_to_br | split: '<br />'
@@ -27,6 +33,53 @@
   assign enabled_dates = current_product.metafields.custom.tour_enabled_dates.value | default: current_product.metafields.custom.tour_enabled_dates | default: section.settings.enabled_dates
   assign time_options = time_options_source | split: ','
   assign language_options = language_options_source | split: ','
+  assign show_duration = true
+  assign duration_text = duration | append: '' | strip
+  assign duration_first = duration_text | slice: 0, 1
+  if duration_text == blank or duration_first == '0'
+    assign show_duration = false
+  endif
+  assign show_people = true
+  assign people_text = people | append: '' | strip
+  assign people_first = people_text | slice: 0, 1
+  if people_text == blank or people_first == '0'
+    assign show_people = false
+  endif
+  assign show_languages = true
+  assign languages_text = languages | append: '' | strip
+  assign languages_first = languages_text | slice: 0, 1
+  if languages_text == blank or languages_first == '0'
+    assign show_languages = false
+  endif
+  assign show_wines = true
+  assign wines_text = wines | append: '' | strip
+  assign wines_first = wines_text | slice: 0, 1
+  if wines_text == blank or wines_first == '0'
+    assign show_wines = false
+  endif
+  assign visible_metric_count = 0
+  if metric_blocks.size > 0
+    for block in metric_blocks
+      assign block_value_text = block.settings.value | append: '' | strip
+      assign block_value_first = block_value_text | slice: 0, 1
+      if block_value_text != blank and block_value_first != '0'
+        assign visible_metric_count = visible_metric_count | plus: 1
+      endif
+    endfor
+  else
+    if show_duration
+      assign visible_metric_count = visible_metric_count | plus: 1
+    endif
+    if show_people
+      assign visible_metric_count = visible_metric_count | plus: 1
+    endif
+    if show_languages
+      assign visible_metric_count = visible_metric_count | plus: 1
+    endif
+    if show_wines
+      assign visible_metric_count = visible_metric_count | plus: 1
+    endif
+  endif
 %}
 
 {{ 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css' | stylesheet_tag }}
@@ -92,17 +145,24 @@
   <div class="santa-rita-tour-detail__content">
     <div class="santa-rita-tour-detail__layout">
       <div class="santa-rita-tour-detail__main">
-        <div class="santa-rita-tour-detail__metrics">
+        {% if visible_metric_count > 0 %}
+        <div class="santa-rita-tour-detail__metrics" style="--tour-metric-count: {{ visible_metric_count }};">
           {% if metric_blocks.size > 0 %}
             {% for block in metric_blocks %}
+              {% liquid
+                assign block_value_text = block.settings.value | append: '' | strip
+                assign block_value_first = block_value_text | slice: 0, 1
+              %}
+              {% if block_value_text != blank and block_value_first != '0' %}
               <div class="santa-rita-tour-detail__metric" {{ block.shopify_attributes }}>
                 <span>{{ block.settings.icon }}</span>
                 <strong>{{ block.settings.value }}</strong>
                 <small>{{ block.settings.label }}</small>
               </div>
+              {% endif %}
             {% endfor %}
           {% else %}
-            {% if duration != blank %}
+            {% if show_duration %}
               <div class="santa-rita-tour-detail__metric">
                 <span>
                   <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -113,7 +173,7 @@
                 <small>duracion</small>
               </div>
             {% endif %}
-            {% if people != blank %}
+            {% if show_people %}
               <div class="santa-rita-tour-detail__metric">
                 <span>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -125,7 +185,7 @@
                 <small>personas</small>
               </div>
             {% endif %}
-            {% if languages != blank %}
+            {% if show_languages %}
               <div class="santa-rita-tour-detail__metric">
                 <span>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -136,7 +196,7 @@
                 <small>idiomas</small>
               </div>
             {% endif %}
-            {% if wines != blank %}
+            {% if show_wines %}
               <div class="santa-rita-tour-detail__metric">
                 <span>
                   <svg width="16" height="21" viewBox="0 0 16 21" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -149,6 +209,7 @@
             {% endif %}
           {% endif %}
         </div>
+        {% endif %}
 
         <a href="#SantaRitaTourReserve-{{ section.id }}" class="santa-rita-tour-detail__mobile-reserve-button">
           {{ section.settings.reserve_button_label }}
@@ -587,7 +648,7 @@
 
   .santa-rita-tour-detail__metrics {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(var(--tour-metric-count, 4), minmax(0, 1fr));
     gap: 0;
     overflow: hidden;
     margin-bottom: 0;
@@ -1103,7 +1164,7 @@
     }
 
     .santa-rita-tour-detail__metrics {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(var(--tour-metric-count, 4), minmax(0, 1fr));
       margin: 0 20px 12px;
       border-radius: 6px;
     }
