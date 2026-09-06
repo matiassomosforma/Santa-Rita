@@ -5,13 +5,11 @@
   assign hero_subheading = current_tour.hero_subheading.value | default: current_tour.hero_subheading | default: section.settings.hero_subheading
   assign short_description = current_tour.short_description.value | default: current_tour.short_description
   assign duration = current_tour.duration.value | default: current_tour.duration
-  assign people = current_tour.people.value | default: current_tour.people
-  assign languages = current_tour.languages.value | default: current_tour.languages
+  assign people = current_tour.max_people.value
+  assign languages = current_tour.tour_type_ids.value | size
   assign wines = current_tour.wines.value | default: current_tour.wines
   if request.design_mode
     assign duration = duration | default: section.settings.default_duration
-    assign people = people | default: section.settings.default_schedule
-    assign languages = languages | default: section.settings.default_languages
     assign wines = wines | default: section.settings.default_capacity
   endif
   assign route_heading = current_tour.route_heading.value | default: current_tour.route_heading | default: section.settings.route_heading
@@ -186,7 +184,7 @@
                 </svg>
               </span>
               <strong>{{ languages }}</strong>
-              <small>idiomas</small>
+              <small>{% if languages == 1 %}idioma{% else %}idiomas{% endif %}</small>
             </div>
           {% endif %}
 
@@ -2038,18 +2036,6 @@ box-shadow: 0px 2px 2px 0px #8C1A3E0D;
       "id": "default_duration",
       "label": "Duracion por defecto",
       "default": "1h 30'"
-    },
-    {
-      "type": "text",
-      "id": "default_schedule",
-      "label": "Personas por defecto",
-      "default": "1 - 12 personas"
-    },
-    {
-      "type": "text",
-      "id": "default_languages",
-      "label": "Idiomas por defecto",
-      "default": "3 idiomas"
     },
     {
       "type": "text",
