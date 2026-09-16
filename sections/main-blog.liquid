@@ -112,9 +112,17 @@
     </header>
 
     <div class="santa-rita-blog-page__toolbar">
-      <div class="santa-rita-blog-page__categories" aria-label="Categorías del blog">
-        {{ category_links }}
-      </div>
+      <blog-category-carousel class="santa-rita-blog-page__category-carousel">
+        <button type="button" data-category-prev aria-label="Categorías anteriores" aria-controls="BlogCategoryTrack-{{ section.id }}" hidden>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m15 6-6 6 6 6"/></svg>
+        </button>
+        <nav id="BlogCategoryTrack-{{ section.id }}" class="santa-rita-blog-page__categories" aria-label="Categorías del blog">
+          {{ category_links }}
+        </nav>
+        <button type="button" data-category-next aria-label="Categorías siguientes" aria-controls="BlogCategoryTrack-{{ section.id }}" hidden>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m9 6 6 6-6 6"/></svg>
+        </button>
+      </blog-category-carousel>
 
       <button
         type="button"
@@ -228,6 +236,7 @@
   </div>
 </section>
 
+<script src="{{ 'blog-category-carousel.js' | asset_url }}" type="module"></script>
 <script>
   (() => {
     const initBlogPage = () => {
@@ -435,16 +444,54 @@
     transform: translateX(-50%);
   }
 
+  .santa-rita-blog-page__category-carousel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .santa-rita-blog-page__category-carousel > button {
+    display: grid;
+    place-items: center;
+    flex: 0 0 32px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid #1e0812;
+    border-radius: 50%;
+    background: transparent;
+    color: #1e0812;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .santa-rita-blog-page__category-carousel > button[hidden] {
+    display: none;
+  }
+
+  .santa-rita-blog-page__category-carousel > button:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .santa-rita-blog-page__category-carousel > button:not(:disabled):hover {
+    background: #B8294F;
+    border-color: #B8294F;
+    color: #fff;
+  }
+
   .santa-rita-blog-page__categories {
     display: flex;
+    flex: 1;
+    min-width: 0;
     flex-wrap: nowrap;
     gap: 10px;
-    margin-inline: calc((100vw - 100%) / -2);
-    padding-inline: calc((100vw - 100%) / 2);
+    padding: 2px;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-behavior: smooth;
-    scroll-padding-inline: calc((100vw - 100%) / 2);
+    scroll-padding-inline: 2px;
     scroll-snap-type: x proximity;
     scrollbar-width: none;
   }
@@ -706,7 +753,7 @@
       font-size: 13px;
     }
 
-    .santa-rita-blog-page__categories {
+    .santa-rita-blog-page__category-carousel {
       display: none;
     }
 

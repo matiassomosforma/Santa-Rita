@@ -13,6 +13,17 @@
   "sections": {
     "santa_rita_footer": {
       "type": "santa-rita-footer",
+      "blocks": {
+        "social_instagram": {
+          "type": "social_link",
+          "settings": {
+            "network": "instagram",
+            "link": "https://www.instagram.com/santaritaonline_cl/",
+            "text": "santaritaonline_cl"
+          }
+        }
+      },
+      "block_order": ["social_instagram"],
       "settings": {}
     }
   },
