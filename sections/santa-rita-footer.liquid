@@ -53,9 +53,10 @@
               {{ form.errors | default_errors }}
             </div>
           {% elsif form.posted_successfully? %}
-            <p id="{{ newsletter_form_id }}-success" class="santa-rita-footer__message" role="status" tabindex="-1" autofocus>
-              ¡Gracias por suscribirte! Si recibes un correo de confirmación, abre el enlace para completar tu suscripción.
-            </p>
+            <div id="{{ newsletter_form_id }}-success" class="santa-rita-footer__message santa-rita-footer__message--success" role="status" tabindex="-1" autofocus>
+              <strong><span aria-hidden="true">✓</span> ¡Solicitud recibida!</strong>
+              <span>Gracias por suscribirte. Si recibes un correo de confirmación, abre el enlace para completar tu suscripción.</span>
+            </div>
           {% endif %}
         {% endform %}
       </div>
@@ -145,6 +146,8 @@
   </div>
 </footer>
 
+<script src="{{ 'santa-rita-newsletter.js' | asset_url }}" type="module"></script>
+
 {% stylesheet %}
   .santa-rita-footer {
     background: #FFFCF7;
@@ -206,12 +209,32 @@
   .santa-rita-footer__form .santa-rita-footer__message {
     grid-column: 1 / -1;
     margin: 12px 0;
+    padding: 14px 16px;
+    border: 1px solid;
+    border-radius: 8px;
     font-size: 14px;
     line-height: 1.5;
   }
 
+  .santa-rita-footer__message--success {
+    color: #205c37;
+    background: #edf7ef;
+    border-color: #a9d4b5;
+  }
+
+  .santa-rita-footer__message strong,
+  .santa-rita-footer__message > span {
+    display: block;
+  }
+
+  .santa-rita-footer__message strong {
+    margin-bottom: 4px;
+  }
+
   .santa-rita-footer__message--error {
     color: #9b173f;
+    background: #fff0f3;
+    border-color: #e6a7b8;
   }
 
   .santa-rita-footer__message p {
