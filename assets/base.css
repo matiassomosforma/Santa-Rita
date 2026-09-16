@@ -38,6 +38,11 @@ html[scroll-lock] {
   overflow: hidden;
 }
 
+html:has(.menu-drawer-container[open]),
+body:has(.menu-drawer-container[open]) {
+  overflow: hidden;
+}
+
 img,
 picture,
 video,
@@ -85,12 +90,12 @@ textarea:hover {
   }
 
   .santa-rita__button:hover{
-    background: transparent;
-    color: #8C1A3E;
+    background: #B8294F;
+    color: white;
   }
 
   .santa-rita__button.santa-rita__button-full:hover{
-    border: 1px solid #8C1A3E;
+    border: 1px solid #B8294F;
   }
 
 /** override ios and firefox defaults */

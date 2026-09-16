@@ -282,7 +282,7 @@
   .santa-rita-awards-slider {
     display: block;
     overflow: hidden;
-    --awards-container-gutter: clamp(24px, 8.5vw, 122px);
+    --awards-container-gutter: clamp(24px, 6.8vw, 120px);
     --awards-slide-gap: 24px;
     background: var(--awards-background);
     color: var(--awards-text-color);
@@ -293,7 +293,9 @@
     grid-template-columns: minmax(260px, 500px) minmax(0, 1fr);
     gap: clamp(48px, 5.6vw, 80px);
     width: 100%;
-    padding: 60px 0 58px var(--awards-container-gutter);
+    max-width: 1440px;
+    margin-inline: auto;
+    padding: 60px var(--awards-container-gutter) 58px;
   }
 
   .santa-rita-awards-slider__intro {
@@ -329,6 +331,12 @@
 
   .santa-rita-awards-slider__carousel {
     min-width: 0;
+  }
+
+  @media screen and (min-width: 990px) {
+    .santa-rita-awards-slider__carousel {
+      margin-right: calc(-1 * (var(--awards-container-gutter) + max(0px, (100vw - 1440px) / 2)));
+    }
   }
 
   .santa-rita-awards-slider__viewport {
@@ -413,7 +421,7 @@
     justify-content: flex-end;
     gap: 34px;
     margin-bottom: 38px;
-    padding-right: var(--awards-container-gutter);
+    padding-right: 0;
   }
 
   .santa-rita-awards-slider__dots {
@@ -455,9 +463,10 @@
     transition: background 0.25s ease, border-color 0.25s ease;
   }
 
-  .santa-rita-awards-slider__arrows button:hover {
-    border-color: #ffffff;
-    background: rgb(255 255 255 / 10%);
+  .santa-rita-awards-slider__arrows button:not(:disabled):hover {
+    color: #ffffff;
+    border-color: #B8294F;
+    background: #B8294F;
   }
 
   .santa-rita-awards-slider__arrows button:disabled {

@@ -22,7 +22,8 @@
         <h2>{{ newsletter_heading }}</h2>
         <p>{{ newsletter_text }}</p>
 
-        {% form 'customer', class: 'santa-rita-footer__form' %}
+        {% assign newsletter_form_id = 'SantaRitaFooterNewsletter-' | append: section.id %}
+        {% form 'customer', id: newsletter_form_id, class: 'santa-rita-footer__form' %}
           <input type="hidden" name="contact[tags]" value="newsletter">
           <label class="visually-hidden" for="SantaRitaFooterEmail-{{ section.id }}">
             Correo electrónico
@@ -37,8 +38,25 @@
             autocomplete="email"
             placeholder="{{ newsletter_placeholder }}"
             required
+            {% if form.errors %}
+              aria-invalid="true"
+              aria-describedby="{{ newsletter_form_id }}-error"
+              autofocus
+            {% elsif form.posted_successfully? %}
+              aria-describedby="{{ newsletter_form_id }}-success"
+            {% endif %}
           >
           <button type="submit">{{ newsletter_button }}</button>
+          {% if form.errors %}
+            <div id="{{ newsletter_form_id }}-error" class="santa-rita-footer__message santa-rita-footer__message--error" role="alert">
+              <p>No pudimos procesar tu suscripción. Revisa tu correo e inténtalo nuevamente.</p>
+              {{ form.errors | default_errors }}
+            </div>
+          {% elsif form.posted_successfully? %}
+            <p id="{{ newsletter_form_id }}-success" class="santa-rita-footer__message" role="status" tabindex="-1" autofocus>
+              ¡Gracias por suscribirte! Si recibes un correo de confirmación, abre el enlace para completar tu suscripción.
+            </p>
+          {% endif %}
         {% endform %}
       </div>
 
@@ -183,6 +201,22 @@
     font-size: 14px;
     line-height: 1;
     outline: 0;
+  }
+
+  .santa-rita-footer__form .santa-rita-footer__message {
+    grid-column: 1 / -1;
+    margin: 12px 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .santa-rita-footer__message--error {
+    color: #9b173f;
+  }
+
+  .santa-rita-footer__message p {
+    margin: 0 0 8px;
+    font-size: inherit;
   }
 
   .santa-rita-footer__form input::placeholder {

@@ -158,10 +158,63 @@
         "padding-block-start": 0,
         "padding-block-end": 32
       }
+    },
+    "santa_rita_arrival_faq_bHqjcU": {
+      "type": "santa-rita-arrival-faq",
+      "blocks": {
+        "faq_VKcknQ": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "{{ collection.metafields.custom.pregunta_1 | metafield_text }}",
+            "answer": "<p>{{ collection.metafields.custom.respuesta_1 | metafield_tag }}</p>"
+          }
+        },
+        "faq_cDTFD3": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "{{ collection.metafields.custom.pregunta_2.value }}",
+            "answer": "<p>{{ collection.metafields.custom.respuesta_2 | metafield_tag }}</p>"
+          }
+        },
+        "faq_hHtD7P": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "{{ collection.metafields.custom.pregunta_frecuente_3.value }}",
+            "answer": "<p>{{ collection.metafields.custom.respuesta_frecuente_3 | metafield_tag }}</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_VKcknQ",
+        "faq_cDTFD3",
+        "faq_hHtD7P"
+      ],
+      "name": "SR llegada y FAQ",
+      "settings": {
+        "show_section": true,
+        "show_arrival": false,
+        "arrival_heading": "Como llegar a Vina Santa Rita?",
+        "arrival_text": "Elige tu medio de transporte preferido y te mostramos el camino hasta la vina.",
+        "show_transport": true,
+        "transport_columns": "4",
+        "show_map": true,
+        "map_embed_code": "",
+        "map_heading": "Vina Santa Rita",
+        "map_text": "Camino Padre Hurtado 0695, Alto Jahuel",
+        "map_link": "",
+        "map_link_label": "Ir a Google Maps",
+        "show_faq": true,
+        "faq_heading": "Preguntas frecuentes",
+        "faq_text": "Todo lo que necesitas saber."
+      }
     }
   },
   "order": [
     "section",
-    "main"
+    "main",
+    "santa_rita_arrival_faq_bHqjcU"
   ]
 }

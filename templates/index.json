@@ -16,10 +16,10 @@
           "type": "slide",
           "settings": {
             "media_type": "video",
-            "video": "shopify://files/videos/santa-rita-banner.mp4",
+            "video": "shopify://files/videos/Video_Bannerhome_5e360d50-21bf-4485-8fd5-f10305fe2bda.mp4",
             "video_asset_name": "",
-            "heading": "Vinos y espumantes\nque cuentan historias,\ncon el sello de Santa Rita",
-            "text": "Cada botella guarda una pasión por descubrir.",
+            "heading": "",
+            "text": "",
             "button_label": "Ver ofertas",
             "button_link": "shopify://collections/all"
           }
@@ -131,9 +131,9 @@
       "settings": {
         "heading": "Historias para descubrir",
         "text": "Conoce el blog de Santa Rita Online.",
-        "blog": "news",
-        "article_limit": 9,
-        "excerpt_length": 90,
+        "blog": "blog",
+        "article_limit": 10,
+        "excerpt_length": 50,
         "button_label": "Ver más"
       }
     }

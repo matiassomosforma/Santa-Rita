@@ -241,7 +241,8 @@
   }
 
   .santa-rita-product-card:hover{
-    box-shadow: 0 0 2px 0 rgb(140 26 62 / 41%) inset, 0 10px 10px 0 rgb(140 26 62 / 19%);
+    border-color: rgb(140 26 62 / 41%);
+    box-shadow: 0 10px 10px 0 rgb(140 26 62 / 19%);
   }
 
   .santa-rita-product-card__badges {
@@ -422,14 +423,14 @@
     min-width: 42px;
     color: #2b1e1e;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 500;
     line-height: 1;
   }
 
   .santa-rita-product-card__quantity-price {
     color: #1e0812;
     font-size: 16px;
-    font-weight: 800;
+    font-weight: 500;
     line-height: 1;
     white-space: nowrap;
   }
@@ -483,9 +484,10 @@
     cursor: pointer;
   }
 
-  .santa-rita-product-card__button:hover{
-    background: #ffffff;
-    color: #8C1A3E;
+  .santa-rita-product-card__button:not(:disabled):hover{
+    background: #B8294F;
+    border-color: #B8294F;
+    color: #ffffff;
     transition: all .3s ease;
   }
 
@@ -527,7 +529,7 @@
   }
 
     .santa-rita-best-sellers__dots button:hover{
-      background: #8C1A3E;
+      background: #B8294F;
       transition: background .3s ease;
     }
 
@@ -555,11 +557,13 @@
     transition: all .3s ease;
   }
 
-    .santa-rita-best-sellers__arrows button:hover{
-      background: #8C1A3E;
+    .santa-rita-best-sellers__arrows button:not(:disabled):hover{
+      color: #ffffff;
+      background: #B8294F;
+      border-color: #B8294F;
     }
 
-    .santa-rita-best-sellers__arrows button:hover svg path{
+    .santa-rita-best-sellers__arrows button:not(:disabled):hover svg path{
       stroke: #ffffff;
     }
 

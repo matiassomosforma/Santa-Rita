@@ -891,6 +891,10 @@
     contain: style;
   }
 
+  .header-section:has(.menu-drawer-container[open]) {
+    z-index: var(--layer-menu-drawer);
+  }
+
   .header.header--compact {
     --header-padding: var(--padding-2xs);
   }
@@ -1133,6 +1137,7 @@
   #header-component .header-logo__image {
     height: 46px;
     width: auto;
+    max-width: 300px;
   }
 
   #header-component .header-menu__inner,
