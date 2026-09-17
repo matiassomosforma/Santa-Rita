@@ -23,7 +23,9 @@
           }
         }
       },
-      "block_order": ["social_instagram"],
+      "block_order": [
+        "social_instagram"
+      ],
       "settings": {}
     }
   },

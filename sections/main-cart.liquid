@@ -104,6 +104,14 @@
     grid-column: 1;
   }
 
+  .cart-page:not(.cart-page--empty) .cart-page__items {
+    padding: clamp(16px, 2vw, 24px);
+    border-radius: 8px;
+    background: #ffffff;
+    align-self: start;
+    min-width: 0;
+  }
+
   .cart-page__summary {
     padding-top: var(--padding-xl);
   }

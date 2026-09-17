@@ -591,8 +591,12 @@
       font-size: 16px;
     }
 
+    .santa-rita-best-sellers__viewport {
+      margin-right: -20px;
+    }
+
     .santa-rita-best-sellers__track {
-      grid-auto-columns: min(82vw, 260px);
+      grid-auto-columns: calc((100% - 14px) / 1.25);
       gap: 14px;
     }
 
@@ -735,8 +739,12 @@
     }
 
     .content-for-layout[data-template='cart'] .santa-rita-best-sellers__track {
-      grid-auto-columns: calc((100% - 10px) / 1.5);
+      grid-auto-columns: calc((100% - 10px) / 1.25);
       gap: 10px;
+    }
+
+    .content-for-layout[data-template='cart'] .santa-rita-best-sellers__viewport {
+      margin-right: -16px;
     }
 
     .content-for-layout[data-template='cart'] .santa-rita-product-card {

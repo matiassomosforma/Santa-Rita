@@ -411,8 +411,16 @@
     }
 
     .santa-rita-footer__legal {
-      gap: 16px;
-    }
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  
+  .santa-rita-footer__legal span{
+    display: none;
+  }
   }
 {% endstylesheet %}
 

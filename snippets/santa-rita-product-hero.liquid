@@ -401,12 +401,13 @@
         {% if image != blank %}
           {{
             image
-            | image_url: width: 780
+            | image_url: width: 1920
             | image_tag:
               class: 'santa-rita-product-hero__image',
-              widths: '360, 520, 680, 780, 960',
-              sizes: '(min-width: 990px) 420px, 70vw',
-              loading: 'eager'
+              widths: '360, 560, 720, 840, 1080, 1440, 1920',
+              sizes: '(max-width: 749px) 280px, 360px',
+              loading: 'eager',
+              fetchpriority: 'high'
           }}
         {% else %}
           {{ 'product-apparel-1' | placeholder_svg_tag: 'santa-rita-product-hero__image santa-rita-product-hero__image--placeholder' }}
@@ -867,8 +868,8 @@ resolved subtitle: {{ subtitle }}</pre>
 
   .santa-rita-product-hero__image {
     display: block;
-    width: min(100%, 360px);
-    height: min(56vw, 470px);
+    /*width: min(100%, 360px);
+    height: min(56vw, 470px);*/
     object-fit: contain;
   }
 
@@ -903,7 +904,7 @@ resolved subtitle: {{ subtitle }}</pre>
     max-width: 500px;
     margin: 0;
     font-family: var(--font-heading--family);
-    font-size: clamp(42px, 4.1vw, 48px);
+    font-size: clamp(24px, 4.1vw, 24px);
     font-weight: 700;
     line-height: normal;
     letter-spacing: 0;
@@ -1177,7 +1178,7 @@ resolved subtitle: {{ subtitle }}</pre>
     }
 
     .santa-rita-product-hero__title {
-      font-size: clamp(38px, 12vw, 48px);
+      font-size: clamp(24px, 12vw, 24px);
     }
 
     .santa-rita-product-hero__add,

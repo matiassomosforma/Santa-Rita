@@ -137,6 +137,10 @@
         }
 
         getPageWidth() {
+          if (window.matchMedia('(max-width: 749px)').matches) {
+            const gap = parseFloat(getComputedStyle(this.track).columnGap) || 0;
+            return this.viewport.clientWidth + gap;
+          }
           return this.viewport.clientWidth;
         }
 
@@ -427,15 +431,24 @@
     }
 
     .santa-rita-blog-slider__track {
-      grid-auto-columns: 86%;
+      grid-auto-columns: 100%;
       gap: 16px;
     }
 
     .santa-rita-blog-card__content {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .santa-rita-blog-card__content h3,
+    .santa-rita-blog-card__content p {
+      grid-column: 1;
+      min-width: 0;
     }
 
     .santa-rita-blog-card__button {
+      grid-column: 1;
+      grid-row: 3;
       justify-self: start;
     }
 

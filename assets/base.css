@@ -38,6 +38,25 @@ html[scroll-lock] {
   overflow: hidden;
 }
 
+main#MainContent[data-template='collection'],
+main#MainContent[data-template^='collection.'] {
+  background: #FFFCF7;
+}
+
+/* Current page in Santa Rita breadcrumbs. */
+:is(
+  .santa-rita-product-hero__breadcrumbs,
+  .main-blog-post__breadcrumbs,
+  .santa-rita-blog-page__breadcrumbs,
+  .santa-rita-collection-banner__breadcrumbs,
+  .santa-rita-page-banner__breadcrumbs,
+  .santa-rita-tour-detail__breadcrumbs,
+  .santa-rita-club-bodega__breadcrumbs
+) > span:last-child {
+  font-size: 14px;
+  font-weight: 500;
+}
+
 html:has(.menu-drawer-container[open]),
 body:has(.menu-drawer-container[open]) {
   overflow: hidden;
