@@ -1,0 +1,226 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "banner": {
+      "type": "santa-rita-page-banner",
+      "name": "Banner de pagina",
+      "settings": {
+        "banner_style": "background",
+        "desktop_video": "shopify://files/videos/BannerTourismoDES (1).mp4",
+        "heading": "Gastronomía",
+        "subheading": "De la Viña Santa Rita.",
+        "show_breadcrumbs": true,
+        "breadcrumb_top": 28,
+        "desktop_padding_top": 200,
+        "desktop_padding_bottom": 200,
+        "text_alignment": "center",
+        "mobile_padding_top": 14,
+        "mobile_padding_bottom": 24,
+        "mobile_text_alignment": "left"
+      }
+    },
+    "intro": {
+      "type": "santa-rita-page-intro",
+      "name": "Contenido con imagen",
+      "settings": {
+        "show_section": true,
+        "color_scheme": "light",
+        "heading": "Descubra un viaje sensorial",
+        "text": "<p>Un lugar donde la herencia culinaria de Santa Rita se fusiona con la sostificación contemporánea en un entorno monumental. </p>",
+        "show_image": true,
+        "image": "shopify://shop_images/Frame_8583.png",
+        "image_position": "right"
+      }
+    },
+    "santa_rita_card_grid_edXbgw": {
+      "type": "santa-rita-card-grid",
+      "blocks": {
+        "card_JKVUEm": {
+          "type": "card",
+          "settings": {
+            "show_card": true,
+            "image": "shopify://shop_images/image_57.png",
+            "title": "Restaurante Doña Paula",
+            "text": "<p>Ofrecemos una propuesta de alta cocina que reinterpreta los sabores tradicionales con técnicas modernas, maridados perfectamente con los mejores vinos de nuestra cava privada.</p>",
+            "button_label": "Reservar",
+            "button_url": "https://google.cl"
+          }
+        },
+        "card_cqjDzi": {
+          "type": "card",
+          "settings": {
+            "show_card": true,
+            "image": "shopify://shop_images/image_58.png",
+            "title": "Panadería",
+            "text": "<p>Un lugar ideal para hacer una pausa en el recorrido, ya sea para tomar un rico café de grano, un jugo natural o una comida gourmet al paso, para continuar visitando y disfrutando del día en Santa Rita.</p>",
+            "button_label": "Reservar",
+            "button_url": "#"
+          }
+        }
+      },
+      "block_order": [
+        "card_JKVUEm",
+        "card_cqjDzi"
+      ],
+      "name": "Grilla de tarjetas",
+      "settings": {
+        "show_section": true,
+        "color_scheme": "dark",
+        "heading": "Viva la experiencia",
+        "text": "Asegure su mesa en el corazón del valle del Maipo y déjenos crear una velada inolvidable.",
+        "columns_desktop": "2",
+        "image_ratio": "wide"
+      }
+    },
+    "arrival_faq": {
+      "type": "santa-rita-arrival-faq",
+      "blocks": {
+        "transport_1": {
+          "type": "transport",
+          "settings": {
+            "show_block": true,
+            "icon_image": "shopify://shop_images/automovil.png",
+            "accent_background": "#fceadd",
+            "accent_text": "#8c1a3e",
+            "title": "Automovil particular",
+            "time": "1 hora"
+          }
+        },
+        "transport_2": {
+          "type": "transport",
+          "settings": {
+            "show_block": true,
+            "icon_image": "shopify://shop_images/metro.png",
+            "accent_background": "#8c1a3e",
+            "accent_text": "#fceadd",
+            "title": "Metro + Taxi colectivo",
+            "time": "45 min"
+          }
+        },
+        "transport_3": {
+          "type": "transport",
+          "settings": {
+            "show_block": true,
+            "icon_image": "shopify://shop_images/bus.png",
+            "accent_background": "#fceadd",
+            "accent_text": "#8c1a3e",
+            "title": "Bus MB81",
+            "time": "1 hora"
+          }
+        },
+        "transport_4": {
+          "type": "transport",
+          "settings": {
+            "show_block": true,
+            "icon_image": "shopify://shop_images/privado.png",
+            "accent_background": "#8c1a3e",
+            "accent_text": "#fceadd",
+            "title": "Transporte privado",
+            "time": "40 min"
+          }
+        },
+        "faq_1": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿En qué idiomas están disponibles los tours?",
+            "answer": "<p>Agrega la respuesta desde el editor.</p>"
+          }
+        },
+        "faq_2": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿Se permiten mascotas en la Viña Santa Rita?",
+            "answer": "<p>Agrega la respuesta desde el editor.</p>"
+          }
+        },
+        "faq_DT6trH": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿Hay algún restaurante para almorzar en la viña?",
+            "answer": "<p>Agrega la respuesta desde el editor.</p>"
+          }
+        },
+        "faq_QrEgNQ": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿La Viña es accesible para personas con movilidad reducida?",
+            "answer": "<p>Agrega la respuesta desde el editor.</p>"
+          }
+        },
+        "faq_EAGqdY": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿Cómo puedo ingresar al Museo Andino y cuál es su costo?",
+            "answer": "<p>Agrega la respuesta desde el editor.</p>"
+          }
+        },
+        "faq_9qY4xB": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿Puedo comprar los tours directamente en la viña o solo online?",
+            "answer": "<p>Agrega la respuesta desde el editor.</p>"
+          }
+        },
+        "faq_dA9p76": {
+          "type": "faq",
+          "settings": {
+            "show_block": true,
+            "question": "¿Existe alguna tienda para comprar vinos y recuerdos en la Viña?",
+            "answer": "<p>Agrega la respuesta desde el editor.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "transport_1",
+        "transport_2",
+        "transport_3",
+        "transport_4",
+        "faq_1",
+        "faq_2",
+        "faq_DT6trH",
+        "faq_QrEgNQ",
+        "faq_EAGqdY",
+        "faq_9qY4xB",
+        "faq_dA9p76"
+      ],
+      "name": "Llegada y FAQ",
+      "settings": {
+        "show_section": true,
+        "show_arrival": true,
+        "arrival_heading": "Como llegar a Vina Santa Rita?",
+        "arrival_text": "Elige tu medio de transporte preferido y te mostramos el camino hasta la vina.",
+        "show_transport": true,
+        "transport_columns": "4",
+        "show_map": true,
+        "map_embed_code": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25538.227778230797!2d-70.84968780314513!3d-33.55943744041927!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662e7a3e4cc8645%3A0x3fc1f219246d5d9c!2sLa%20Primavera%2C%20Padre%20Hurtado%2C%20Regi%C3%B3n%20Metropolitana!5e1!3m2!1ses!2scl!4v1782054866504!5m2!1ses!2scl\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>",
+        "map_heading": "Vina Santa Rita",
+        "map_text": "Camino Padre Hurtado 0695, Alto Jahuel",
+        "map_link": "https://www.google.com/maps?ll=-33.55692,-70.840971&z=12&t=h&hl=es&gl=CL&mapclient=embed&q=La+Primavera+Padre+Hurtado+Regi%C3%B3n+Metropolitana",
+        "map_link_label": "Ir a Google Maps",
+        "show_faq": true,
+        "faq_heading": "Preguntas frecuentes",
+        "faq_text": "Todo lo que necesitas saber sobre Tour Vina Santa Rita."
+      }
+    }
+  },
+  "order": [
+    "banner",
+    "intro",
+    "santa_rita_card_grid_edXbgw",
+    "arrival_faq"
+  ]
+}
