@@ -220,8 +220,8 @@
     display: grid;
     min-height: 184px;
     place-items: end center;
-    margin-bottom: 32px;
-    padding-top: 32px;
+    margin-bottom: 20px;
+    padding-top: 20px;
     text-decoration: none;
   }
 
@@ -277,7 +277,7 @@
     padding-inline: 16px;
     color: #2b1e1e;
     font-family: var(--font-heading--family);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     line-height: 1.08;
     letter-spacing: 0;
@@ -356,7 +356,7 @@
 
   .santa-rita-search-results .santa-rita-product-card__quantity-price {
     color: #1e0812;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 500;
     line-height: 1;
     white-space: nowrap;
@@ -469,6 +469,17 @@
 {
   "name": "t:names.search_results",
   "settings": [
+    {
+      "type": "range",
+      "id": "product_card_image_scale",
+      "label": "Tamaño de imagen de producto",
+      "info": "Reduce la imagen dentro de la tarjeta sin cambiar su distribución. Se aplica en escritorio y móvil.",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
     {
       "type": "paragraph",
       "content": "t:content.edit_empty_state_collection_in_theme_settings"

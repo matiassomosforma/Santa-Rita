@@ -330,6 +330,11 @@
 {% endcapture %}
 
 {% style %}
+  .santa-rita-product-card__image {
+    transform: scale(var(--santa-rita-product-image-scale, 1));
+    transform-origin: center;
+  }
+
   .santa-rita-product-card__liter-prices .santa-rita-product-card__liter-price {
     display: none;
   }
@@ -360,6 +365,7 @@
 {% unless is_tour_product %}
   <article
     class="santa-rita-product-card"
+    style="--santa-rita-product-image-scale: {{ section_settings.product_card_image_scale | default: 100 | divided_by: 100.0 }};"
     data-wsh-product-id="{{ product.id }}"
     data-wsh-selected-variant-id="{{ selected_variant.id }}"
   >

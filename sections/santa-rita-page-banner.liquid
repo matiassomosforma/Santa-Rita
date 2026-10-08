@@ -43,6 +43,7 @@
 <section
   class="santa-rita-page-banner santa-rita-page-banner--{{ banner_style }}"
   style="
+    --banner-video-fit: {{ section.settings.video_fit | default: 'contain' }};
     --banner-padding-top: {{ section.settings.desktop_padding_top | default: 28 }}px;
     --banner-padding-bottom: {{ section.settings.desktop_padding_bottom | default: 74 }}px;
     --banner-breadcrumb-top: {{ section.settings.breadcrumb_top | default: 28 }}px;
@@ -122,6 +123,14 @@
 
   <div class="santa-rita-page-banner__overlay"></div>
 
+  {% if section.settings.banner_link != blank %}
+    <a
+      class="santa-rita-page-banner__link"
+      href="{{ section.settings.banner_link }}"
+      aria-label="{{ section.settings.banner_link_label | default: banner_title | default: 'Ver más' | escape }}"
+    ></a>
+  {% endif %}
+
   <div class="santa-rita-page-banner__inner">
     {% if section.settings.show_breadcrumbs %}
       <nav class="santa-rita-page-banner__breadcrumbs" aria-label="Breadcrumb">
@@ -179,7 +188,7 @@
   }
 
   .santa-rita-page-banner__video {
-    object-fit: cover;
+    object-fit: var(--banner-video-fit, contain);
     object-position: center;
   }
 
@@ -340,6 +349,30 @@
     object-fit: cover;
   }
 
+  .santa-rita-page-banner--split .santa-rita-page-banner__video {
+    object-fit: var(--banner-video-fit, contain);
+    background: #09090b;
+  }
+
+  .santa-rita-page-banner__link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .santa-rita-page-banner__link:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: -6px;
+  }
+
+  .santa-rita-page-banner__inner {
+    pointer-events: none;
+  }
+
+  .santa-rita-page-banner__inner a {
+    pointer-events: auto;
+  }
+
   @media screen and (min-width: 750px) {
     .santa-rita-page-banner--background .santa-rita-page-banner__grid {
       flex-grow: 1;
@@ -468,6 +501,23 @@
         }
       ],
       "default": "background"
+    },
+    {
+      "type": "select",
+      "id": "video_fit",
+      "label": "Ajuste del video",
+      "options": [
+        {
+          "value": "contain",
+          "label": "Mostrar video completo"
+        },
+        {
+          "value": "cover",
+          "label": "Rellenar y recortar"
+        }
+      ],
+      "default": "contain",
+      "info": "Mostrar completo evita recortes en cualquier pantalla. Puede dejar franjas de fondo según las proporciones del video."
     },
     {
       "type": "video",
@@ -605,6 +655,19 @@
         }
       ],
       "default": "left"
+    },
+    {
+      "type": "url",
+      "id": "banner_link",
+      "label": "Enlace del banner completo",
+      "info": "Hace clicable todo el banner, incluida su imagen o video."
+    },
+    {
+      "type": "text",
+      "id": "banner_link_label",
+      "label": "Descripción del enlace del banner",
+      "default": "Ver más",
+      "info": "Describe el destino para quienes usan lectores de pantalla."
     }
   ],
   "presets": [

@@ -20,6 +20,7 @@
   id="{{ section_id }}"
   class="santa-rita-banner-slider"
   style="
+    --banner-video-fit: {{ section.settings.video_fit | default: 'contain' }};
     --banner-height-desktop: {{ section.settings.height_desktop }}px;
     --banner-height-mobile: {{ section.settings.height_mobile }}px;
     --banner-content-max-width: {{ section.settings.content_max_width }}px;
@@ -48,6 +49,7 @@
         data-slide
         data-index="{{ forloop.index0 }}"
         aria-hidden="{% if is_active %}false{% else %}true{% endif %}"
+        {% unless is_active %}inert{% endunless %}
         {{ block.shopify_attributes }}
       >
         <div class="santa-rita-banner-slider__media">
@@ -100,6 +102,14 @@
         </div>
 
         <div class="santa-rita-banner-slider__overlay"></div>
+
+        {% if block_settings.banner_link != blank %}
+          <a
+            class="santa-rita-banner-slider__link"
+            href="{{ block_settings.banner_link }}"
+            aria-label="{{ block_settings.banner_link_label | default: block_settings.heading | default: 'Ver más' | escape }}"
+          ></a>
+        {% endif %}
 
         <div class="santa-rita-banner-slider__content santa-rita-banner-slider__content--{{ section.settings.content_position }}">
           <div class="santa-rita-banner-slider__container">
@@ -180,6 +190,7 @@
 
           this.slides[this.currentIndex]?.classList.remove('is-active');
           this.slides[this.currentIndex]?.setAttribute('aria-hidden', 'true');
+          this.slides[this.currentIndex]?.setAttribute('inert', '');
           this.buttons[this.currentIndex]?.classList.remove('is-active');
           this.buttons[this.currentIndex]?.setAttribute('aria-current', 'false');
 
@@ -187,6 +198,7 @@
 
           this.slides[this.currentIndex]?.classList.add('is-active');
           this.slides[this.currentIndex]?.setAttribute('aria-hidden', 'false');
+          this.slides[this.currentIndex]?.removeAttribute('inert');
           this.buttons[this.currentIndex]?.classList.add('is-active');
           this.buttons[this.currentIndex]?.setAttribute('aria-current', 'true');
           this.playActiveVideo();
@@ -278,6 +290,29 @@
     display: block;
   }
 
+  .santa-rita-banner-slider__video {
+    object-fit: var(--banner-video-fit, contain);
+  }
+
+  .santa-rita-banner-slider__link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .santa-rita-banner-slider__link:focus-visible {
+    outline: 3px solid #ffffff;
+    outline-offset: -6px;
+  }
+
+  .santa-rita-banner-slider__content {
+    pointer-events: none;
+  }
+
+  .santa-rita-banner-slider__content a {
+    pointer-events: auto;
+  }
+
   .santa-rita-banner-slider__placeholder {
     width: 100%;
     height: 100%;
@@ -296,7 +331,6 @@
     display: flex;
     align-items: center;
     width: 100%;
-    min-height: 630px;
     padding: clamp(40px, 7vw, 102px) clamp(24px, 4vw, 64px);
   }
 
@@ -407,7 +441,6 @@
       align-items: center;
       padding: 42px 28px;
       align-items: end;
-      min-height: 470px;
     }
 
     .santa-rita-banner-slider__heading {
@@ -432,6 +465,23 @@
   "tag": "section",
   "class": "section-santa-rita-banner-slider",
   "settings": [
+    {
+      "type": "select",
+      "id": "video_fit",
+      "label": "Ajuste del video",
+      "options": [
+        {
+          "value": "contain",
+          "label": "Mostrar video completo"
+        },
+        {
+          "value": "cover",
+          "label": "Rellenar y recortar"
+        }
+      ],
+      "default": "contain",
+      "info": "Mostrar completo evita recortes en cualquier pantalla. Puede dejar franjas de fondo según las proporciones del video."
+    },
     {
       "type": "range",
       "id": "height_desktop",
@@ -582,6 +632,19 @@
           "type": "url",
           "id": "button_link",
           "label": "Link del botón"
+        },
+        {
+          "type": "url",
+          "id": "banner_link",
+          "label": "Enlace del banner completo",
+          "info": "Hace clicable toda la imagen o video. El botón conserva su propio enlace."
+        },
+        {
+          "type": "text",
+          "id": "banner_link_label",
+          "label": "Descripción del enlace del banner",
+          "default": "Ver más",
+          "info": "Describe el destino para quienes usan lectores de pantalla."
         }
       ]
     }

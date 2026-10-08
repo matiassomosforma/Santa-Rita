@@ -462,8 +462,8 @@
     display: grid;
     min-height: 170px;
     place-items: end center;
-    margin-bottom: 25px;
-    padding-top: 30px;
+    margin-bottom: 20px;
+    padding-top: 20px;
     text-decoration: none;
   }
 
@@ -803,6 +803,17 @@
 {
   "name": "SR pagina 404",
   "settings": [
+    {
+      "type": "range",
+      "id": "product_card_image_scale",
+      "label": "Tamaño de imagen de producto",
+      "info": "Reduce la imagen dentro de la tarjeta sin cambiar su distribución. Se aplica en escritorio y móvil.",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
     {
       "type": "image_picker",
       "id": "banner_image",
