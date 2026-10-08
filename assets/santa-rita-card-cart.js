@@ -12,16 +12,27 @@ document.addEventListener('submit', async (event) => {
   if (!button || !status) return;
   const body = new FormData(form);
   if (!body.get('id')) {
+    status.classList.remove('visually-hidden');
+    status.dataset.error = 'true';
     status.textContent = 'Selecciona una presentación disponible.';
     return;
   }
 
   const originalLabel = button.textContent;
+  let added = false;
+  const resetButton = () => {
+    delete form.dataset.addingToCart;
+    delete button.dataset.cartState;
+    button.disabled = false;
+    button.textContent = originalLabel;
+  };
   form.dataset.addingToCart = 'true';
   button.disabled = true;
+  button.dataset.cartState = 'loading';
   button.textContent = 'Agregando…';
   form.setAttribute('aria-busy', 'true');
   status.textContent = '';
+  status.classList.add('visually-hidden');
   delete status.dataset.error;
 
   const sections = [...new Set(Array.from(document.querySelectorAll('cart-items-component'),
@@ -39,7 +50,10 @@ document.addEventListener('submit', async (event) => {
     if (!response.ok || result.status) {
       throw new Error(typeof result.description === 'string' ? result.description : 'No se pudo agregar el producto. Inténtalo nuevamente.');
     }
-    status.textContent = 'Producto agregado exitosamente. Puedes seguir comprando.';
+    added = true;
+    button.dataset.cartState = 'added';
+    button.innerHTML = '<svg class="santa-rita-cart-check" viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Agregado</span>';
+    status.textContent = 'Producto agregado al carrito.';
     document.dispatchEvent(new CartAddEvent(result, String(body.get('id')), {
       source: 'product-form-component',
       itemCount: Number(body.get('quantity')) || 1,
@@ -48,14 +62,20 @@ document.addEventListener('submit', async (event) => {
       skipCartDrawer: true,
     }));
   } catch (error) {
+    status.classList.remove('visually-hidden');
     status.dataset.error = 'true';
     status.textContent = error instanceof TypeError
       ? 'No pudimos confirmar la operación. Revisa tu carrito antes de volver a intentarlo.'
       : error.message || 'No se pudo agregar el producto. Inténtalo nuevamente.';
   } finally {
-    delete form.dataset.addingToCart;
     form.removeAttribute('aria-busy');
-    button.disabled = false;
-    button.textContent = originalLabel;
+    if (added) {
+      window.setTimeout(() => {
+        resetButton();
+        status.textContent = '';
+      }, 2400);
+    } else {
+      resetButton();
+    }
   }
 });

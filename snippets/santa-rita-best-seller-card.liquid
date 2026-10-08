@@ -330,6 +330,35 @@
 {% endcapture %}
 
 {% style %}
+  .santa-rita-product-card .santa-rita-product-card__form .santa-rita-product-card__button[data-cart-state] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    opacity: 1;
+    transition: background-color 180ms ease, color 180ms ease;
+  }
+
+  .santa-rita-product-card .santa-rita-product-card__form .santa-rita-product-card__button[data-cart-state='added'] {
+    background: #B8294F;
+    color: #ffffff;
+    cursor: default;
+  }
+
+  .santa-rita-product-card .santa-rita-product-card__form .santa-rita-product-card__button[data-cart-state='loading'] {
+    cursor: wait;
+  }
+
+  .santa-rita-cart-check {
+    flex: 0 0 18px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .santa-rita-product-card .santa-rita-product-card__form .santa-rita-product-card__button[data-cart-state] {
+      transition: none;
+    }
+  }
+
   .santa-rita-product-card__cart-status {
     margin: 0;
     font-size: 13px;
@@ -467,7 +496,7 @@
         Agotado
       {% endif %}
     </button>
-    <p class="santa-rita-product-card__cart-status" data-cart-status role="status" aria-live="polite" aria-atomic="true"></p>
+    <p class="santa-rita-product-card__cart-status visually-hidden" data-cart-status role="status" aria-live="polite" aria-atomic="true"></p>
   {% endform %}
   </article>
 {% endunless %}
