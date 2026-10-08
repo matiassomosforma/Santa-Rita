@@ -20,7 +20,6 @@
   id="{{ section_id }}"
   class="santa-rita-banner-slider"
   style="
-    --banner-video-fit: {{ section.settings.video_fit | default: 'contain' }};
     --banner-height-desktop: {{ section.settings.height_desktop }}px;
     --banner-height-mobile: {{ section.settings.height_mobile }}px;
     --banner-content-max-width: {{ section.settings.content_max_width }}px;
@@ -287,11 +286,12 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center center !important;
     display: block;
   }
 
   .santa-rita-banner-slider__video {
-    object-fit: var(--banner-video-fit, contain);
+    object-fit: cover;
   }
 
   .santa-rita-banner-slider__link {
@@ -457,6 +457,31 @@
       margin-top: 20px;
     }
   }
+
+  .santa-rita-banner-slider__slide {
+    height: var(--banner-height-desktop);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .santa-rita-banner-slider__slide .santa-rita-banner-slider__content {
+    height: 100%;
+    min-height: 0;
+    padding-block: clamp(12px, 3vw, 48px);
+  }
+
+  .santa-rita-banner-slider__container {
+    padding-block: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-banner-slider__slide {
+      height: var(--banner-height-mobile);
+    }
+    .santa-rita-banner-slider__container {
+      padding-inline: 0;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -466,28 +491,11 @@
   "class": "section-santa-rita-banner-slider",
   "settings": [
     {
-      "type": "select",
-      "id": "video_fit",
-      "label": "Ajuste del video",
-      "options": [
-        {
-          "value": "contain",
-          "label": "Mostrar video completo"
-        },
-        {
-          "value": "cover",
-          "label": "Rellenar y recortar"
-        }
-      ],
-      "default": "contain",
-      "info": "Mostrar completo evita recortes en cualquier pantalla. Puede dejar franjas de fondo según las proporciones del video."
-    },
-    {
       "type": "range",
       "id": "height_desktop",
-      "label": "Alto desktop",
-      "min": 360,
-      "max": 760,
+      "label": "Alto de imagen y video en escritorio",
+      "min": 160,
+      "max": 1000,
       "step": 20,
       "default": 520,
       "unit": "px"
@@ -495,9 +503,9 @@
     {
       "type": "range",
       "id": "height_mobile",
-      "label": "Alto mobile",
-      "min": 320,
-      "max": 680,
+      "label": "Alto de imagen y video en móvil",
+      "min": 160,
+      "max": 1000,
       "step": 20,
       "default": 460,
       "unit": "px"

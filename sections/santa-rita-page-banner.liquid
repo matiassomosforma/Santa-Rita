@@ -43,7 +43,8 @@
 <section
   class="santa-rita-page-banner santa-rita-page-banner--{{ banner_style }}"
   style="
-    --banner-video-fit: {{ section.settings.video_fit | default: 'contain' }};
+    --banner-height-desktop: {{ section.settings.height_desktop | default: 520 }}px;
+    --banner-height-mobile: {{ section.settings.height_mobile | default: 320 }}px;
     --banner-padding-top: {{ section.settings.desktop_padding_top | default: 28 }}px;
     --banner-padding-bottom: {{ section.settings.desktop_padding_bottom | default: 74 }}px;
     --banner-breadcrumb-top: {{ section.settings.breadcrumb_top | default: 28 }}px;
@@ -188,8 +189,8 @@
   }
 
   .santa-rita-page-banner__video {
-    object-fit: var(--banner-video-fit, contain);
-    object-position: center;
+    object-fit: cover;
+    object-position: center center !important;
   }
 
   .santa-rita-page-banner__video--mobile {
@@ -198,7 +199,7 @@
 
   .santa-rita-page-banner__image {
     object-fit: cover;
-    object-position: center;
+    object-position: center center !important;
   }
 
   .santa-rita-page-banner__image--placeholder {
@@ -350,7 +351,7 @@
   }
 
   .santa-rita-page-banner--split .santa-rita-page-banner__video {
-    object-fit: var(--banner-video-fit, contain);
+    object-fit: cover;
     background: #09090b;
   }
 
@@ -388,7 +389,7 @@
     }
 
     .santa-rita-page-banner__image {
-      object-position: center;
+      object-position: center center !important;
     }
 
     .santa-rita-page-banner__video-wrapper--has-mobile .santa-rita-page-banner__video--desktop {
@@ -480,12 +481,60 @@
       display: none;
     }
   }
+
+  .santa-rita-page-banner--background {
+    height: var(--banner-height-desktop);
+    min-height: 0;
+  }
+
+  .santa-rita-page-banner--background .santa-rita-page-banner__inner {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .santa-rita-page-banner--split .santa-rita-page-banner__picture,
+  .santa-rita-page-banner--split .santa-rita-page-banner__video-wrapper {
+    height: var(--banner-height-desktop);
+    aspect-ratio: auto;
+  }
+
+  @media screen and (max-width: 749px) {
+    .santa-rita-page-banner--background,
+    .santa-rita-page-banner--split .santa-rita-page-banner__picture,
+    .santa-rita-page-banner--split .santa-rita-page-banner__video-wrapper {
+      height: var(--banner-height-mobile);
+    }
+    .santa-rita-page-banner--split .santa-rita-page-banner__media {
+      display: block;
+      margin-top: 24px;
+    }
+  }
 </style>
 
 {% schema %}
 {
   "name": "Banner de pagina",
   "settings": [
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Alto de imagen y video en móvil",
+      "min": 160,
+      "max": 1000,
+      "step": 20,
+      "default": 320,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "height_desktop",
+      "label": "Alto de imagen y video en escritorio",
+      "min": 160,
+      "max": 1000,
+      "step": 20,
+      "default": 520,
+      "unit": "px"
+    },
     {
       "type": "select",
       "id": "banner_style",
@@ -501,23 +550,6 @@
         }
       ],
       "default": "background"
-    },
-    {
-      "type": "select",
-      "id": "video_fit",
-      "label": "Ajuste del video",
-      "options": [
-        {
-          "value": "contain",
-          "label": "Mostrar video completo"
-        },
-        {
-          "value": "cover",
-          "label": "Rellenar y recortar"
-        }
-      ],
-      "default": "contain",
-      "info": "Mostrar completo evita recortes en cualquier pantalla. Puede dejar franjas de fondo según las proporciones del video."
     },
     {
       "type": "video",
