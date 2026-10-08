@@ -64,7 +64,8 @@ class CartDrawerComponent extends DialogComponent {
     }
   };
 
-  #handleCartAdd = () => {
+  #handleCartAdd = (event) => {
+    if (event.detail?.data?.skipCartDrawer) return;
     if (this.hasAttribute('auto-open')) {
       this.showDialog();
     }

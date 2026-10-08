@@ -330,6 +330,21 @@
 {% endcapture %}
 
 {% style %}
+  .santa-rita-product-card__cart-status {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #24613b;
+  }
+
+  .santa-rita-product-card__cart-status:empty {
+    display: none;
+  }
+
+  .santa-rita-product-card__cart-status[data-error] {
+    color: #9b173f;
+  }
+
   .santa-rita-product-card__image {
     transform: scale(var(--santa-rita-product-image-scale, 1));
     transform-origin: center;
@@ -452,6 +467,7 @@
         Agotado
       {% endif %}
     </button>
+    <p class="santa-rita-product-card__cart-status" data-cart-status role="status" aria-live="polite" aria-atomic="true"></p>
   {% endform %}
   </article>
 {% endunless %}
