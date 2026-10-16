@@ -7,6 +7,7 @@
   endif
 
   assign selected_variant = product.selected_or_first_available_variant
+  assign card_title = product.metafields.custom.nombre_corto_tarjeta.value | strip | default: product.title
   assign has_unit_presentation = false
   assign has_box_presentation = false
 
@@ -418,7 +419,7 @@
   </div>
 
   <div class="santa-rita__product-image">
-    <a href="{{ product.url }}" class="santa-rita-product-card__media" aria-label="{{ product.title | escape }}">
+    <a href="{{ product.url }}" class="santa-rita-product-card__media" aria-label="{{ card_title | escape }}">
       {% if product.featured_image != blank %}
         {{
           product.featured_image
@@ -462,7 +463,7 @@
   {% endif %}
 
   <h3>
-    <a href="{{ product.url }}">{{ product.title }}</a>
+    <a href="{{ product.url }}">{{ card_title | escape }}</a>
   </h3>
 
   {% if location != blank %}

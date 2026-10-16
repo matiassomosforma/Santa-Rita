@@ -61,6 +61,8 @@ document.addEventListener('submit', async (event) => {
       sections: result.sections,
       skipCartDrawer: true,
     }));
+    // Card additions always open the minicart, regardless of the theme's auto-open setting.
+    document.querySelector('cart-drawer-component')?.open();
   } catch (error) {
     status.classList.remove('visually-hidden');
     status.dataset.error = 'true';
