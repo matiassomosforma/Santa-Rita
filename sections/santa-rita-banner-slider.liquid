@@ -4,17 +4,7 @@
   if section.blocks.size > 1 and section.settings.autoplay
     assign autoplay_enabled = true
   endif
-  assign first_block = section.blocks.first
 %}
-
-{% if first_block.settings.media_type == 'video' and first_block.settings.video_asset_name != blank %}
-  <link
-    rel="preload"
-    as="video"
-    href="{{ first_block.settings.video_asset_name | asset_url }}"
-    type="video/mp4"
-  >
-{% endif %}
 
 <santa-rita-banner-slider
   id="{{ section_id }}"
@@ -52,49 +42,65 @@
         {{ block.shopify_attributes }}
       >
         <div class="santa-rita-banner-slider__media">
-          {% if block_settings.media_type == 'video' and block_settings.video != blank %}
-            {% liquid
-              assign video_preload = 'metadata'
-              if forloop.first
-                assign video_preload = 'auto'
-              endif
-            %}
-            {{
-              block_settings.video
-              | video_tag:
-                image_size: '2400x',
-                autoplay: true,
-                loop: true,
-                muted: true,
-                controls: false,
-                playsinline: true,
-                preload: video_preload,
-                class: 'santa-rita-banner-slider__video'
-            }}
-          {% elsif block_settings.media_type == 'video' and block_settings.video_asset_name != blank %}
+          {% liquid
+            assign desktop_video = block_settings.video
+            assign mobile_video = block_settings.video_mobile | default: desktop_video
+            assign desktop_image = block_settings.image
+            assign mobile_image = block_settings.image_mobile | default: desktop_image
+            assign desktop_poster = desktop_image | default: desktop_video.preview_image
+            assign mobile_poster = mobile_image | default: mobile_video.preview_image
+            assign has_video = false
+            if desktop_video != blank or mobile_video != blank or block_settings.video_asset_name != blank
+              assign has_video = true
+            endif
+          %}
+          {% if block_settings.media_type == 'video' and has_video %}
             <video
               class="santa-rita-banner-slider__video"
               autoplay
               muted
               loop
               playsinline
-              preload="{% if forloop.first %}auto{% else %}metadata{% endif %}"
-              {% if block_settings.image != blank %}
-                poster="{{ block_settings.image | image_url: width: 2000 }}"
+              preload="none"
+              {% if desktop_image != blank %}
+                poster="{{ desktop_image | image_url: width: 2000 }}"
               {% endif %}
+              data-poster-desktop="{% if desktop_poster != blank %}{{ desktop_poster | image_url: width: 2000 }}{% endif %}"
+              data-poster-mobile="{% if mobile_poster != blank %}{{ mobile_poster | image_url: width: 1000 }}{% endif %}"
             >
-              <source src="{{ block_settings.video_asset_name | asset_url }}" type="video/mp4">
+              {% for source in desktop_video.sources %}
+                <source data-banner-device="desktop" data-src="{{ source.url | escape }}" type="{{ source.mime_type | escape }}">
+              {% else %}
+                {% if block_settings.video_asset_name != blank %}
+                  <source data-banner-device="desktop" data-src="{{ block_settings.video_asset_name | asset_url }}" type="video/mp4">
+                {% endif %}
+              {% endfor %}
+              {% for source in mobile_video.sources %}
+                <source data-banner-device="mobile" data-src="{{ source.url | escape }}" type="{{ source.mime_type | escape }}">
+              {% else %}
+                {% if block_settings.video_asset_name != blank %}
+                  <source data-banner-device="mobile" data-src="{{ block_settings.video_asset_name | asset_url }}" type="video/mp4">
+                {% endif %}
+              {% endfor %}
             </video>
-          {% elsif block_settings.image != blank %}
-            {{
-              block_settings.image
-              | image_url: width: 2400
-              | image_tag:
-                widths: '750, 1100, 1500, 2000, 2400',
-                sizes: '100vw',
-                class: 'santa-rita-banner-slider__image',
-                loading: 'lazy'
-            }}
+            <button type="button" class="santa-rita-banner-slider__play" data-video-play hidden aria-label="Reproducir video">
+              ▶ Reproducir video
+            </button>
+          {% elsif desktop_image != blank or mobile_image != blank %}
+            <picture>
+              {% if mobile_image != blank %}
+                <source media="(max-width: 749px)" srcset="{{ mobile_image | image_url: width: 750 }} 750w, {{ mobile_image | image_url: width: 1100 }} 1100w" sizes="100vw">
+              {% endif %}
+              {{
+                desktop_image | default: mobile_image
+                | image_url: width: 2400
+                | image_tag:
+                  widths: '750, 1100, 1500, 2000, 2400',
+                  sizes: '100vw',
+                  class: 'santa-rita-banner-slider__image',
+                  loading: 'lazy'
+              }}
+            </picture>
           {% else %}
             <div class="santa-rita-banner-slider__placeholder"></div>
           {% endif %}
@@ -176,11 +182,39 @@
           this.addEventListener('focusin', () => this.stopAutoplay());
           this.addEventListener('focusout', () => this.startAutoplay());
 
+          this.mobileQuery = window.matchMedia('(max-width: 749px)');
+          this.onViewportChange = () => this.playActiveVideo();
+          this.mobileQuery.addEventListener('change', this.onViewportChange);
+          this.videoEvents = new AbortController();
+          const { signal } = this.videoEvents;
+          this.slides.forEach((slide) => {
+            const video = slide.querySelector('video');
+            if (!video) return;
+            const playButton = slide.querySelector('[data-video-play]');
+            playButton?.addEventListener('click', () => this.tryPlayVideo(video), { signal });
+            video.addEventListener('playing', () => {
+              if (playButton) playButton.hidden = true;
+            }, { signal });
+            video.addEventListener('canplay', () => {
+              if (slide === this.slides[this.currentIndex]) this.tryPlayVideo(video);
+            }, { signal });
+          });
+          this.videoObserver = new IntersectionObserver((entries) => {
+            if (entries.some((entry) => entry.isIntersecting)) this.playActiveVideo();
+          });
+          this.videoObserver.observe(this);
+          document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) this.playActiveVideo();
+          }, { signal });
           this.playActiveVideo();
           this.startAutoplay();
         }
 
         disconnectedCallback() {
+          this.mobileQuery?.removeEventListener('change', this.onViewportChange);
+          this.videoEvents?.abort();
+          this.videoObserver?.disconnect();
+          this.querySelectorAll('video').forEach((video) => video.pause());
           this.stopAutoplay();
         }
 
@@ -208,19 +242,44 @@
             const video = slide.querySelector('video');
             if (!video) return;
 
-            video.muted = true;
-            video.loop = true;
-            video.playsInline = true;
-            video.setAttribute('muted', '');
-            video.setAttribute('playsinline', '');
-            video.setAttribute('preload', index === this.currentIndex ? 'auto' : 'metadata');
-
-            if (index === this.currentIndex) {
-              video.load();
-              video.play().catch(() => {});
-            } else {
+            if (index !== this.currentIndex) {
               video.pause();
+              return;
             }
+
+            const device = this.mobileQuery.matches ? 'mobile' : 'desktop';
+            if (video.dataset.activeDevice !== device) {
+              video.pause();
+              const sources = Array.from(video.querySelectorAll('source')).filter((source) => source.dataset.bannerDevice === device);
+              // Assign one playable URL directly; do not leave empty source candidates for Safari.
+              const source = sources.find((source) => source.type === 'video/mp4' && video.canPlayType(source.type))
+                || sources.find((source) => video.canPlayType(source.type));
+              if (!source) return;
+              const poster = this.mobileQuery.matches ? video.dataset.posterMobile : video.dataset.posterDesktop;
+              if (poster) video.setAttribute('poster', poster);
+              else video.removeAttribute('poster');
+              video.dataset.activeDevice = device;
+              video.defaultMuted = true;
+              video.muted = true;
+              video.playsInline = true;
+              video.autoplay = true;
+              video.preload = 'auto';
+              video.src = source.dataset.src;
+              video.load();
+            }
+            this.tryPlayVideo(video);
+          });
+        }
+
+        tryPlayVideo(video) {
+          if (!video.paused || !video.getAttribute('src')) return;
+          video.muted = true;
+          video.play().catch((error) => {
+            if (error.name === 'AbortError' || !this.isConnected) return;
+            const slide = video.closest('[data-slide]');
+            if (slide !== this.slides[this.currentIndex] || !video.paused) return;
+            const button = slide.querySelector('[data-video-play]');
+            if (button) button.hidden = false;
           });
         }
 
@@ -281,6 +340,12 @@
     inset: 0;
   }
 
+  .santa-rita-banner-slider__media picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
   .santa-rita-banner-slider__image,
   .santa-rita-banner-slider__video {
     width: 100%;
@@ -292,6 +357,23 @@
 
   .santa-rita-banner-slider__video {
     object-fit: cover;
+  }
+
+  .santa-rita-banner-slider__play {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    z-index: 3;
+    padding: 12px 18px;
+    border: 1px solid #fff;
+    border-radius: 7px;
+    background: #21000f;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .santa-rita-banner-slider__play[hidden] {
+    display: none;
   }
 
   .santa-rita-banner-slider__link {
@@ -605,12 +687,24 @@
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Imagen de fondo"
+          "label": "Imagen de fondo desktop"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Imagen de fondo mobile",
+          "info": "Opcional. Si no se selecciona, se usa la imagen desktop."
         },
         {
           "type": "video",
           "id": "video",
-          "label": "Video de fondo"
+          "label": "Video de fondo desktop"
+        },
+        {
+          "type": "video",
+          "id": "video_mobile",
+          "label": "Video de fondo mobile",
+          "info": "Opcional. Si no se selecciona, se usa el video desktop."
         },
         {
           "type": "text",

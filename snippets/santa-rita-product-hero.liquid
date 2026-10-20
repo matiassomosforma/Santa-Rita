@@ -198,6 +198,10 @@
           class="santa-rita-product-hero__presentation-radio"
           data-sr-product-variant-id="{{ presentation_variant.id }}"
           data-sr-product-variant-available="{{ presentation_variant.available }}"
+          data-quantity-min="{{ presentation_variant.quantity_rule.min | default: 1 }}"
+          data-quantity-max="{{ presentation_variant.quantity_rule.max }}"
+          data-quantity-step="{{ presentation_variant.quantity_rule.increment | default: 1 }}"
+          data-cart-quantity="{{ cart | item_count_for_variant: presentation_variant.id }}"
           type="radio"
           name="{{ presentation_group_name }}"
           value="{{ presentation_variant.id }}"
@@ -274,6 +278,10 @@
           class="santa-rita-product-hero__presentation-radio"
           data-sr-product-variant-id="{{ presentation_variant.id }}"
           data-sr-product-variant-available="{{ presentation_variant.available }}"
+          data-quantity-min="{{ presentation_variant.quantity_rule.min | default: 1 }}"
+          data-quantity-max="{{ presentation_variant.quantity_rule.max }}"
+          data-quantity-step="{{ presentation_variant.quantity_rule.increment | default: 1 }}"
+          data-cart-quantity="{{ cart | item_count_for_variant: presentation_variant.id }}"
           type="radio"
           name="{{ presentation_group_name }}"
           value="{{ presentation_variant.id }}"
@@ -507,7 +515,6 @@ resolved subtitle: {{ subtitle }}</pre>
               ref="variantId"
               value="{{ variant.id }}"
             >
-            <input type="hidden" name="quantity" value="1">
 
             <div
               class="santa-rita-product-hero__price"
@@ -532,6 +539,8 @@ resolved subtitle: {{ subtitle }}</pre>
               </div>
             {% endif %}
 
+            <div class="santa-rita-product-hero__actions">
+              {% render 'quantity-selector', product: product, variant: variant %}
             <add-to-cart-component
               ref="addToCartButtonContainer"
               data-product-variant-media="{{ product_variant_media }}"
@@ -555,6 +564,7 @@ resolved subtitle: {{ subtitle }}</pre>
                 <span>{{ add_to_cart_text }}</span>
               </button>
             </add-to-cart-component>
+            </div>
           {% endform %}
         </product-form-component>
 
@@ -594,6 +604,14 @@ resolved subtitle: {{ subtitle }}</pre>
 
           if (variantInput instanceof HTMLInputElement) {
             variantInput.value = variantId;
+          }
+
+          const quantitySelector = form?.querySelector('quantity-selector-component');
+          if (quantitySelector) {
+            quantitySelector.dataset.variantId = variantId;
+            quantitySelector.updateConstraints(input.dataset.quantityMin, input.dataset.quantityMax || null, input.dataset.quantityStep);
+            quantitySelector.setCartQuantity(Number(input.dataset.cartQuantity) || 0);
+            quantitySelector.querySelector('input[name="quantity"]').disabled = input.dataset.srProductVariantAvailable !== 'true';
           }
 
           productHero?.setAttribute('data-wsh-selected-variant-id', variantId);
@@ -1097,6 +1115,35 @@ resolved subtitle: {{ subtitle }}</pre>
     font-weight: 800;
   }
 
+  .santa-rita-product-hero__actions {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+    align-items: stretch;
+  }
+
+  .santa-rita-product-hero__actions .quantity-selector {
+    --quantity-selector-width: 96px;
+    --minimum-touch-target: 30px;
+    min-height: 48px;
+    border: 1px solid #e5e5e5;
+    border-radius: 7px;
+    background: #fff;
+    color: #333;
+  }
+
+  .santa-rita-product-hero__actions .quantity-selector input[type='number'] {
+    min-width: 0;
+    padding: 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .santa-rita-product-hero__actions .quantity-selector button {
+    color: #666;
+  }
+
   .santa-rita-product-hero__add {
     display: inline-flex;
     align-items: center;
@@ -1104,8 +1151,8 @@ resolved subtitle: {{ subtitle }}</pre>
     gap: 10px;
     width: min(100%, 490px);
     min-height: 48px;
-    margin-top: 20px;
-    padding: 0 28px;
+    margin-top: 0;
+    padding: 0 16px;
     border: 0;
     border-radius: 10px;
     background: #9d1238;

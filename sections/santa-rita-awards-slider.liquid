@@ -178,23 +178,46 @@
 
         disconnectedCallback() {
           window.removeEventListener('resize', this.handleResize);
+          this.videoObserver?.disconnect();
+          this.videoEvents?.abort();
         }
 
         setupVideos() {
+          this.videoEvents = new AbortController();
+          const { signal } = this.videoEvents;
+          const tryPlay = (video) => {
+            if (!video.paused) return;
+            video.play().catch((error) => {
+              if (error.name !== 'AbortError' && video.paused) video.setAttribute('controls', '');
+            });
+          };
+          this.videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) tryPlay(entry.target);
+            });
+          });
           this.querySelectorAll('.santa-rita-awards-slide__video').forEach((video) => {
+            video.defaultMuted = true;
             video.muted = true;
             video.loop = true;
             video.playsInline = true;
+            video.autoplay = true;
             video.removeAttribute('controls');
-            video.play().catch(() => {});
+            video.addEventListener('canplay', () => tryPlay(video), { signal });
+            this.videoObserver.observe(video);
+            tryPlay(video);
 
             const slide = video.closest('.santa-rita-awards-slide');
             if (!slide) return;
 
-            slide.addEventListener('mouseenter', () => video.setAttribute('controls', ''));
-            slide.addEventListener('mouseleave', () => video.removeAttribute('controls'));
-            slide.addEventListener('focusin', () => video.setAttribute('controls', ''));
-            slide.addEventListener('focusout', () => video.removeAttribute('controls'));
+            slide.addEventListener('mouseenter', () => video.setAttribute('controls', ''), { signal });
+            slide.addEventListener('mouseleave', () => {
+              if (!video.paused) video.removeAttribute('controls');
+            }, { signal });
+            slide.addEventListener('focusin', () => video.setAttribute('controls', ''), { signal });
+            slide.addEventListener('focusout', () => {
+              if (!video.paused) video.removeAttribute('controls');
+            }, { signal });
           });
         }
 

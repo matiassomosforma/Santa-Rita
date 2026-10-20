@@ -95,6 +95,14 @@
       'santa-rita-best-sellers',
       class SantaRitaBestSellers extends HTMLElement {
         connectedCallback() {
+          // Later instances can connect while the HTML parser is still adding their children.
+          this.contentObserver = new MutationObserver(() => this.initialize());
+          this.contentObserver.observe(this, { childList: true, subtree: true });
+          this.initialize();
+        }
+
+        initialize() {
+          if (this.events) return;
           this.viewport = this.querySelector('[data-slider-viewport]');
           this.track = this.querySelector('[data-slider-track]');
           this.prevButton = this.querySelector('[data-slider-prev]');
@@ -103,18 +111,27 @@
 
           this.handleResize = () => this.setupDots();
 
-          if (!this.viewport || !this.track) return;
+          if (!this.viewport || !this.track || !this.prevButton || !this.nextButton || !this.dotsContainer) return;
+          this.contentObserver.disconnect();
+          this.events = new AbortController();
+          const { signal } = this.events;
 
-          this.prevButton?.addEventListener('click', () => this.scrollByPage(-1));
-          this.nextButton?.addEventListener('click', () => this.scrollByPage(1));
-          this.viewport.addEventListener('scroll', () => this.updateState(), { passive: true });
-          window.addEventListener('resize', this.handleResize);
+          this.prevButton.addEventListener('click', () => this.scrollByPage(-1), { signal });
+          this.nextButton.addEventListener('click', () => this.scrollByPage(1), { signal });
+          this.viewport.addEventListener('scroll', () => this.updateState(), { passive: true, signal });
+          window.addEventListener('resize', this.handleResize, { signal });
+          this.sizeObserver = new ResizeObserver(() => this.setupDots());
+          this.sizeObserver.observe(this.viewport);
+          this.sizeObserver.observe(this.track);
 
           this.setupDots();
         }
 
         disconnectedCallback() {
-          window.removeEventListener('resize', this.handleResize);
+          this.contentObserver?.disconnect();
+          this.sizeObserver?.disconnect();
+          this.events?.abort();
+          this.events = null;
         }
 
         getStep() {

@@ -331,6 +331,62 @@
 {% endcapture %}
 
 {% style %}
+  .santa-rita-product-card__actions {
+    display: grid;
+    grid-template-columns: 82px minmax(0, 1fr);
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .santa-rita-product-card__amount {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 1px solid #e5e5e5;
+    border-radius: 7px;
+    background: #fff;
+  }
+
+  .santa-rita-product-card__amount button {
+    flex: 0 0 24px;
+    padding: 0;
+    min-height: 42px;
+    border: 0;
+    background: transparent;
+    color: #666;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .santa-rita-product-card__amount button:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .santa-rita-product-card__amount input {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #333;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+
+  .santa-rita-product-card__amount input::-webkit-inner-spin-button,
+  .santa-rita-product-card__amount input::-webkit-outer-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+  }
+
   .santa-rita-product-card .santa-rita-product-card__form .santa-rita-product-card__button[data-cart-state] {
     display: flex;
     align-items: center;
@@ -471,7 +527,6 @@
   {% endif %}
 
   {% form 'product', product, class: 'santa-rita-product-card__form', data-wsh-product-id: product.id %}
-    <input type="hidden" name="quantity" value="1">
 
     <fieldset class="santa-rita-product-card__quantity-options" aria-label="Selecciona unidades">
       <legend class="visually-hidden">Selecciona unidades</legend>
@@ -484,7 +539,14 @@
       </div>
     {% endif %}
 
-    <button
+    <div class="santa-rita-product-card__actions">
+      <fieldset class="santa-rita-product-card__amount" {% unless product.available %}disabled{% endunless %}>
+        <legend class="visually-hidden">Cantidad</legend>
+        <button type="button" data-card-quantity-change="-1" aria-label="Disminuir cantidad" disabled>−</button>
+        <input type="number" name="quantity" value="1" min="1" step="1" inputmode="numeric" aria-label="Cantidad" required>
+        <button type="button" data-card-quantity-change="1" aria-label="Aumentar cantidad">+</button>
+      </fieldset>
+      <button
       class="santa-rita-product-card__button"
       type="submit"
       {% unless product.available %}
@@ -492,11 +554,12 @@
       {% endunless %}
     >
       {% if product.available %}
-        Agregar al carro
+        Agregar
       {% else %}
         Agotado
       {% endif %}
     </button>
+    </div>
     <p class="santa-rita-product-card__cart-status visually-hidden" data-cart-status role="status" aria-live="polite" aria-atomic="true"></p>
   {% endform %}
   </article>

@@ -1,5 +1,24 @@
 import { CartAddEvent } from '@theme/events';
 
+document.addEventListener('click', (event) => {
+  const button = event.target.closest('[data-card-quantity-change]');
+  if (!button) return;
+  const control = button.closest('.santa-rita-product-card__amount');
+  const input = control?.querySelector('input[name="quantity"]');
+  if (!input) return;
+  const current = Number(input.value);
+  input.value = String(Math.max(1, (Number.isFinite(current) ? Math.floor(current) : 1) + Number(button.dataset.cardQuantityChange)));
+  input.dispatchEvent(new Event('change', { bubbles: true }));
+});
+
+document.addEventListener('change', (event) => {
+  const input = event.target;
+  if (!(input instanceof HTMLInputElement) || !input.matches('.santa-rita-product-card__amount input')) return;
+  const value = Number(input.value);
+  input.value = String(Number.isFinite(value) ? Math.max(1, Math.floor(value)) : 1);
+  input.closest('.santa-rita-product-card__amount').querySelector('[data-card-quantity-change="-1"]').disabled = Number(input.value) <= 1;
+});
+
 // Delegation also covers cards replaced by filtering or infinite scrolling.
 document.addEventListener('submit', async (event) => {
   const form = event.target;
