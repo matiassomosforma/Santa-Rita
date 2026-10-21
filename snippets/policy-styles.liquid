@@ -1,0 +1,109 @@
+{% doc %}
+  Shared reading layout for Shopify's hosted policy markup. Uses the active
+  color scheme and typography settings; policy content stays managed by Shopify.
+  @example
+  {% render 'policy-styles' %}
+{% enddoc %}
+
+{% stylesheet %}
+  /* Scope through main to override Shopify's policy stylesheet. */
+  main .shopify-policy__container {
+    width: 100%;
+    max-width: 56rem;
+    margin-inline: auto;
+    padding-block: clamp(2.5rem, 6vw, 5rem) clamp(4rem, 8vw, 7rem);
+    padding-inline: clamp(1.25rem, 5vw, 4rem);
+    color: var(--color-foreground);
+    overflow-wrap: anywhere;
+  }
+
+  .shopify-policy__container .shopify-policy__title {
+    margin-block-end: clamp(2rem, 5vw, 3rem);
+    padding-block-end: clamp(1.5rem, 4vw, 2.5rem);
+    border-block-end: 1px solid var(--color-border);
+    text-align: start;
+  }
+
+  .shopify-policy__title::before {
+    content: '';
+    display: block;
+    width: 3rem;
+    height: 3px;
+    margin-block-end: var(--margin-4xl);
+    background: var(--color-primary);
+  }
+
+  .shopify-policy__title h1 {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, var(--font-h1--size));
+    line-height: 1.18;
+    text-wrap: balance;
+  }
+
+  .shopify-policy__body {
+    min-width: 0;
+    font-family: var(--font-paragraph--family);
+    font-style: var(--font-paragraph--style);
+    font-size: max(1rem, var(--font-paragraph--size));
+    line-height: 1.8;
+  }
+
+  .shopify-policy__body :is(h1, h2) {
+    margin-block: var(--margin-5xl) var(--margin-xl);
+    font-size: clamp(1.375rem, 2.5vw, 1.75rem);
+    line-height: 1.4;
+    text-wrap: balance;
+  }
+
+  .shopify-policy__body h2 {
+    padding-block-start: var(--padding-4xl);
+    border-block-start: 1px solid var(--color-border);
+  }
+
+  .shopify-policy__body :is(h3, h4, h5, h6) {
+    margin-block: var(--margin-4xl) var(--margin-lg);
+    font-size: var(--font-size--lg);
+    line-height: 1.5;
+  }
+
+  .shopify-policy__body p {
+    margin-block: 0 var(--margin-2xl);
+  }
+
+  .shopify-policy__body :is(ul, ol) {
+    padding-inline-start: var(--padding-2xl);
+    margin-block-end: var(--margin-2xl);
+  }
+
+  .shopify-policy__body li {
+    padding-inline-start: var(--padding-xs);
+    margin-block-end: var(--margin-sm);
+  }
+
+  .shopify-policy__body li::marker {
+    color: var(--color-primary);
+  }
+
+  .shopify-policy__body a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .shopify-policy__body a:hover {
+    color: var(--color-primary-hover);
+  }
+
+  .shopify-policy__body a:focus-visible {
+    outline: var(--focus-outline-width) solid currentColor;
+    outline-offset: var(--focus-outline-offset);
+  }
+
+  @media print {
+    main .shopify-policy__container {
+      max-width: none;
+      padding: 0;
+    }
+  }
+{% endstylesheet %}

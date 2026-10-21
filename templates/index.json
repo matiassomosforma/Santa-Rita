@@ -16,12 +16,15 @@
           "type": "slide",
           "settings": {
             "media_type": "video",
-            "video": "shopify://files/videos/Video_Bannerhome_5e360d50-21bf-4485-8fd5-f10305fe2bda.mp4",
+            "video": "shopify://files/videos/videos sro hoify.mp4",
+            "video_mobile": "shopify://files/videos/video sro shopify.mp4",
             "video_asset_name": "",
             "heading": "",
             "text": "",
-            "button_label": "Ver ofertas",
-            "button_link": "shopify://collections/all"
+            "button_label": "",
+            "button_link": "shopify://collections/all",
+            "banner_link": "",
+            "banner_link_label": "Ver más"
           }
         }
       },
@@ -29,11 +32,11 @@
         "slide_intro"
       ],
       "settings": {
-        "height_desktop": 520,
-        "height_mobile": 460,
+        "height_desktop": 620,
+        "height_mobile": 340,
         "content_position": "left",
         "content_max_width": 640,
-        "overlay_opacity": 45,
+        "overlay_opacity": 5,
         "autoplay": true,
         "autoplay_speed": 6,
         "text_color": "#ffffff",
@@ -44,6 +47,7 @@
     "santa_rita_best_sellers": {
       "type": "santa-rita-best-sellers",
       "settings": {
+        "product_card_image_scale": 100,
         "heading": "Más vendidos",
         "text": "Los vinos más elegidos en Santa Rita.",
         "products": [],
@@ -65,43 +69,67 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "image": "shopify://shop_images/image_8.png",
+            "image": "shopify://shop_images/Mesa_de_trabajo_1.png",
             "video_asset_name": "",
-            "title": "Floresta",
-            "subtitle": "Cabernet Franc",
+            "title": "Santa Rita",
+            "subtitle": "Forbes",
             "link": ""
+          }
+        },
+        "slide_iDb8mk": {
+          "type": "slide",
+          "settings": {
+            "media_type": "image",
+            "image": "shopify://shop_images/vinos_premiados_mundialmente_2.png",
+            "video_asset_name": "",
+            "title": "Pewen de Apalta",
+            "subtitle": "Carmenere",
+            "link": "shopify://products/vino-tinto-pewen-de-apalta-carmenere"
           }
         },
         "award_video_1": {
           "type": "slide",
           "settings": {
             "media_type": "video",
-            "video": "shopify://files/videos/Banner_Home1080X1350 1.mp4",
+            "video": "shopify://files/videos/WhatsApp Video 2026-10-20 at 4.32.51 PM.mp4",
             "video_asset_name": "",
-            "title": "",
+            "title": "Floresta",
             "subtitle": "",
-            "link": ""
+            "link": "shopify://collections/vinos-floresta"
           }
         },
         "award_image_2": {
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "image": "shopify://shop_images/Captura_de_Pantalla_2026-03-22_a_la_s_19.45.38_1.png",
+            "image": "shopify://shop_images/vinos_premiados_mundialmente_1.png",
             "video_asset_name": "",
-            "title": "Pewen de Apalta",
-            "subtitle": "Carmenere",
-            "link": ""
+            "title": "Casa Real",
+            "subtitle": "Cabernet Sauvignon",
+            "link": "shopify://products/vino-tinto-casa-real-reserva-especial-cabernet-sauvignon"
+          }
+        },
+        "slide_dzCVJE": {
+          "type": "slide",
+          "settings": {
+            "media_type": "image",
+            "image": "shopify://shop_images/vinos_premiados_mundialmente_27c15c39-432e-4a4b-a017-8d8ae648a9e1.png",
+            "video_asset_name": "",
+            "title": "Triple C",
+            "subtitle": "Red Blend",
+            "link": "shopify://products/vino-tinto-carmen-triple-c-red-blend"
           }
         }
       },
       "block_order": [
         "award_image_1",
+        "slide_iDb8mk",
         "award_video_1",
-        "award_image_2"
+        "award_image_2",
+        "slide_dzCVJE"
       ],
       "settings": {
-        "show_stars": true,
+        "show_stars": false,
         "heading": "Vinos premiados\nmundialmente",
         "text": "Descubre los vinos de selección.",
         "card_width": 250,
@@ -112,6 +140,7 @@
     "santa_rita_best_sellers_nR6Laz": {
       "type": "santa-rita-best-sellers",
       "settings": {
+        "product_card_image_scale": 100,
         "heading": "Nuevos lanzamientos",
         "text": "Explora los últimos ingresos.",
         "products": [],

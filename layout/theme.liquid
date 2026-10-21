@@ -48,6 +48,9 @@
     {% endif %}
 
     {{ content_for_header }}
+    {% if request.path contains '/policies/' %}
+      {% render 'policy-styles' %}
+    {% endif %}
   </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}{% if is_boxi_builder_page %} santa-rita-boxi-builder-page{% endif %}">
