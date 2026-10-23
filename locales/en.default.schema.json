@@ -8,6 +8,15 @@
  * ------------------------------------------------------------
  */
 {
+  "sr_exclusions": {
+    "collections": "Excluded collections",
+    "tags": "Excluded product tags",
+    "tags_info": "Separate tags with commas. Exact matches, ignoring capitalization. Any matching tag or collection excludes the product.",
+    "related": "SR related wine exclusions",
+    "related_info": "Applies to all SR related wines sections, including fallback products.",
+    "products": "Excluded products",
+    "local_info": "Additional exclusions for this section. General exclusions in Theme settings also apply."
+  },
   "categories": {
     "banners": "Banners",
     // Category for fundamental content blocks (text, images, buttons)

@@ -1,3 +1,8 @@
+{% comment %}
+  Section contract: related wines with shared theme exclusions and local exclusions.
+  Recommendations and catalog fallback use identical exclusion rules.
+  @example Set SR related wine exclusions in Theme settings for all product templates.
+{% endcomment %}
 <script
   src="{{ 'product-recommendations.js' | asset_url }}"
   type="module"
@@ -12,7 +17,7 @@
 <product-recommendations
   id="santa-rita-related-wines-{{ section.id }}"
   class="santa-rita-related-wines"
-  data-url="{{ routes.product_recommendations_url }}?limit={{ product_limit }}"
+  data-url="{{ routes.product_recommendations_url }}?limit=10"
   data-section-id="{{ section.id }}"
   data-product-id="{{ product.id }}"
   data-intent="related"
@@ -24,7 +29,74 @@
       assign related_products = recommendations.products
     %}
 
-    {% if related_products != blank or collections.all.products != blank %}
+    {% capture related_cards %}
+      {% liquid
+        assign rendered_product_count = 0
+        assign rendered_product_ids = '|'
+      %}
+
+      {% for related_product in related_products %}
+        {% capture excluded %}
+          {% render 'santa-rita-product-excluded', product: related_product,
+            excluded_collections: section.settings.excluded_collections,
+            excluded_tags: section.settings.excluded_tags, related: true %}
+        {% endcapture %}
+        {% assign excluded = excluded | strip %}
+        {% if excluded == 'true' %}{% continue %}{% endif %}
+
+        {% render 'santa-rita-best-seller-card',
+          product: related_product,
+          section_settings: section.settings
+        %}
+        {% liquid
+          assign rendered_product_count = rendered_product_count | plus: 1
+          assign rendered_product_ids = rendered_product_ids | append: related_product.id | append: '|'
+        %}
+        {% if rendered_product_count >= product_limit %}{% break %}{% endif %}
+      {% endfor %}
+
+      {% if rendered_product_count < product_limit %}
+        {% for fallback_product in collections.all.products %}
+          {% capture excluded %}
+            {% render 'santa-rita-product-excluded', product: fallback_product,
+              excluded_collections: section.settings.excluded_collections,
+              excluded_tags: section.settings.excluded_tags, related: true %}
+          {% endcapture %}
+          {% assign excluded = excluded | strip %}
+          {% if excluded == 'true' %}{% continue %}{% endif %}
+
+          {% liquid
+            assign fallback_product_token = fallback_product.id | prepend: '|' | append: '|'
+            assign is_current_product = false
+            assign is_rendered_product = false
+
+            if fallback_product.id == product.id
+              assign is_current_product = true
+            endif
+
+            if rendered_product_ids contains fallback_product_token
+              assign is_rendered_product = true
+            endif
+          %}
+
+          {% unless is_current_product or is_rendered_product %}
+            {% render 'santa-rita-best-seller-card',
+              product: fallback_product,
+              section_settings: section.settings
+            %}
+            {% liquid
+              assign rendered_product_count = rendered_product_count | plus: 1
+              assign rendered_product_ids = rendered_product_ids | append: fallback_product.id | append: '|'
+            %}
+          {% endunless %}
+
+          {% if rendered_product_count >= product_limit %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endcapture %}
+    {% if rendered_product_count > 0 %}
       <santa-rita-related-wines-slider
         class="santa-rita-related-wines__slider"
         {% if section.settings.autoplay %}
@@ -42,54 +114,7 @@
 
           <div class="santa-rita-related-wines__viewport" data-related-viewport>
             <div class="santa-rita-related-wines__track" data-related-track>
-              {% liquid
-                assign rendered_product_count = 0
-                assign rendered_product_ids = '|'
-              %}
-
-              {% for related_product in related_products limit: product_limit %}
-                {% render 'santa-rita-best-seller-card',
-                  product: related_product,
-                  section_settings: section.settings
-                %}
-                {% liquid
-                  assign rendered_product_count = rendered_product_count | plus: 1
-                  assign rendered_product_ids = rendered_product_ids | append: related_product.id | append: '|'
-                %}
-              {% endfor %}
-
-              {% if rendered_product_count < product_limit %}
-                {% for fallback_product in collections.all.products %}
-                  {% liquid
-                    assign fallback_product_token = fallback_product.id | prepend: '|' | append: '|'
-                    assign is_current_product = false
-                    assign is_rendered_product = false
-
-                    if fallback_product.id == product.id
-                      assign is_current_product = true
-                    endif
-
-                    if rendered_product_ids contains fallback_product_token
-                      assign is_rendered_product = true
-                    endif
-                  %}
-
-                  {% unless is_current_product or is_rendered_product %}
-                    {% render 'santa-rita-best-seller-card',
-                      product: fallback_product,
-                      section_settings: section.settings
-                    %}
-                    {% liquid
-                      assign rendered_product_count = rendered_product_count | plus: 1
-                      assign rendered_product_ids = rendered_product_ids | append: fallback_product.id | append: '|'
-                    %}
-                  {% endunless %}
-
-                  {% if rendered_product_count >= product_limit %}
-                    {% break %}
-                  {% endif %}
-                {% endfor %}
-              {% endif %}
+              {{ related_cards }}
             </div>
           </div>
 
@@ -734,6 +759,21 @@
       "id": "rating_count",
       "label": "Resenas por defecto",
       "default": "134"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:sr_exclusions.local_info"
+    },
+    {
+      "type": "collection_list",
+      "id": "excluded_collections",
+      "label": "t:sr_exclusions.collections"
+    },
+    {
+      "type": "textarea",
+      "id": "excluded_tags",
+      "label": "t:sr_exclusions.tags",
+      "info": "t:sr_exclusions.tags_info"
     }
   ],
   "presets": [

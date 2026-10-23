@@ -1,0 +1,60 @@
+{% doc %}
+  Outputs only true or false for collection membership or exact product tag matches.
+  Related wine rules are additive to local rules. Empty settings exclude nothing.
+  @param {product} product - Candidate product.
+  @param {collection[]} [excluded_collections] - Local excluded collections.
+  @param {string} [excluded_tags] - Comma-separated tags, case insensitive.
+  @param {boolean} [related] - Apply global SR related wine exclusions.
+  @param {boolean} [exclude_tours] - Preserve curated carousel tour exclusions.
+  @example
+  {% capture excluded %}
+    {% render 'santa-rita-product-excluded', product: product, related: true %}
+  {% endcapture %}
+{% enddoc %}
+{%- liquid
+  assign excluded = false
+  assign collection_ids = excluded_collections | map: 'id'
+  assign tags_text = excluded_tags
+  if related
+    assign global_collection_ids = settings.sr_related_excluded_collections | map: 'id'
+    assign excluded_product_ids = settings.sr_related_excluded_products | map: 'id'
+    if excluded_product_ids contains product.id
+      assign excluded = true
+    endif
+    assign tags_text = tags_text | append: ',' | append: settings.sr_related_excluded_tags
+  endif
+  for product_collection in product.collections
+    if collection_ids contains product_collection.id
+      assign excluded = true
+      break
+    endif
+    if related and global_collection_ids contains product_collection.id
+      assign excluded = true
+      break
+    endif
+  endfor
+  assign tags_to_exclude = tags_text | downcase | split: ','
+  for tag_to_exclude in tags_to_exclude
+    assign normalized_tag = tag_to_exclude | strip
+    if normalized_tag == blank
+      continue
+    endif
+    for product_tag in product.tags
+      assign normalized_product_tag = product_tag | downcase | strip
+      if normalized_product_tag == normalized_tag
+        assign excluded = true
+        break
+      endif
+    endfor
+    if excluded
+      break
+    endif
+  endfor
+  if exclude_tours
+    assign product_type = product.type | downcase
+    if product_type contains 'tour' or product.tags contains 'tour' or product.tags contains 'Tour'
+      assign excluded = true
+    endif
+  endif
+  echo excluded
+-%}

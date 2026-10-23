@@ -8,6 +8,15 @@
  * ------------------------------------------------------------
  */
 {
+  "sr_exclusions": {
+    "collections": "Colecciones excluidas",
+    "tags": "Etiquetas de producto excluidas",
+    "tags_info": "Separa las etiquetas con comas. Coincidencia exacta, sin distinguir mayúsculas. Basta coincidir con una etiqueta o colección para excluir el producto.",
+    "related": "SR exclusiones relacionados",
+    "related_info": "Se aplica a todas las secciones SR vinos relacionados, incluidos los productos de relleno.",
+    "products": "Productos excluidos",
+    "local_info": "Exclusiones adicionales para esta sección. También se aplican las exclusiones generales de Configuración del tema."
+  },
   "names": {
     "404": "404",
     "borders": "Bordes",

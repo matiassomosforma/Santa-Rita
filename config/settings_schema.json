@@ -2484,5 +2484,30 @@
         "label": "Enlace partner"
       }
     ]
+  },
+  {
+    "name": "t:sr_exclusions.related",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "t:sr_exclusions.related_info"
+      },
+      {
+        "type": "collection_list",
+        "id": "sr_related_excluded_collections",
+        "label": "t:sr_exclusions.collections"
+      },
+      {
+        "type": "textarea",
+        "id": "sr_related_excluded_tags",
+        "label": "t:sr_exclusions.tags",
+        "info": "t:sr_exclusions.tags_info"
+      },
+      {
+        "type": "product_list",
+        "id": "sr_related_excluded_products",
+        "label": "t:sr_exclusions.products"
+      }
+    ]
   }
 ]
