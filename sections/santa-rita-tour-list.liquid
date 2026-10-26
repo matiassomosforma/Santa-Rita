@@ -1,12 +1,22 @@
+{% comment %}
+  Section contract: renders tour metaobjects in a configurable slider order.
+  Manual ordering uses the selected metaobject list; automatic ordering precedes the display limit.
+  @example
+  Add Tours and select a sort order, or select and reorder tours in the manual list.
+{% endcomment %}
 {% liquid
   assign tour_metaobjects = metaobjects.tour.values
+  assign tour_sort_order = section.settings.tour_sort_order | default: 'date_desc'
+  if tour_sort_order == 'manual'
+    assign tour_metaobjects = section.settings.manual_tours
+  endif
   assign products_limit = section.settings.products_limit | default: 6
 %}
 
 {%- capture tour_entries_string -%}
   {%- for tour in tour_metaobjects -%}
     {%- liquid
-      assign tour_sort_date = tour.date.value | default: tour.fecha.value | default: tour.tour_date.value | default: tour.fecha_tour.value | default: tour.created_at.value | default: tour.created_at | default: tour.system.created_at | default: tour.system.updated_at
+      assign tour_sort_date = tour.date.value | default: tour.fecha.value | default: tour.tour_date.value | default: tour.fecha_tour.value | default: tour.created_at.value | default: tour.created_at
 
       if tour_sort_date != blank
         assign tour_sort_key = tour_sort_date | date: '%s'
@@ -20,13 +30,23 @@
       if tour_sort_key_length < 16
         assign tour_sort_key = '0000000000000000' | append: tour_sort_key | slice: -16, 16
       endif
+
+      if tour_sort_order == 'title_asc' or tour_sort_order == 'title_desc'
+        assign tour_sort_key = tour.title.value | default: tour.title | default: tour.system.handle | strip | downcase | replace: ',', ' '
+      endif
     -%}
     {{- tour_sort_key -}}::{{- tour.system.handle -}}{%- unless forloop.last -%},{%- endunless -%}
   {%- endfor -%}
 {%- endcapture -%}
 
 {% liquid
-  assign sorted_tour_entries = tour_entries_string | split: ',' | sort | reverse
+  assign sorted_tour_entries = tour_entries_string | split: ','
+  unless tour_sort_order == 'manual'
+    assign sorted_tour_entries = sorted_tour_entries | sort
+    if tour_sort_order == 'date_desc' or tour_sort_order == 'title_desc'
+      assign sorted_tour_entries = sorted_tour_entries | reverse
+    endif
+  endunless
 %}
 
 <section
@@ -1251,6 +1271,44 @@
 {
   "name": "Tours",
   "settings": [
+    {
+      "type": "select",
+      "id": "tour_sort_order",
+      "label": "t:sr_tour_order.label",
+      "info": "t:sr_tour_order.date_info",
+      "options": [
+        {
+          "value": "date_desc",
+          "label": "t:sr_tour_order.date_desc"
+        },
+        {
+          "value": "date_asc",
+          "label": "t:sr_tour_order.date_asc"
+        },
+        {
+          "value": "title_asc",
+          "label": "t:sr_tour_order.title_asc"
+        },
+        {
+          "value": "title_desc",
+          "label": "t:sr_tour_order.title_desc"
+        },
+        {
+          "value": "manual",
+          "label": "t:sr_tour_order.manual"
+        }
+      ],
+      "default": "date_desc"
+    },
+    {
+      "type": "metaobject_list",
+      "id": "manual_tours",
+      "label": "t:sr_tour_order.manual_tours",
+      "info": "t:sr_tour_order.manual_info",
+      "metaobject_type": "tour",
+      "limit": 12,
+      "visible_if": "{{ section.settings.tour_sort_order == 'manual' }}"
+    },
     {
       "type": "range",
       "id": "products_limit",

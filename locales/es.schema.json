@@ -8,6 +8,17 @@
  * ------------------------------------------------------------
  */
 {
+  "sr_tour_order": {
+    "label": "Ordenar tours",
+    "date_desc": "Fecha: descendente",
+    "date_asc": "Fecha: ascendente",
+    "title_asc": "Título: A–Z",
+    "title_desc": "Título: Z–A",
+    "manual": "Orden personalizado",
+    "manual_tours": "Tours en orden personalizado",
+    "manual_info": "Selecciona los tours y arrástralos al orden que prefieras. Solo se muestran los seleccionados, hasta el límite de cantidad de tours.",
+    "date_info": "Usa el campo de fecha del tour (date, fecha, tour_date, fecha_tour o created_at). Si no tiene fecha, usa el ID de la entrada como alternativa."
+  },
   "sr_exclusions": {
     "collections": "Colecciones excluidas",
     "tags": "Etiquetas de producto excluidas",

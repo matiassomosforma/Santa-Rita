@@ -8,6 +8,17 @@
  * ------------------------------------------------------------
  */
 {
+  "sr_tour_order": {
+    "label": "Sort tours",
+    "date_desc": "Date: newest first",
+    "date_asc": "Date: oldest first",
+    "title_asc": "Title: A–Z",
+    "title_desc": "Title: Z–A",
+    "manual": "Custom order",
+    "manual_tours": "Tours in custom order",
+    "manual_info": "Select tours and drag them into your preferred order. Only selected tours are shown, up to the tour count limit.",
+    "date_info": "Uses the tour date field (date, fecha, tour_date, fecha_tour or created_at). Without a date, uses the entry ID as a fallback."
+  },
   "sr_exclusions": {
     "collections": "Excluded collections",
     "tags": "Excluded product tags",
