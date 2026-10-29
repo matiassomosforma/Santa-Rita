@@ -780,11 +780,11 @@ var fnCalled = false;
       type: 'POST',
       success: function (data, success) {         
         if(wpdNetVersion == 2){
-          $("#wpdNetOrderSuccessMsg").html($.parseHTML({{shop.metafields.wcp_net.netThankMsg | json}}));
+          $("#wpdNetOrderSuccessMsg").text({{shop.metafields.wcp_net.netThankMsg | json}});
           $("#wpdNetOrderSuccessWrapper").css("display","flex");
           $("#wpdNetContentWrapper, #wpdNetLeftContent, #wpdNetHeaderWrapper, #wpdNetMainForm").hide();          
         }else{
-         $("#wcp-wcpModal-container").html($.parseHTML({{shop.metafields.wcp_net.netThankMsg | json}}));   
+         $("#wcp-wcpModal-container").text({{shop.metafields.wcp_net.netThankMsg | json}});   
         }
         wcpClearCartnet();
         //return false; 

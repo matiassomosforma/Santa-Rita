@@ -127,17 +127,18 @@
         }
       },
       "settings": {
+        "product_card_image_scale": 100,
         "layout_type": "grid",
         "product_card_size": "medium",
         "mobile_product_card_size": "small",
         "enable_infinite_scroll": true,
         "products_per_page": 24,
         "show_collection_banner": true,
-        "collection_banner_image": "shopify://shop_images/image_61_1.png",
-        "collection_banner_fallback_title": "Nuestras Ofertas",
-        "collection_banner_fallback_subtitle": "Curaduría exclusiva de los mejores valles de Chile con precios preferenciales.",
+        "collection_banner_image": "shopify://shop_images/categorias_web_nueva_6ac0acdf-020e-4f63-8c09-8b63a5051eb3.png",
+        "collection_banner_fallback_title": "Todos los productos",
+        "collection_banner_fallback_subtitle": "Descubre todo lo que Santa Rita Online tiene para ti. Encuentra tus etiquetas favoritas de vino, espumantes, destilados, café  y mucho más, todo en un solo lugar.",
         "show_collection_breadcrumbs": true,
-        "collection_breadcrumb_label": "Nuestras ofertas",
+        "collection_breadcrumb_label": "Todos los productos",
         "all_products_label": "Todos los productos",
         "collection_links": [
           "vinos",

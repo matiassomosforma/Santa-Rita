@@ -13,17 +13,23 @@
       "type": "santa-rita-page-banner",
       "name": "Banner de pagina",
       "settings": {
+        "height_mobile": 320,
+        "height_desktop": 520,
         "banner_style": "background",
+        "desktop_video": "shopify://files/videos/BannerTourismoDES.mp4",
         "desktop_image": "shopify://shop_images/BannerTourismoDES_1_1.png",
         "heading": "Nuestros Tours",
         "subheading": "Una invitacion a descubrir el alma de nuestra bodega a solo 45 minutos de Santiago.",
         "show_breadcrumbs": true,
+        "breadcrumb_top": 28,
         "desktop_padding_top": 28,
         "desktop_padding_bottom": 144,
         "text_alignment": "center",
-        "mobile_padding_top": 14,
+        "mobile_padding_top": 110,
         "mobile_padding_bottom": 24,
-        "mobile_text_alignment": "left"
+        "mobile_text_alignment": "center",
+        "banner_link": "",
+        "banner_link_label": "Ver más"
       }
     },
     "santa_rita_tour_list": {
@@ -71,23 +77,10 @@
         },
         "faq_languages": {
           "type": "faq",
+          "repeater": "{{ page.metafields.custom.preguntas_frecuentes.value }}",
           "settings": {
-            "question": "En que idiomas estan disponibles los tours?",
-            "answer": "<p>Los idiomas se configuran en cada tour desde sus opciones de reserva.</p>"
-          }
-        },
-        "faq_pets": {
-          "type": "faq",
-          "settings": {
-            "question": "Se permiten mascotas en la Vina Santa Rita?",
-            "answer": "<p>La disponibilidad para mascotas debe confirmarse con el equipo de reservas antes de la visita.</p>"
-          }
-        },
-        "faq_food": {
-          "type": "faq",
-          "settings": {
-            "question": "Hay algun restaurante para almorzar en la vina?",
-            "answer": "<p>Puedes agregar informacion actualizada de restaurante, horarios y condiciones desde el editor del theme.</p>"
+            "question": "{{ block.repeater.pregunta.value }}",
+            "answer": "{{ block.repeater.respuesta | metafield_tag }}"
           }
         }
       },
@@ -96,18 +89,26 @@
         "transport_metro",
         "transport_bus",
         "transport_private",
-        "faq_languages",
-        "faq_pets",
-        "faq_food"
+        "faq_languages"
       ],
       "name": "Tours",
       "settings": {
-        "products_limit": 6,
+        "tour_sort_order": "manual",
+        "manual_tours": [
+          "tour-premium",
+          "seleccion",
+          "tour-clasico",
+          "paseo-en-carruaje",
+          "pedal-bar-tour",
+          "tour-del-carmenere",
+          "winemaker-experience"
+        ],
+        "products_limit": 12,
         "heading": "Elige tu experiencia",
-        "subheading": "Desde recorridos clasicos hasta vivencias unicas en el corazon de la vina.",
+        "subheading": "Desde recorridos clásicos hasta experiencias exclusivas e interactivas, cada tour invita a vivir la viña de una manera única.",
         "card_button_label": "Ver más",
         "price_note": "por persona",
-        "notice": "Reserva con anticipacion. Todos los tours requieren reserva minima con 24 horas de anticipacion.",
+        "notice": "Reserva con anticipacion. Todos los tours requieren reserva minima con 12 horas de anticipacion.",
         "arrival_heading": "Como llegar a Vina Santa Rita?",
         "arrival_text": "Elige tu medio de transporte preferido y te mostramos el camino hasta la vina.",
         "map_embed_code": "<iframe src=\"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25538.227778230797!2d-70.84968780314513!3d-33.55943744041927!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662e7a3e4cc8645%3A0x3fc1f219246d5d9c!2sLa%20Primavera%2C%20Padre%20Hurtado%2C%20Regi%C3%B3n%20Metropolitana!5e1!3m2!1ses!2scl!4v1782054866504!5m2!1ses!2scl\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>",

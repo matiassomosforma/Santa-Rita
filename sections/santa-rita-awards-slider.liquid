@@ -1,3 +1,9 @@
+{% comment %}
+  Section contract: awards carousel with native touch scrolling and independent
+  desktop/mobile autoplay. Autoplay pauses for interaction and reduced motion.
+  @example
+  Add award slides and enable autoplay for the desired viewport in the editor.
+{% endcomment %}
 {% liquid
   assign slider_id = 'SantaRitaAwardsSlider-' | append: section.id
 %}
@@ -5,6 +11,8 @@
 <santa-rita-awards-slider
   id="{{ slider_id }}"
   class="santa-rita-awards-slider"
+  data-autoplay-desktop="{{ section.settings.autoplay_desktop }}"
+  data-autoplay-mobile="{{ section.settings.autoplay_mobile }}"
   style="
     --awards-background: {{ section.settings.background }};
     --awards-text-color: {{ section.settings.text_color }};
@@ -125,6 +133,12 @@
       <div class="santa-rita-awards-slider__footer">
         <div class="santa-rita-awards-slider__dots" data-awards-dots aria-label="Paginación"></div>
         <div class="santa-rita-awards-slider__arrows">
+          <button type="button" data-awards-autoplay hidden
+            data-pause-label="{{ 'accessibility.slideshow_pause' | t | escape }}"
+            data-play-label="{{ 'accessibility.slideshow_play' | t | escape }}"
+            aria-label="{{ 'accessibility.slideshow_pause' | t | escape }}">
+            <span data-awards-autoplay-icon aria-hidden="true">Ⅱ</span>
+          </button>
           <button type="button" data-awards-prev aria-label="Slide anterior">
             <span aria-hidden="true">
               <svg xmlns="http://www.w3.org/2000/svg" width="33" height="20" viewBox="0 0 33 20" fill="none">
@@ -157,29 +171,82 @@
           this.prevButton = this.querySelector('[data-awards-prev]');
           this.nextButton = this.querySelector('[data-awards-next]');
           this.dotsContainer = this.querySelector('[data-awards-dots]');
+          this.autoplayButton = this.querySelector('[data-awards-autoplay]');
+          this.mobileQuery = window.matchMedia('(max-width: 749px)');
+          this.motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
           this.index = 0;
-          this.handleResize = () => {
-            this.createDots();
-            this.update();
-          };
+          this.paused = false;
+          this.hovered = false;
+          this.events?.abort();
+          this.events = new AbortController();
+          const { signal } = this.events;
 
           if (!this.viewport || !this.track || !this.slides.length) return;
 
-          this.prevButton?.addEventListener('click', () => this.goTo(this.index - 1));
-          this.nextButton?.addEventListener('click', () => this.goTo(this.index + 1));
-          window.addEventListener('resize', this.handleResize);
-          this.setupVideos();
-
-          requestAnimationFrame(() => {
+          this.prevButton?.addEventListener('click', () => this.goTo(this.index - 1), { signal });
+          this.nextButton?.addEventListener('click', () => this.goTo(this.index + 1), { signal });
+          this.viewport.addEventListener('scroll', () => this.update(), { passive: true, signal });
+          this.viewport.addEventListener('pointerdown', () => this.pause(), { passive: true, signal });
+          this.viewport.addEventListener('wheel', () => this.pause(), { passive: true, signal });
+          this.addEventListener('focusin', (event) => {
+            if (!this.autoplayButton?.contains(event.target)) this.pause();
+          }, { signal });
+          this.addEventListener('pointerenter', (event) => {
+            if (event.pointerType !== 'mouse') return;
+            this.hovered = true;
+            this.syncAutoplay();
+          }, { signal });
+          this.addEventListener('pointerleave', () => {
+            this.hovered = false;
+            this.syncAutoplay();
+          }, { signal });
+          this.autoplayButton?.addEventListener('click', () => {
+            this.paused = !this.paused;
+            this.syncAutoplay();
+          }, { signal });
+          document.addEventListener('visibilitychange', () => this.syncAutoplay(), { signal });
+          this.mobileQuery.addEventListener('change', () => this.syncAutoplay(), { signal });
+          this.motionQuery.addEventListener('change', () => this.syncAutoplay(), { signal });
+          this.resizeObserver = new ResizeObserver(() => {
             this.createDots();
             this.update();
+            this.syncAutoplay();
           });
+          this.resizeObserver.observe(this.viewport);
+          this.resizeObserver.observe(this.slides[0]);
+          this.setupVideos();
+          this.createDots();
+          this.update();
+          this.syncAutoplay();
         }
 
         disconnectedCallback() {
-          window.removeEventListener('resize', this.handleResize);
+          this.events?.abort();
+          this.resizeObserver?.disconnect();
+          clearInterval(this.autoplayTimer);
           this.videoObserver?.disconnect();
           this.videoEvents?.abort();
+        }
+
+        pause() {
+          this.paused = true;
+          this.syncAutoplay();
+        }
+
+        syncAutoplay() {
+          clearInterval(this.autoplayTimer);
+          const enabled = (this.mobileQuery.matches ? this.dataset.autoplayMobile : this.dataset.autoplayDesktop) === 'true';
+          const available = enabled && !this.motionQuery.matches && this.getMaxIndex() > 0;
+          if (this.autoplayButton) {
+            this.autoplayButton.hidden = !available;
+            this.autoplayButton.setAttribute('aria-label', this.paused
+              ? this.autoplayButton.dataset.playLabel : this.autoplayButton.dataset.pauseLabel);
+            this.autoplayButton.querySelector('[data-awards-autoplay-icon]').textContent = this.paused ? '▶' : 'Ⅱ';
+          }
+          if (!available || this.paused || this.hovered || document.hidden) return;
+          this.autoplayTimer = setInterval(() => {
+            this.goTo(this.index >= this.getMaxIndex() ? 0 : this.index + 1, true);
+          }, 5000);
         }
 
         setupVideos() {
@@ -233,33 +300,12 @@
         }
 
         getMaxIndex() {
-          if (this.isMobile()) {
-            return Math.max(0, this.slides.length - 2);
-          }
-
-          const maxTranslate = this.getMaxTranslate();
-          if (maxTranslate <= 1) return 0;
-          return Math.ceil(maxTranslate / this.getStep());
-        }
-
-        isMobile() {
-          return window.matchMedia('(max-width: 749px)').matches;
+          const maxScroll = this.getMaxTranslate();
+          return maxScroll <= 1 ? 0 : Math.ceil((maxScroll - 1) / this.getStep());
         }
 
         getMaxTranslate() {
-          const slide = this.slides[0];
-          if (!slide) return 0;
-
-          const step = this.getStep();
-
-          if (this.isMobile()) {
-            return Math.max(0, (this.slides.length - 2) * step);
-          }
-
-          const visibleSlides = (this.viewport.clientWidth + this.getGap()) / step;
-          const endPadding = 24;
-
-          return Math.max(0, (this.slides.length - visibleSlides) * step + endPadding);
+          return Math.max(0, this.viewport.scrollWidth - this.viewport.clientWidth);
         }
 
         createDots() {
@@ -275,18 +321,22 @@
           }
         }
 
-        goTo(index) {
-          const maxIndex = this.getMaxIndex();
-          this.index = Math.min(Math.max(index, 0), maxIndex);
-          this.update();
+        goTo(index, automatic = false) {
+          if (!automatic) this.pause();
+          const targetIndex = Math.min(Math.max(index, 0), this.getMaxIndex());
+          const position = Math.min(targetIndex * this.getStep(), this.getMaxTranslate());
+          const direction = getComputedStyle(this.viewport).direction === 'rtl' ? -1 : 1;
+          this.viewport.scrollTo({
+            left: position * direction,
+            behavior: this.motionQuery.matches ? 'instant' : 'smooth',
+          });
         }
 
         update() {
           const maxIndex = this.getMaxIndex();
-          if (this.index > maxIndex) this.index = maxIndex;
-
-          const translate = Math.min(this.index * this.getStep(), this.getMaxTranslate());
-          this.track.style.transform = `translateX(${-translate}px)`;
+          const position = Math.abs(this.viewport.scrollLeft);
+          this.index = this.getMaxTranslate() - position <= 1
+            ? maxIndex : Math.min(maxIndex, Math.round(position / this.getStep()));
 
           Array.from(this.dotsContainer?.children || []).forEach((dot, index) => {
             dot.classList.toggle('is-active', index === this.index);
@@ -363,18 +413,25 @@
   }
 
   .santa-rita-awards-slider__viewport {
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .santa-rita-awards-slider__viewport::-webkit-scrollbar {
+    display: none;
   }
 
   .santa-rita-awards-slider__track {
     display: flex;
     gap: var(--awards-slide-gap);
     align-items: flex-start;
-    transition: transform 0.45s ease;
-    will-change: transform;
   }
 
   .santa-rita-awards-slide {
+    min-width: 0;
+    scroll-snap-align: start;
     flex: 0 0 calc((100% - (var(--awards-slide-gap) * 1.7)) / 2.7);
     color: inherit;
     text-align: center;
@@ -486,6 +543,10 @@
     transition: background 0.25s ease, border-color 0.25s ease;
   }
 
+  .santa-rita-awards-slider__arrows button[hidden] {
+    display: none;
+  }
+
   .santa-rita-awards-slider__arrows button:not(:disabled):hover {
     color: #ffffff;
     border-color: #B8294F;
@@ -569,6 +630,18 @@
   "tag": "section",
   "class": "section-santa-rita-awards-slider",
   "settings": [
+    {
+      "type": "checkbox",
+      "id": "autoplay_desktop",
+      "label": "t:settings.awards_autoplay_desktop",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay_mobile",
+      "label": "t:settings.awards_autoplay_mobile",
+      "default": false
+    },
     {
       "type": "checkbox",
       "id": "show_stars",

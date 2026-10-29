@@ -80,6 +80,12 @@
           "blocks": {}
         }
       },
+      "custom_css": [
+        ".mega-menu__column:has(.mega-menu__child-list > li:nth-child(6)) {grid-column: span 2;}",
+        ".mega-menu__child-list:has(> li:nth-child(6)) {column-count: 2; column-gap: 32px;}",
+        ".mega-menu__child-list:has(> li:nth-child(6)) > li {break-inside: avoid;}",
+        ".mega-menu__link--parent,.mega-menu__link--parent .wrap-text {color: #000; font-weight: 500; font-size: 16px;}"
+      ],
       "settings": {
         "logo_position": "left",
         "menu_position": "right",

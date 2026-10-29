@@ -16,14 +16,14 @@
           "type": "slide",
           "settings": {
             "media_type": "video",
-            "video": "shopify://files/videos/videos sro hoify.mp4",
-            "video_mobile": "shopify://files/videos/video sro shopify.mp4",
+            "video": "shopify://files/videos/forbes video banner shopify (1).mp4",
+            "video_mobile": "shopify://files/videos/mobile_bannershopify.mp4",
             "video_asset_name": "",
             "heading": "",
             "text": "",
             "button_label": "",
             "button_link": "shopify://collections/all",
-            "banner_link": "",
+            "banner_link": "shopify://collections/ofertas",
             "banner_link_label": "Ver más"
           }
         }
@@ -32,8 +32,8 @@
         "slide_intro"
       ],
       "settings": {
-        "height_desktop": 620,
-        "height_mobile": 340,
+        "height_desktop": 560,
+        "height_mobile": 460,
         "content_position": "left",
         "content_max_width": 640,
         "overlay_opacity": 5,
@@ -50,16 +50,31 @@
         "product_card_image_scale": 100,
         "heading": "Más vendidos",
         "text": "Los vinos más elegidos en Santa Rita.",
-        "products": [],
+        "products": [
+          "vino-tinto-escudo-de-casa-real-cabernet-sauvignon",
+          "vino-tinto-medalla-real-reserva-carmenere",
+          "vino-tinto-carmen-gran-reserva-frida-kahlo-carmenere",
+          "espumante-amaranta-brut",
+          "vino-blanco-medalla-real-reserva-sauvignon-blanc",
+          "vino-tinto-medalla-real-gran-reserva-cabernet-sauvignon",
+          "vino-tinto-secret-reserve-seleccion-carmenere",
+          "vino-tinto-carmen-reserva-frida-kahlo-carmenere",
+          "vino-tinto-cabernario-cabernet-sauvignon",
+          "bipack-santa-rita-medalla-real-gran-reserva-carmenere-cabernet-sauvignon",
+          "caja-mix-vino-gran-reserva",
+          "escudo-de-casa-real-sauvignon-blanc"
+        ],
         "collection": "all",
-        "max_products": 8,
+        "max_products": 12,
         "autoplay": true,
         "autoplay_speed": 5,
         "infinite_loop": true,
         "pack_label": "x12 un.",
         "unit_price_label": "$2.970",
         "liter_price_label": "$3.960",
-        "rating_count": "134"
+        "rating_count": "134",
+        "excluded_collections": [],
+        "excluded_tags": ""
       }
     },
     "santa_rita_awards_slider": {
@@ -76,6 +91,17 @@
             "link": ""
           }
         },
+        "award_video_1": {
+          "type": "slide",
+          "settings": {
+            "media_type": "video",
+            "video": "shopify://files/videos/WhatsApp Video 2026-10-20 at 4.32.51 PM.mp4",
+            "video_asset_name": "",
+            "title": "Floresta",
+            "subtitle": "",
+            "link": "shopify://collections/vinos-floresta"
+          }
+        },
         "slide_iDb8mk": {
           "type": "slide",
           "settings": {
@@ -87,15 +113,15 @@
             "link": "shopify://products/vino-tinto-pewen-de-apalta-carmenere"
           }
         },
-        "award_video_1": {
+        "slide_HwjmB8": {
           "type": "slide",
           "settings": {
             "media_type": "video",
-            "video": "shopify://files/videos/WhatsApp Video 2026-10-20 at 4.32.51 PM.mp4",
+            "video": "shopify://files/videos/SR_DIGITAL 02.mp4",
             "video_asset_name": "",
-            "title": "Floresta",
-            "subtitle": "",
-            "link": "shopify://collections/vinos-floresta"
+            "title": "Escudo de Casa Real",
+            "subtitle": "Chardonnay",
+            "link": "shopify://collections/vinos-escudo-de-casa-real"
           }
         },
         "award_image_2": {
@@ -123,15 +149,16 @@
       },
       "block_order": [
         "award_image_1",
-        "slide_iDb8mk",
         "award_video_1",
+        "slide_iDb8mk",
+        "slide_HwjmB8",
         "award_image_2",
         "slide_dzCVJE"
       ],
       "settings": {
         "show_stars": false,
-        "heading": "Vinos premiados\nmundialmente",
-        "text": "Descubre los vinos de selección.",
+        "heading": "Vinos extraordinarios",
+        "text": "Reconocidos por los más grandes críticos del mundo. DESCUBRE NUESTROS GRANDES VINOS",
         "card_width": 250,
         "background": "#1e0812",
         "text_color": "#ffffff"
@@ -143,7 +170,15 @@
         "product_card_image_scale": 100,
         "heading": "Nuevos lanzamientos",
         "text": "Explora los últimos ingresos.",
-        "products": [],
+        "products": [
+          "coctel-120-3-medallas-caramel-macchiato",
+          "coctel-120-3-medallas-chocolate-naranja",
+          "escudo-de-casa-real-chardonnay",
+          "escudo-de-casa-real-sauvignon-blanc",
+          "espumante-carmen-frida-kahlo-zero",
+          "vino-blanco-carmen-frida-kahlo-zero-x6",
+          "vino-tinto-carmen-frida-kahlo-zero-x6"
+        ],
         "collection": "all",
         "max_products": 8,
         "autoplay": true,
@@ -152,7 +187,9 @@
         "pack_label": "x12 un.",
         "unit_price_label": "$2.970",
         "liter_price_label": "$3.960",
-        "rating_count": "134"
+        "rating_count": "134",
+        "excluded_collections": [],
+        "excluded_tags": ""
       }
     },
     "santa_rita_blog_slider": {

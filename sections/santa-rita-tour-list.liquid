@@ -125,7 +125,7 @@
 
                   <div class="santa-rita-tour-list__footer">
                     <div>
-                      <strong>{% if is_free_tour %}Gratuito{% else %}{{ price_cents | money }}{% endif %}</strong>
+                      <strong>{% if is_free_tour %}Gratuito{% else %}{{ price_cents | money | replace: ',', '.' }}{% endif %}</strong>
                       {% if is_free_tour %}
                         <small>Sin costo por persona</small>
                       {% elsif duration != blank %}

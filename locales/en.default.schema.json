@@ -769,6 +769,8 @@
     "below_media": "Below media"
   },
   "settings": {
+    "awards_autoplay_desktop": "Autoplay on desktop",
+    "awards_autoplay_mobile": "Autoplay on mobile",
     "accordion": "Accordion",
     "account": "Account",
     "actions_display_style": "Menu style",

@@ -220,6 +220,8 @@
     "layered_slideshow": "Presentación de diapositivas en capas"
   },
   "settings": {
+    "awards_autoplay_desktop": "Reproducción automática en desktop",
+    "awards_autoplay_mobile": "Reproducción automática en mobile",
     "alignment": "Alineación",
     "autoplay": "Reproducción automática",
     "background": "Fondo",

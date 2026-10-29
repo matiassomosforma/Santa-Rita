@@ -13,6 +13,8 @@
       "type": "santa-rita-page-banner",
       "name": "Banner de pagina",
       "settings": {
+        "height_mobile": 320,
+        "height_desktop": 520,
         "banner_style": "background",
         "desktop_video": "shopify://files/videos/BannerTourismoDES (1).mp4",
         "heading": "Gastronomía",
@@ -24,7 +26,9 @@
         "text_alignment": "center",
         "mobile_padding_top": 14,
         "mobile_padding_bottom": 24,
-        "mobile_text_alignment": "left"
+        "mobile_text_alignment": "left",
+        "banner_link": "",
+        "banner_link_label": "Ver más"
       }
     },
     "intro": {
@@ -47,7 +51,7 @@
           "type": "card",
           "settings": {
             "show_card": true,
-            "image": "shopify://shop_images/image_57.png",
+            "image": "shopify://shop_images/Diseno_sin_titulo_11.png",
             "title": "Restaurante Doña Paula",
             "text": "<p>Ofrecemos una propuesta de alta cocina que reinterpreta los sabores tradicionales con técnicas modernas, maridados perfectamente con los mejores vinos de nuestra cava privada.</p>",
             "button_label": "Reservar",
@@ -58,7 +62,7 @@
           "type": "card",
           "settings": {
             "show_card": true,
-            "image": "shopify://shop_images/image_58.png",
+            "image": "shopify://shop_images/Diseno_sin_titulo_6.png",
             "title": "Panadería",
             "text": "<p>Un lugar ideal para hacer una pausa en el recorrido, ya sea para tomar un rico café de grano, un jugo natural o una comida gourmet al paso, para continuar visitando y disfrutando del día en Santa Rita.</p>",
             "button_label": "Reservar",
