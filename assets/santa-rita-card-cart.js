@@ -37,18 +37,19 @@ document.addEventListener('submit', async (event) => {
     return;
   }
 
-  const originalLabel = button.textContent;
+  const originalMarkup = button.innerHTML;
   let added = false;
   const resetButton = () => {
     delete form.dataset.addingToCart;
     delete button.dataset.cartState;
     button.disabled = false;
-    button.textContent = originalLabel;
+    button.innerHTML = originalMarkup;
   };
   form.dataset.addingToCart = 'true';
   button.disabled = true;
   button.dataset.cartState = 'loading';
-  button.textContent = 'Agregando…';
+  const buttonLabel = button.querySelector('.santa-rita-product-card__button-label') || button;
+  buttonLabel.textContent = 'Agregando…';
   form.setAttribute('aria-busy', 'true');
   status.textContent = '';
   status.classList.add('visually-hidden');
@@ -71,7 +72,7 @@ document.addEventListener('submit', async (event) => {
     }
     added = true;
     button.dataset.cartState = 'added';
-    button.innerHTML = '<svg class="santa-rita-cart-check" viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Agregado</span>';
+    button.innerHTML = '<svg class="santa-rita-cart-check" viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="santa-rita-product-card__button-label">Agregado</span>';
     status.textContent = 'Producto agregado al carrito.';
     document.dispatchEvent(new CartAddEvent(result, String(body.get('id')), {
       source: 'product-form-component',

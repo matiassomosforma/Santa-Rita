@@ -442,7 +442,7 @@
                 | image_url: width: 1400
                 | image_tag:
                   widths: '375, 550, 750, 990, 1200, 1400',
-                  sizes: '(min-width: 990px) 52vw, 100vw',
+                  sizes: '(min-width: 1036px) 610px, (min-width: 750px) 52vw, 100vw',
                   loading: 'eager',
                   class: 'santa-rita-collection-banner__image'
               }}
@@ -706,6 +706,23 @@
     font-weight: 700;
     line-height: 1.04;
     letter-spacing: 0;
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 1035px) {
+    .santa-rita-collection-banner__layout {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 24px;
+    }
+
+    .santa-rita-collection-banner__content,
+    .santa-rita-collection-banner__picture,
+    .santa-rita-collection-banner__placeholder {
+      min-width: 0;
+    }
+
+    .santa-rita-collection-banner__content {
+      overflow-wrap: anywhere;
+    }
   }
 
   .santa-rita-collection-banner__content p {
